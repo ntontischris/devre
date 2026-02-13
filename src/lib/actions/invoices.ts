@@ -1,0 +1,227 @@
+'use server';
+
+import { createClient } from '@/lib/supabase/server';
+import { createInvoiceSchema, updateInvoiceSchema, type LineItem } from '@/lib/schemas/invoice';
+import type { ActionResult } from '@/types/index';
+import type { InvoiceStatus } from '@/lib/constants';
+import { revalidatePath } from 'next/cache';
+
+interface InvoiceFilters {
+  status?: InvoiceStatus | InvoiceStatus[];
+  client_id?: string;
+  project_id?: string;
+  issue_date_from?: string;
+  issue_date_to?: string;
+}
+
+export async function getInvoices(filters?: InvoiceFilters): Promise<ActionResult<any[]>> {
+  try {
+    const supabase = await createClient();
+    let query = supabase
+      .from('invoices')
+      .select('*, client:clients(*), project:projects(*)')
+      .order('created_at', { ascending: false });
+
+    if (filters?.status) {
+      if (Array.isArray(filters.status)) {
+        query = query.in('status', filters.status);
+      } else {
+        query = query.eq('status', filters.status);
+      }
+    }
+    if (filters?.client_id) {
+      query = query.eq('client_id', filters.client_id);
+    }
+    if (filters?.project_id) {
+      query = query.eq('project_id', filters.project_id);
+    }
+    if (filters?.issue_date_from) {
+      query = query.gte('issue_date', filters.issue_date_from);
+    }
+    if (filters?.issue_date_to) {
+      query = query.lte('issue_date', filters.issue_date_to);
+    }
+
+    const { data, error } = await query;
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: 'Failed to fetch invoices' };
+  }
+}
+
+export async function getInvoice(id: string): Promise<ActionResult<any>> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*, client:clients(*), project:projects(*)')
+      .eq('id', id)
+      .single();
+
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: 'Failed to fetch invoice' };
+  }
+}
+
+export async function getNextInvoiceNumber(): Promise<string> {
+  try {
+    const supabase = await createClient();
+    const currentYear = new Date().getFullYear();
+
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('invoice_number')
+      .like('invoice_number', `DMS-${currentYear}-%`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !data) {
+      return `DMS-${currentYear}-001`;
+    }
+
+    const lastNumber = parseInt(data.invoice_number.split('-')[2] || '0', 10);
+    const nextNumber = (lastNumber + 1).toString().padStart(3, '0');
+    return `DMS-${currentYear}-${nextNumber}`;
+  } catch (error) {
+    const currentYear = new Date().getFullYear();
+    return `DMS-${currentYear}-001`;
+  }
+}
+
+export async function createInvoice(input: unknown): Promise<ActionResult<any>> {
+  try {
+    const validated = createInvoiceSchema.parse(input);
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { data: null, error: 'User not authenticated' };
+
+    const invoiceNumber = await getNextInvoiceNumber();
+
+    const subtotal = validated.line_items.reduce(
+      (sum: number, item: LineItem) => sum + item.quantity * item.unit_price,
+      0
+    );
+    const taxAmount = subtotal * (validated.tax_rate / 100);
+    const total = subtotal + taxAmount;
+
+    const { data, error } = await supabase
+      .from('invoices')
+      .insert({
+        ...validated,
+        invoice_number: invoiceNumber,
+        subtotal,
+        tax_amount: taxAmount,
+        total,
+        status: 'draft',
+        created_by: user.id,
+      })
+      .select('*, client:clients(*), project:projects(*)')
+      .single();
+
+    if (error) return { data: null, error: error.message };
+
+    revalidatePath('/admin/invoices');
+    return { data, error: null };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { data: null, error: error.message };
+    }
+    return { data: null, error: 'Failed to create invoice' };
+  }
+}
+
+export async function updateInvoice(id: string, input: unknown): Promise<ActionResult<any>> {
+  try {
+    const validated = updateInvoiceSchema.parse(input);
+    const supabase = await createClient();
+
+    let updateData: any = { ...validated };
+
+    if (validated.line_items) {
+      const subtotal = validated.line_items.reduce(
+        (sum: number, item: LineItem) => sum + item.quantity * item.unit_price,
+        0
+      );
+      const taxRate = validated.tax_rate || 24;
+      const taxAmount = subtotal * (taxRate / 100);
+      const total = subtotal + taxAmount;
+
+      updateData = {
+        ...updateData,
+        subtotal,
+        tax_amount: taxAmount,
+        total,
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('invoices')
+      .update(updateData)
+      .eq('id', id)
+      .select('*, client:clients(*), project:projects(*)')
+      .single();
+
+    if (error) return { data: null, error: error.message };
+
+    revalidatePath('/admin/invoices');
+    revalidatePath(`/admin/invoices/${id}`);
+    return { data, error: null };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { data: null, error: error.message };
+    }
+    return { data: null, error: 'Failed to update invoice' };
+  }
+}
+
+export async function updateInvoiceStatus(id: string, status: InvoiceStatus): Promise<ActionResult<any>> {
+  try {
+    const supabase = await createClient();
+
+    const updateData: any = { status };
+
+    if (status === 'sent' && !updateData.sent_at) {
+      updateData.sent_at = new Date().toISOString();
+    }
+    if (status === 'paid' && !updateData.paid_at) {
+      updateData.paid_at = new Date().toISOString();
+    }
+
+    const { data, error } = await supabase
+      .from('invoices')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) return { data: null, error: error.message };
+
+    revalidatePath('/admin/invoices');
+    revalidatePath(`/admin/invoices/${id}`);
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: 'Failed to update invoice status' };
+  }
+}
+
+export async function deleteInvoice(id: string): Promise<ActionResult<void>> {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('invoices')
+      .delete()
+      .eq('id', id);
+
+    if (error) return { data: null, error: error.message };
+
+    revalidatePath('/admin/invoices');
+    return { data: undefined, error: null };
+  } catch (error) {
+    return { data: null, error: 'Failed to delete invoice' };
+  }
+}

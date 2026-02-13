@@ -1,0 +1,58 @@
+import { getProject } from '@/lib/actions/projects';
+import { getClients } from '@/lib/actions/clients';
+import { ProjectWithClient, Client } from '@/types';
+import { PageHeader } from '@/components/shared/page-header';
+import { ProjectForm } from '@/components/admin/projects/project-form';
+import { Card, CardContent } from '@/components/ui/card';
+import { notFound, redirect } from 'next/navigation';
+
+interface EditProjectPageProps {
+  params: Promise<{ projectId: string }>;
+}
+
+export async function generateMetadata({ params }: EditProjectPageProps) {
+  const { projectId } = await params;
+  const result = await getProject(projectId);
+
+  if (result.error) {
+    return { title: 'Edit Project' };
+  }
+
+  const project = result.data as ProjectWithClient;
+  return { title: `Edit ${project.title}` };
+}
+
+export default async function EditProjectPage({ params }: EditProjectPageProps) {
+  const { projectId } = await params;
+
+  const [projectResult, clientsResult] = await Promise.all([
+    getProject(projectId),
+    getClients(),
+  ]);
+
+  if (projectResult.error) {
+    notFound();
+  }
+
+  if (clientsResult.error) {
+    redirect('/admin/projects');
+  }
+
+  const project = projectResult.data as ProjectWithClient;
+  const clients = clientsResult.data as Client[];
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title={`Edit ${project.title}`}
+        description="Update project information"
+      />
+
+      <Card>
+        <CardContent className="pt-6">
+          <ProjectForm project={project} clients={clients} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

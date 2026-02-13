@@ -1,0 +1,284 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
+import { Calendar, Trash2 } from 'lucide-react'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
+import { SubTaskList } from './sub-task-list'
+import { updateTask, deleteTask } from '@/lib/actions/tasks'
+import { TASK_STATUSES, TASK_STATUS_LABELS, PRIORITIES, PRIORITY_LABELS } from '@/lib/constants'
+
+type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done'
+type Priority = 'low' | 'medium' | 'high' | 'urgent'
+
+type Task = {
+  id: string
+  project_id: string
+  title: string
+  description: string | null
+  status: TaskStatus
+  priority: Priority
+  assigned_to: string | null
+  due_date: string | null
+  order_index: number
+  metadata: Record<string, unknown>
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+type SubTask = {
+  id: string
+  title: string
+  completed: boolean
+}
+
+type TaskDetailSheetProps = {
+  task: Task | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  projectId: string
+}
+
+export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDetailSheetProps) {
+  const router = useRouter()
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+  const [editedTitle, setEditedTitle] = useState('')
+  const [editedDescription, setEditedDescription] = useState('')
+  const [editedAssignedTo, setEditedAssignedTo] = useState('')
+  const [editedDueDate, setEditedDueDate] = useState('')
+
+  useEffect(() => {
+    if (task) {
+      setEditedTitle(task.title)
+      setEditedDescription(task.description || '')
+      setEditedAssignedTo(task.assigned_to || '')
+      setEditedDueDate(task.due_date ? task.due_date.split('T')[0] : '')
+    }
+  }, [task])
+
+  if (!task) return null
+
+  const handleUpdate = async (field: string, value: unknown) => {
+    const result = await updateTask(task.id, { [field]: value })
+
+    if (result.error) {
+      toast.error('Failed to update task', {
+        description: result.error,
+      })
+    } else {
+      toast.success('Task updated successfully')
+      router.refresh()
+    }
+  }
+
+  const handleTitleBlur = () => {
+    if (editedTitle.trim() && editedTitle !== task.title) {
+      handleUpdate('title', editedTitle.trim())
+    } else if (!editedTitle.trim()) {
+      setEditedTitle(task.title)
+    }
+  }
+
+  const handleDescriptionBlur = () => {
+    if (editedDescription !== (task.description || '')) {
+      handleUpdate('description', editedDescription.trim() || null)
+    }
+  }
+
+  const handleAssignedToBlur = () => {
+    if (editedAssignedTo !== (task.assigned_to || '')) {
+      handleUpdate('assigned_to', editedAssignedTo.trim() || null)
+    }
+  }
+
+  const handleDueDateChange = (value: string) => {
+    setEditedDueDate(value)
+    handleUpdate('due_date', value || null)
+  }
+
+  const handleStatusChange = (value: string) => {
+    handleUpdate('status', value)
+  }
+
+  const handlePriorityChange = (value: string) => {
+    handleUpdate('priority', value)
+  }
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+
+    const result = await deleteTask(task.id)
+
+    setIsDeleting(false)
+
+    if (result.error) {
+      toast.error('Failed to delete task', {
+        description: result.error,
+      })
+    } else {
+      toast.success('Task deleted successfully')
+      setShowDeleteDialog(false)
+      onOpenChange(false)
+      router.refresh()
+    }
+  }
+
+  const subTasks = (task.metadata?.sub_tasks as SubTask[] | undefined) || []
+
+  return (
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Task Details</SheetTitle>
+          </SheetHeader>
+
+          <div className="space-y-6 mt-6">
+            <div className="space-y-2">
+              <Label htmlFor="task-title">Title</Label>
+              <Input
+                id="task-title"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onBlur={handleTitleBlur}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur()
+                  }
+                }}
+                className="font-medium"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="task-description">Description</Label>
+              <Textarea
+                id="task-description"
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                onBlur={handleDescriptionBlur}
+                placeholder="Add a description..."
+                rows={4}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="task-status">Status</Label>
+                <Select value={task.status} onValueChange={handleStatusChange}>
+                  <SelectTrigger id="task-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TASK_STATUSES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {TASK_STATUS_LABELS[status]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="task-priority">Priority</Label>
+                <Select value={task.priority} onValueChange={handlePriorityChange}>
+                  <SelectTrigger id="task-priority">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITIES.map((priority) => (
+                      <SelectItem key={priority} value={priority}>
+                        {PRIORITY_LABELS[priority]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="task-due-date">Due Date</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="task-due-date"
+                    type="date"
+                    value={editedDueDate}
+                    onChange={(e) => handleDueDateChange(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="task-assigned-to">Assigned To</Label>
+                <Input
+                  id="task-assigned-to"
+                  value={editedAssignedTo}
+                  onChange={(e) => setEditedAssignedTo(e.target.value)}
+                  onBlur={handleAssignedToBlur}
+                  placeholder="Assignee name..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.currentTarget.blur()
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="border-t pt-6">
+              <SubTaskList taskId={task.id} initialSubTasks={subTasks} />
+            </div>
+
+            <div className="border-t pt-6">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setShowDeleteDialog(true)}
+                className="w-full"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Task
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Delete Task"
+        description="Are you sure you want to delete this task? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleDelete}
+        destructive
+        loading={isDeleting}
+      />
+    </>
+  )
+}

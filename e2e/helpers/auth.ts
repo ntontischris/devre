@@ -1,0 +1,142 @@
+import { Page } from '@playwright/test';
+import path from 'path';
+
+/**
+ * Authentication helper utilities for E2E tests
+ * Handles login flows and storage state management
+ */
+
+// Storage state file paths
+export const ADMIN_STORAGE_STATE = path.join(__dirname, '../.auth/admin.json');
+export const CLIENT_STORAGE_STATE = path.join(__dirname, '../.auth/client.json');
+
+/**
+ * Default test credentials
+ * Note: These should match users in your Supabase local database
+ */
+export const TEST_USERS = {
+  admin: {
+    email: 'admin@devre.test',
+    password: 'Admin123!',
+  },
+  client: {
+    email: 'client@devre.test',
+    password: 'Client123!',
+  },
+};
+
+/**
+ * Login as admin user via the login form
+ * @param page - Playwright page instance
+ */
+export async function loginAsAdmin(page: Page) {
+  await login(page, TEST_USERS.admin.email, TEST_USERS.admin.password);
+}
+
+/**
+ * Login as client user via the login form
+ * @param page - Playwright page instance
+ */
+export async function loginAsClient(page: Page) {
+  await login(page, TEST_USERS.client.email, TEST_USERS.client.password);
+}
+
+/**
+ * Generic login function that fills the login form
+ * @param page - Playwright page instance
+ * @param email - User email
+ * @param password - User password
+ */
+export async function login(page: Page, email: string, password: string) {
+  // Navigate to login page
+  await page.goto('/login');
+
+  // Wait for the login form to be visible
+  await page.waitForSelector('form');
+
+  // Fill in email field
+  const emailInput = page.locator('input[name="email"], input[type="email"]').first();
+  await emailInput.fill(email);
+
+  // Fill in password field
+  const passwordInput = page.locator('input[name="password"], input[type="password"]').first();
+  await passwordInput.fill(password);
+
+  // Click the submit button
+  const submitButton = page.locator('button[type="submit"]').first();
+  await submitButton.click();
+
+  // Wait for navigation to complete (either to dashboard or error)
+  await page.waitForURL(/\/(admin|client)\/dashboard/, { timeout: 10000 });
+}
+
+/**
+ * Setup authenticated session and save to storage state
+ * This can be used in global setup to authenticate once and reuse
+ * @param page - Playwright page instance
+ * @param email - User email
+ * @param password - User password
+ * @param storageStatePath - Path to save the storage state
+ */
+export async function setupAuthSession(
+  page: Page,
+  email: string,
+  password: string,
+  storageStatePath: string
+) {
+  await login(page, email, password);
+
+  // Save the authenticated state
+  await page.context().storageState({ path: storageStatePath });
+}
+
+/**
+ * Logout the current user
+ * @param page - Playwright page instance
+ */
+export async function logout(page: Page) {
+  // Look for logout button/link (adjust selector based on your UI)
+  const logoutButton = page.locator('[data-testid="logout"], button:has-text("Logout"), a:has-text("Logout")').first();
+
+  if (await logoutButton.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await logoutButton.click();
+  } else {
+    // Fallback: navigate to logout endpoint if button not found
+    await page.goto('/api/auth/signout');
+  }
+
+  // Wait for redirect to login page
+  await page.waitForURL('/login', { timeout: 5000 });
+}
+
+/**
+ * Wait for authentication to complete
+ * Useful when auth state is being checked/loaded
+ * @param page - Playwright page instance
+ */
+export async function waitForAuth(page: Page) {
+  // Wait for either dashboard or login page
+  await page.waitForURL(/\/(admin|client)\/dashboard|\/login/, { timeout: 10000 });
+}
+
+/**
+ * Check if user is authenticated
+ * @param page - Playwright page instance
+ * @returns boolean indicating if user is authenticated
+ */
+export async function isAuthenticated(page: Page): Promise<boolean> {
+  const url = page.url();
+  return url.includes('/admin/') || url.includes('/client/');
+}
+
+/**
+ * Get the current user role from the URL
+ * @param page - Playwright page instance
+ * @returns 'admin' | 'client' | null
+ */
+export async function getCurrentUserRole(page: Page): Promise<'admin' | 'client' | null> {
+  const url = page.url();
+  if (url.includes('/admin/')) return 'admin';
+  if (url.includes('/client/')) return 'client';
+  return null;
+}

@@ -1,0 +1,130 @@
+'use client';
+
+import { ArrowLeft, Download, Send, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/shared/page-header';
+import { ContractView } from '@/components/shared/contract-view';
+import { ConfirmDialog } from '@/components/shared/confirm-dialog';
+import { deleteContract, sendContract } from '@/lib/actions/contracts';
+import type { Contract } from '@/types';
+
+interface ContractViewPageProps {
+  contract: Contract;
+}
+
+export function ContractViewPage({ contract }: ContractViewPageProps) {
+  const router = useRouter();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    const result = await deleteContract(contract.id);
+
+    if (result.error) {
+      toast.error(result.error);
+      setIsDeleting(false);
+      return;
+    }
+
+    toast.success('Contract deleted successfully');
+    router.push(`/admin/projects/${contract.project_id}`);
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      const response = await fetch(`/api/contracts/${contract.id}/pdf`);
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contract-${contract.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      toast.error('Failed to download PDF');
+    }
+  };
+
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSendToClient = async () => {
+    setIsSending(true);
+    try {
+      const result = await sendContract(contract.id);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success('Contract sent to client');
+      router.refresh();
+    } catch {
+      toast.error('Failed to send contract');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <PageHeader title={contract.title}>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/admin/projects/${contract.project_id}`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Project
+            </Link>
+          </Button>
+          {contract.status === 'signed' && (
+            <Button size="sm" variant="outline" onClick={handleDownloadPDF}>
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+          )}
+          {contract.status === 'draft' && (
+            <Button size="sm" onClick={handleSendToClient} disabled={isSending}>
+              <Send className="h-4 w-4 mr-2" />
+              {isSending ? 'Sending...' : 'Send to Client'}
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDeleteDialogOpen(true)}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
+          </Button>
+        </div>
+      </PageHeader>
+
+      <div className="mt-6">
+        <ContractView contract={contract} showSignature />
+      </div>
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Delete Contract"
+        description="Are you sure you want to delete this contract? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleDelete}
+        loading={isDeleting}
+        destructive
+      />
+    </div>
+  );
+}

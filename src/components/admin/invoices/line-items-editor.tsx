@@ -1,0 +1,104 @@
+'use client';
+
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Plus, Trash2 } from 'lucide-react';
+import type { LineItem } from '@/lib/schemas/invoice';
+
+interface LineItemsEditorProps {
+  items: LineItem[];
+  onChange: (items: LineItem[]) => void;
+}
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('el-GR', { style: 'currency', currency: 'EUR' }).format(amount);
+};
+
+export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
+  const handleAddItem = () => {
+    onChange([...items, { description: '', quantity: 1, unit_price: 0 }]);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    if (items.length === 1) return; // Keep at least one item
+    onChange(items.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateItem = (index: number, field: keyof LineItem, value: string | number) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], [field]: value };
+    onChange(newItems);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[40%]">Description</TableHead>
+              <TableHead className="w-[15%]">Quantity</TableHead>
+              <TableHead className="w-[20%]">Unit Price</TableHead>
+              <TableHead className="w-[20%] text-right">Total</TableHead>
+              <TableHead className="w-[5%]"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.map((item, index) => {
+              const lineTotal = item.quantity * item.unit_price;
+              return (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Input
+                      value={item.description}
+                      onChange={(e) => handleUpdateItem(index, 'description', e.target.value)}
+                      placeholder="Item description"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={item.quantity}
+                      onChange={(e) => handleUpdateItem(index, 'quantity', parseFloat(e.target.value) || 0)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={item.unit_price}
+                      onChange={(e) => handleUpdateItem(index, 'unit_price', parseFloat(e.target.value) || 0)}
+                    />
+                  </TableCell>
+                  <TableCell className="text-right font-medium">
+                    {formatCurrency(lineTotal)}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveItem(index)}
+                      disabled={items.length === 1}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+      <Button type="button" variant="outline" onClick={handleAddItem}>
+        <Plus className="mr-2 h-4 w-4" />
+        Add Line Item
+      </Button>
+    </div>
+  );
+}
