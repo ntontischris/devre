@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { format } from 'date-fns';
-import { ArrowLeft, Check, X, FolderKanban, Calendar, MapPin, DollarSign, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, Check, X, FolderKanban, Calendar, MapPin, DollarSign, Link as LinkIcon, User, Mail, Phone, Building2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { reviewFilmingRequest, convertToProject } from '@/lib/actions/filming-requests';
 import { toast } from 'sonner';
@@ -25,10 +25,7 @@ import type { FilmingRequest } from '@/types';
 import { useTranslations } from 'next-intl';
 
 interface FilmingRequestDetailProps {
-  request: FilmingRequest & {
-    preferred_dates?: Array<{ date?: string; time_slot?: string }>;
-    reference_links?: string[];
-  };
+  request: FilmingRequest;
 }
 
 export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
@@ -36,7 +33,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
   const tc = useTranslations('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [adminNotes, setAdminNotes] = useState((request as any).admin_notes || '');
+  const [adminNotes, setAdminNotes] = useState(request.admin_notes || '');
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<'accepted' | 'declined'>('accepted');
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
@@ -104,7 +101,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
           </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold tracking-tight">
-              {(request as any).title}
+              {request.title}
             </h1>
             <div className="flex items-center gap-2 mt-2">
               <StatusBadge status={request.status} />
@@ -181,7 +178,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
                     {t('referenceLinks')}
                   </div>
                   <div className="space-y-1">
-                    {request.reference_links.map((link: string, index: number) => (
+                    {request.reference_links.map((link, index) => (
                       <a
                         key={index}
                         href={link}
@@ -200,6 +197,51 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
           </CardContent>
         </Card>
 
+        {/* Contact Information (for public submissions) */}
+        {request.contact_name && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('contactInfo')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-start gap-2">
+                <User className="h-4 w-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">{t('contactName')}</div>
+                  <div className="text-sm">{request.contact_name}</div>
+                </div>
+              </div>
+              {request.contact_email && (
+                <div className="flex items-start gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">{t('contactEmail')}</div>
+                    <div className="text-sm">{request.contact_email}</div>
+                  </div>
+                </div>
+              )}
+              {request.contact_phone && (
+                <div className="flex items-start gap-2">
+                  <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">{t('contactPhone')}</div>
+                    <div className="text-sm">{request.contact_phone}</div>
+                  </div>
+                </div>
+              )}
+              {request.contact_company && (
+                <div className="flex items-start gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">{t('contactCompany')}</div>
+                    <div className="text-sm">{request.contact_company}</div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Preferred Dates */}
         {request.preferred_dates && request.preferred_dates.length > 0 && (
           <Card>
@@ -211,7 +253,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {request.preferred_dates.map((dateInfo, index: number) => (
+                {request.preferred_dates.map((dateInfo, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm p-2 border rounded">
                     <Check className="h-4 w-4 text-muted-foreground" />
                     <span>
@@ -228,18 +270,18 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
         )}
 
         {/* Additional Details */}
-        {((request as any).location || request.budget_range) && (
+        {(request.location || request.budget_range) && (
           <Card>
             <CardHeader>
               <CardTitle>{t('additionalDetails')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {(request as any).location && (
+              {request.location && (
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
                     <div className="text-sm font-medium text-muted-foreground">{t('location')}</div>
-                    <div className="text-sm">{(request as any).location}</div>
+                    <div className="text-sm">{request.location}</div>
                   </div>
                 </div>
               )}

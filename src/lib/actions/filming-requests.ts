@@ -1,7 +1,8 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { createFilmingRequestSchema, reviewFilmingRequestSchema } from '@/lib/schemas/filming-request';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { createFilmingRequestSchema, reviewFilmingRequestSchema, publicBookingSchema } from '@/lib/schemas/filming-request';
 import type { ActionResult, FilmingRequest } from '@/types/index';
 import type { FilmingRequestStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
@@ -168,5 +169,42 @@ export async function convertToProject(id: string): Promise<ActionResult<unknown
     return { data: project, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to convert filming request to project' };
+  }
+}
+
+export async function createPublicFilmingRequest(input: unknown): Promise<ActionResult<FilmingRequest>> {
+  try {
+    const validated = publicBookingSchema.parse(input);
+    const supabase = createAdminClient();
+
+    const { data, error } = await supabase
+      .from('filming_requests')
+      .insert({
+        client_id: null,
+        title: validated.title,
+        description: validated.description || null,
+        project_type: validated.project_type || null,
+        selected_package: validated.selected_package || null,
+        budget_range: validated.budget_range || null,
+        location: validated.location || null,
+        preferred_dates: validated.preferred_dates ?? null,
+        contact_name: validated.contact_name,
+        contact_email: validated.contact_email,
+        contact_phone: validated.contact_phone || null,
+        contact_company: validated.contact_company || null,
+        status: 'pending',
+      })
+      .select()
+      .single();
+
+    if (error) return { data: null, error: error.message };
+
+    revalidatePath('/admin/filming-requests');
+    return { data, error: null };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { data: null, error: error.message };
+    }
+    return { data: null, error: 'Failed to submit booking request' };
   }
 }

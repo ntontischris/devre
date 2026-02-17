@@ -279,21 +279,23 @@ export type ContractTemplate = {
  */
 export type FilmingRequest = {
   id: string;
-  full_name: string;
-  email: string;
-  phone: string | null;
-  company_name: string | null;
-  project_type: ProjectType;
-  description: string;
+  client_id: string | null;
+  title: string;
+  description: string | null;
+  preferred_dates: Array<{ date?: string; time_slot?: string }> | null;
+  location: string | null;
+  project_type: string | null;
   budget_range: string | null;
-  preferred_dates: string | null;
+  reference_links: string[] | null;
+  selected_package: string | null;
   status: FilmingRequestStatus;
-  notes: string | null;
-  converted_to_project_id: string | null;
-  reviewed_by: string | null;
-  reviewed_at: string | null;
+  admin_notes: string | null;
+  converted_project_id: string | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  contact_company: string | null;
   created_at: string;
-  updated_at: string;
 };
 
 /**
@@ -509,12 +511,10 @@ export type CreateFilmingRequestInput = Omit<
   FilmingRequest,
   | 'id'
   | 'created_at'
-  | 'updated_at'
   | 'status'
-  | 'reviewed_by'
-  | 'reviewed_at'
-  | 'converted_to_project_id'
-  | 'notes'
+  | 'admin_notes'
+  | 'converted_project_id'
+  | 'client_id'
 >;
 
 export type CreateEquipmentListInput = Omit<

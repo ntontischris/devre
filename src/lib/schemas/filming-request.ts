@@ -52,3 +52,22 @@ export const filmingRequestResponseSchema = createFilmingRequestSchema.extend({
 });
 
 export type FilmingRequestResponse = z.infer<typeof filmingRequestResponseSchema>;
+
+/**
+ * Public booking form schema (no auth required)
+ */
+export const publicBookingSchema = z.object({
+  contact_name: z.string().min(1, 'Name is required').max(255),
+  contact_email: z.string().email('Invalid email').max(255),
+  contact_phone: z.string().max(50).optional().or(z.literal('')),
+  contact_company: z.string().max(255).optional().or(z.literal('')),
+  title: z.string().min(1, 'Title is required').max(255),
+  description: z.string().max(5000).optional().or(z.literal('')),
+  project_type: z.enum(PROJECT_TYPES).optional(),
+  selected_package: z.string().max(100).optional().or(z.literal('')),
+  budget_range: z.string().max(100).optional().or(z.literal('')),
+  location: z.string().max(500).optional().or(z.literal('')),
+  preferred_dates: z.array(preferredDateSchema).optional(),
+});
+
+export type PublicBookingInput = z.infer<typeof publicBookingSchema>;

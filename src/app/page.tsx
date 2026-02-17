@@ -78,7 +78,7 @@ export default async function Home() {
                 {t('nav.clientPortal')}
               </Button>
             </Link>
-            <Link href="/client/book">
+            <Link href="/book">
               <Button size="sm" className="bg-amber-500 text-zinc-950 hover:bg-amber-400 font-semibold">
                 {t('nav.bookCall')}
               </Button>
@@ -88,7 +88,7 @@ export default async function Home() {
           <div className="flex items-center gap-3 lg:hidden">
             <LanguageSwitcher />
             <Link href="/login" className="text-sm text-zinc-400">{t('nav.login')}</Link>
-            <Link href="/client/book">
+            <Link href="/book">
               <Button size="sm" className="bg-amber-500 text-zinc-950 hover:bg-amber-400 text-xs font-semibold">
                 {t('nav.bookCall')}
               </Button>
@@ -124,7 +124,7 @@ export default async function Home() {
             </p>
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link href="/client/book">
+              <Link href="/book">
                 <Button size="lg" className="group bg-amber-500 px-8 text-zinc-950 hover:bg-amber-400 font-semibold text-base h-13 shadow-lg shadow-amber-500/20">
                   {t('hero.ctaPrimary')}
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -554,7 +554,7 @@ export default async function Home() {
             <p className="text-sm text-zinc-500">
               {t('pricing.customNote')}
             </p>
-            <Link href="/client/book" className="mt-3 inline-block">
+            <Link href="/book" className="mt-3 inline-block">
               <Button variant="ghost" className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 font-medium">
                 {t('pricing.getQuote')}
                 <ChevronRight className="ml-1 h-4 w-4" />
@@ -645,7 +645,7 @@ export default async function Home() {
             {t('cta.description')}
           </p>
           <div className="mt-10">
-            <Link href="/client/book">
+            <Link href="/book">
               <Button size="lg" className="group bg-amber-500 px-10 text-zinc-950 hover:bg-amber-400 font-semibold text-base h-13 shadow-lg shadow-amber-500/20">
                 {t('cta.button')}
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -698,7 +698,7 @@ export default async function Home() {
                 <h4 className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-zinc-400">{t('footer.platformLabel')}</h4>
                 <ul className="space-y-2.5 text-sm text-zinc-500">
                   <li><Link href="/login" className="transition-colors hover:text-white">{t('nav.clientPortal')}</Link></li>
-                  <li><Link href="/client/book" className="transition-colors hover:text-white">{t('nav.bookCall')}</Link></li>
+                  <li><Link href="/book" className="transition-colors hover:text-white">{t('nav.bookCall')}</Link></li>
                   <li><Link href="/signup" className="transition-colors hover:text-white">{t('footer.createAccount')}</Link></li>
                 </ul>
               </div>

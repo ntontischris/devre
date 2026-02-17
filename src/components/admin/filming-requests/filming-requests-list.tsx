@@ -45,11 +45,14 @@ export function FilmingRequestsList({ requests }: FilmingRequestsListProps) {
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="font-semibold text-sm truncate">
-                    {(request as any).title}
+                    {request.title}
                   </span>
                   <StatusBadge status={request.status} />
                 </div>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  {request.contact_name && (
+                    <span>{request.contact_name}{request.contact_email ? ` (${request.contact_email})` : ''}</span>
+                  )}
                   <span>
                     {request.project_type
                       ? PROJECT_TYPE_LABELS[request.project_type as keyof typeof PROJECT_TYPE_LABELS]
