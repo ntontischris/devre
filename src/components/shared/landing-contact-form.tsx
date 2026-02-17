@@ -76,7 +76,7 @@ export function LandingContactForm() {
             name="name"
             required
             placeholder={t('namePlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:ring-amber-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
         <div className="space-y-2">
@@ -89,7 +89,7 @@ export function LandingContactForm() {
             type="email"
             required
             placeholder={t('emailPlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:ring-amber-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
       </div>
@@ -103,7 +103,7 @@ export function LandingContactForm() {
             id="contact-phone"
             name="phone"
             placeholder={t('phonePlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:ring-amber-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
         <div className="space-y-2">
@@ -114,7 +114,7 @@ export function LandingContactForm() {
             id="contact-subject"
             name="subject"
             placeholder={t('subjectPlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:ring-amber-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
       </div>
@@ -129,7 +129,7 @@ export function LandingContactForm() {
           required
           rows={5}
           placeholder={t('messagePlaceholder')}
-          className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-amber-500/50 focus:ring-amber-500/20 resize-none"
+          className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 resize-none"
         />
       </div>
 
@@ -143,7 +143,7 @@ export function LandingContactForm() {
       <Button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full bg-amber-500 text-zinc-950 hover:bg-amber-400 font-semibold h-12 text-base shadow-lg shadow-amber-500/20 disabled:opacity-50"
+        className="w-full bg-gold-500 text-zinc-950 hover:bg-gold-400 font-semibold h-12 text-base shadow-lg shadow-gold-500/20 disabled:opacity-50"
       >
         {status === 'sending' ? (
           t('sending')

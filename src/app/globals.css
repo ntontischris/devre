@@ -5,6 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-gold-50: #fdf8e8;
+  --color-gold-100: #f9ecbe;
+  --color-gold-200: #f0d890;
+  --color-gold-300: #e5c766;
+  --color-gold-400: #d9b343;
+  --color-gold-500: #c9a033;
+  --color-gold-600: #a68428;
+  --color-gold-700: #836a20;
+  --color-gold-800: #614f19;
+  --color-gold-900: #3f3411;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -183,10 +193,10 @@
   animation: scroll-bounce 2s ease-in-out infinite;
 }
 
-/* Glow pulse — amber accent glow */
+/* Glow pulse — gold accent glow */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.15), 0 0 60px rgba(245, 158, 11, 0.05); }
-  50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.3), 0 0 80px rgba(245, 158, 11, 0.1); }
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 160, 51, 0.15), 0 0 60px rgba(201, 160, 51, 0.05); }
+  50% { box-shadow: 0 0 30px rgba(201, 160, 51, 0.3), 0 0 80px rgba(201, 160, 51, 0.1); }
 }
 
 .animate-glow-pulse {
@@ -199,7 +209,7 @@
   100% { --border-angle: 360deg; }
 }
 
-/* Text shimmer — gold text animation */
+/* Text shimmer — metallic gold animation */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -208,17 +218,48 @@
 .text-shimmer {
   background: linear-gradient(
     90deg,
-    #f59e0b 0%,
-    #fbbf24 25%,
-    #fcd34d 50%,
-    #fbbf24 75%,
-    #f59e0b 100%
+    #a68428 0%,
+    #c9a033 15%,
+    #d9b343 30%,
+    #f0d98a 50%,
+    #d9b343 70%,
+    #c9a033 85%,
+    #a68428 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer 4s linear infinite;
+}
+
+/* Hero headline — metallic gold gradient (static, no shimmer) */
+.text-gold-metallic {
+  background: linear-gradient(
+    180deg,
+    #f0d98a 0%,
+    #d9b343 30%,
+    #c9a033 60%,
+    #a68428 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero text glow — ambient golden radiance */
+.hero-text-glow {
+  filter: drop-shadow(0 0 30px rgba(201, 160, 51, 0.25)) drop-shadow(0 0 60px rgba(201, 160, 51, 0.1));
+}
+
+/* Hero text glow pulse — subtle breathing glow */
+@keyframes text-glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(201, 160, 51, 0.15)) drop-shadow(0 0 50px rgba(201, 160, 51, 0.05)); }
+  50% { filter: drop-shadow(0 0 40px rgba(201, 160, 51, 0.3)) drop-shadow(0 0 80px rgba(201, 160, 51, 0.12)); }
+}
+
+.hero-text-glow-pulse {
+  animation: text-glow-pulse 4s ease-in-out infinite;
 }
 
 /* Line draw — decorative line animation */
@@ -257,7 +298,7 @@
 
 .glass-card:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(245, 158, 11, 0.15);
+  border-color: rgba(201, 160, 51, 0.15);
 }
 
 /* Bento card with animated gradient border on hover */
@@ -278,8 +319,8 @@
   background: linear-gradient(
     135deg,
     transparent 40%,
-    rgba(245, 158, 11, 0) 40%,
-    rgba(245, 158, 11, 0) 60%,
+    rgba(201, 160, 51, 0) 40%,
+    rgba(201, 160, 51, 0) 60%,
     transparent 60%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -294,9 +335,9 @@
 .bento-card:hover::before {
   background: linear-gradient(
     135deg,
-    rgba(245, 158, 11, 0.3),
-    rgba(245, 158, 11, 0.05),
-    rgba(245, 158, 11, 0.3)
+    rgba(201, 160, 51, 0.3),
+    rgba(201, 160, 51, 0.05),
+    rgba(201, 160, 51, 0.3)
   );
   opacity: 1;
 }
@@ -304,7 +345,7 @@
 .bento-card:hover {
   background: rgba(255, 255, 255, 0.04);
   transform: translateY(-2px);
-  box-shadow: 0 20px 60px -15px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 20px 60px -15px rgba(201, 160, 51, 0.08);
 }
 
 /* Hero section parallax depth */
@@ -390,12 +431,12 @@
 }
 
 .landing-scroll::-webkit-scrollbar-thumb {
-  background: rgba(245, 158, 11, 0.3);
+  background: rgba(201, 160, 51, 0.3);
   border-radius: 3px;
 }
 
 .landing-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.5);
+  background: rgba(201, 160, 51, 0.5);
 }
 
 /* Video thumbnail hover effect */
@@ -427,7 +468,7 @@
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  background: linear-gradient(135deg, #f59e0b, #d97706, #f59e0b);
+  background: linear-gradient(135deg, #c9a033, #a68428, #c9a033);
   z-index: -1;
   opacity: 0.6;
   filter: blur(8px);

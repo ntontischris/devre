@@ -64,7 +64,7 @@ export default async function LandingPage() {
   const t = await getTranslations('landing');
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white selection:bg-amber-500/30 selection:text-white">
+    <div className="min-h-screen bg-zinc-950 text-white selection:bg-gold-500/30 selection:text-white">
 
       {/* ════════════════════════════════════════════════════════════
           NAVIGATION — Frosted glass, minimal, floating
@@ -100,7 +100,7 @@ export default async function LandingPage() {
                 </Button>
               </Link>
               <Link href="#contact" className="hidden md:block">
-                <Button size="sm" className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-[13px]">
+                <Button size="sm" className="bg-gold-500 hover:bg-gold-400 text-black font-semibold text-[13px]">
                   {t('nav.bookCall')}
                   <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                 </Button>
@@ -134,9 +134,9 @@ export default async function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/60 via-transparent to-zinc-950/60" />
 
         {/* Ambient amber glow orb — top right */}
-        <div className="hero-orb absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-amber-500/10 blur-[120px] pointer-events-none" />
+        <div className="hero-orb absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-gold-500/10 blur-[120px] pointer-events-none" />
         {/* Second subtle orb — bottom left */}
-        <div className="hero-orb absolute -bottom-48 -left-48 w-[400px] h-[400px] rounded-full bg-amber-600/5 blur-[100px] pointer-events-none" style={{ animationDelay: '4s' }} />
+        <div className="hero-orb absolute -bottom-48 -left-48 w-[400px] h-[400px] rounded-full bg-gold-600/5 blur-[100px] pointer-events-none" style={{ animationDelay: '4s' }} />
 
         {/* Content */}
         <div className="relative z-10 h-full flex flex-col justify-end pb-24 sm:pb-32 lg:justify-center lg:pb-0">
@@ -144,15 +144,15 @@ export default async function LandingPage() {
 
             {/* Eyebrow badge */}
             <div className="hero-clip-reveal mb-8" style={{ animationDelay: '0.3s' }}>
-              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/5 backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                <span className="text-amber-400/90 text-xs font-medium tracking-[0.15em] uppercase">{t('hero.badge')}</span>
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-gold-500/20 bg-gold-500/5 backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-gold-500 animate-pulse" />
+                <span className="text-gold-400/90 text-xs font-medium tracking-[0.15em] uppercase">{t('hero.badge')}</span>
               </div>
             </div>
 
-            {/* Main headline — massive, powerful */}
-            <h1 className="hero-clip-reveal" style={{ animationDelay: '0.6s' }}>
-              <span className="block text-[clamp(2.8rem,8vw,7rem)] font-black text-white leading-[0.95] tracking-[-0.03em]">
+            {/* Main headline — massive, powerful, golden glow */}
+            <h1 className="hero-clip-reveal hero-text-glow-pulse" style={{ animationDelay: '0.6s' }}>
+              <span className="block text-[clamp(2.8rem,8vw,7rem)] font-black leading-[0.95] tracking-[-0.03em] text-gold-metallic">
                 {t('hero.titleLine1')}
               </span>
               <span className="block text-[clamp(2.8rem,8vw,7rem)] font-black leading-[0.95] tracking-[-0.03em] text-shimmer">
@@ -160,8 +160,8 @@ export default async function LandingPage() {
               </span>
             </h1>
 
-            {/* Amber accent line */}
-            <div className="hero-line-expand mt-8 h-px w-24 bg-gradient-to-r from-amber-500 to-amber-500/0" />
+            {/* Gold accent line */}
+            <div className="hero-line-expand mt-8 h-px w-24 bg-gradient-to-r from-gold-500 to-gold-500/0" />
 
             {/* Description */}
             <p className="hero-fade-1 mt-6 text-base sm:text-lg text-zinc-300/80 max-w-xl leading-relaxed font-light">
@@ -171,7 +171,7 @@ export default async function LandingPage() {
             {/* CTAs */}
             <div className="hero-fade-2 mt-10 flex flex-col sm:flex-row items-start gap-4">
               <Link href="#contact">
-                <Button size="lg" className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-base px-8 py-6 h-auto shadow-[0_0_40px_rgba(245,158,11,0.25)] hover:shadow-[0_0_60px_rgba(245,158,11,0.35)] transition-all duration-300">
+                <Button size="lg" className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-base px-8 py-6 h-auto shadow-[0_0_40px_rgba(201,160,51,0.25)] hover:shadow-[0_0_60px_rgba(201,160,51,0.35)] transition-all duration-300">
                   {t('hero.ctaPrimary')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -240,20 +240,20 @@ export default async function LandingPage() {
           ABOUT — Editorial asymmetric layout
       ════════════════════════════════════════════════════════════ */}
       <section id="about" className="relative py-32 md:py-40">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_80%_20%,rgba(245,158,11,0.03),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_80%_20%,rgba(201,160,51,0.03),transparent)]" />
 
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
             <div>
               <ScrollReveal>
                 <div className="flex items-center gap-4 mb-8">
-                  <span className="text-7xl font-black text-amber-500/10 leading-none">01</span>
-                  <div className="h-px flex-1 bg-gradient-to-r from-amber-500/40 to-transparent" />
+                  <span className="text-7xl font-black text-gold-500/10 leading-none">01</span>
+                  <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" />
                 </div>
               </ScrollReveal>
 
               <ScrollReveal delay={100}>
-                <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('about.label')}</span>
+                <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('about.label')}</span>
               </ScrollReveal>
 
               <ScrollReveal delay={200}>
@@ -292,7 +292,7 @@ export default async function LandingPage() {
                 ].map((item, i) => (
                   <ScrollReveal key={i} delay={500 + i * 100}>
                     <div className="glass-card rounded-xl p-4 text-center group">
-                      <item.Icon className="h-5 w-5 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                      <item.Icon className="h-5 w-5 text-gold-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                       <h4 className="text-xs font-bold text-white mb-1">{item.title}</h4>
                       <p className="text-[10px] text-zinc-500 leading-snug">{item.desc}</p>
                     </div>
@@ -311,7 +311,7 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="max-w-3xl mb-16">
-              <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('approach.label')}</span>
+              <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('approach.label')}</span>
               <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05]">
                 {t('approach.title')}
               </h2>
@@ -327,7 +327,7 @@ export default async function LandingPage() {
             ].map((card, i) => (
               <ScrollReveal key={i} delay={i * 150}>
                 <div className="bento-card p-8 h-full">
-                  <card.Icon className="h-8 w-8 text-amber-500 mb-6" />
+                  <card.Icon className="h-8 w-8 text-gold-500 mb-6" />
                   <h3 className="text-xl font-bold text-white mb-3">{card.title}</h3>
                   <p className="text-zinc-400 leading-relaxed text-sm">{card.desc}</p>
                 </div>
@@ -337,7 +337,7 @@ export default async function LandingPage() {
 
           <ScrollReveal animation="scale-up">
             <blockquote className="relative bg-white/[0.02] border border-white/[0.06] rounded-2xl p-12 md:p-16 overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-amber-500 to-transparent" />
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold-500 to-transparent" />
               <p className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-relaxed italic pl-6">
                 &ldquo;{t('approach.quote')}&rdquo;
               </p>
@@ -350,18 +350,18 @@ export default async function LandingPage() {
           SERVICES — Bento grid with glassmorphism
       ════════════════════════════════════════════════════════════ */}
       <section id="services" className="relative py-32 md:py-40">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_0%,rgba(245,158,11,0.04),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_0%,rgba(201,160,51,0.04),transparent)]" />
 
         <div className="relative mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-7xl font-black text-amber-500/10 leading-none">02</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-amber-500/40 to-transparent" />
+              <span className="text-7xl font-black text-gold-500/10 leading-none">02</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" />
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={100}>
-            <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('services.label')}</span>
+            <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('services.label')}</span>
             <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] mb-16">
               {t('services.title')}
             </h2>
@@ -378,12 +378,12 @@ export default async function LandingPage() {
             ].map((service, i) => (
               <ScrollReveal key={i} delay={i * 80}>
                 <div className="bento-card p-8 h-full relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,rgba(245,158,11,0.05),transparent_70%)] group-hover:scale-150 transition-transform duration-700" />
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,rgba(201,160,51,0.05),transparent_70%)] group-hover:scale-150 transition-transform duration-700" />
                   <div className="relative">
-                    <div className="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-bold tracking-wider uppercase mb-5">
+                    <div className="inline-block px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-[10px] font-bold tracking-wider uppercase mb-5">
                       {service.tag}
                     </div>
-                    <service.Icon className="h-8 w-8 text-amber-500 mb-5" />
+                    <service.Icon className="h-8 w-8 text-gold-500 mb-5" />
                     <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
                     <p className="text-zinc-400 leading-relaxed text-sm">{service.desc}</p>
                   </div>
@@ -396,7 +396,7 @@ export default async function LandingPage() {
             <div className="flex flex-wrap items-center justify-center gap-3 mt-10">
               {[t('services.featureDrone'), t('services.featureMusic'), t('services.featureSubs'), t('services.featureStrategy')].map((feat, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-gold-500" />
                   <span className="text-zinc-400 text-sm">{feat}</span>
                 </div>
               ))}
@@ -412,15 +412,15 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-7xl font-black text-amber-500/10 leading-none">03</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-amber-500/40 to-transparent" />
+              <span className="text-7xl font-black text-gold-500/10 leading-none">03</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" />
             </div>
           </ScrollReveal>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <ScrollReveal delay={100}>
               <div>
-                <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('portfolio.label')}</span>
+                <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('portfolio.label')}</span>
                 <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05]">
                   {t('portfolio.title')}
                 </h2>
@@ -432,7 +432,7 @@ export default async function LandingPage() {
                 href="https://www.youtube.com/@devremedia"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden md:inline-flex items-center gap-2 text-amber-500 hover:text-amber-400 font-semibold text-sm group flex-shrink-0"
+                className="hidden md:inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-semibold text-sm group flex-shrink-0"
               >
                 <Youtube className="h-5 w-5" />
                 {t('portfolio.watchOnYoutube')}
@@ -456,7 +456,7 @@ export default async function LandingPage() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 z-10 flex items-center justify-center">
-                    <div className="w-14 h-14 rounded-full bg-amber-500/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-[0_0_40px_rgba(245,158,11,0.3)]">
+                    <div className="w-14 h-14 rounded-full bg-gold-500/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-[0_0_40px_rgba(201,160,51,0.3)]">
                       <Play className="h-6 w-6 text-black ml-0.5" fill="black" />
                     </div>
                   </div>
@@ -473,7 +473,7 @@ export default async function LandingPage() {
               href="https://www.youtube.com/@devremedia"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-amber-500 hover:text-amber-400 font-semibold text-sm"
+              className="inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-semibold text-sm"
             >
               <Youtube className="h-5 w-5" />
               {t('portfolio.watchOnYoutube')}
@@ -490,7 +490,7 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="text-center mb-20">
-              <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('process.label')}</span>
+              <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('process.label')}</span>
               <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05]">
                 {t('process.title')}
               </h2>
@@ -502,13 +502,13 @@ export default async function LandingPage() {
             {[1, 2, 3, 4].map((step, i) => (
               <ScrollReveal key={step} delay={i * 150}>
                 <div className="relative text-center md:text-left">
-                  <div className="text-[5rem] md:text-[6rem] font-black leading-none text-transparent mb-4" style={{ WebkitTextStroke: '1.5px rgba(245, 158, 11, 0.25)' }}>
+                  <div className="text-[5rem] md:text-[6rem] font-black leading-none text-transparent mb-4" style={{ WebkitTextStroke: '1.5px rgba(201, 160, 51, 0.25)' }}>
                     0{step}
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">{t(`process.step${step}Title`)}</h3>
                   <p className="text-zinc-400 leading-relaxed text-sm">{t(`process.step${step}Desc`)}</p>
                   {step < 4 && (
-                    <div className="hidden md:block absolute top-12 right-0 w-full h-px translate-x-1/2 bg-gradient-to-r from-amber-500/20 to-transparent" />
+                    <div className="hidden md:block absolute top-12 right-0 w-full h-px translate-x-1/2 bg-gradient-to-r from-gold-500/20 to-transparent" />
                   )}
                 </div>
               </ScrollReveal>
@@ -524,7 +524,7 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('work.label')}</span>
+              <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('work.label')}</span>
               <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05]">
                 {t('work.title')}
               </h2>
@@ -574,18 +574,18 @@ export default async function LandingPage() {
           TEAM — Dramatic portrait cards
       ════════════════════════════════════════════════════════════ */}
       <section id="team" className="relative py-32 md:py-40">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,rgba(245,158,11,0.04),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,rgba(201,160,51,0.04),transparent)]" />
 
         <div className="relative mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-7xl font-black text-amber-500/10 leading-none">04</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-amber-500/40 to-transparent" />
+              <span className="text-7xl font-black text-gold-500/10 leading-none">04</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" />
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={100}>
-            <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('team.label')}</span>
+            <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('team.label')}</span>
             <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] mb-4">
               {t('team.title')}
             </h2>
@@ -605,7 +605,7 @@ export default async function LandingPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <p className="text-amber-400 text-xs font-semibold tracking-[0.2em] uppercase mb-1">{t('team.harisRole')}</p>
+                    <p className="text-gold-400 text-xs font-semibold tracking-[0.2em] uppercase mb-1">{t('team.harisRole')}</p>
                     <h3 className="text-3xl font-black text-white">{t('team.harisName')}</h3>
                   </div>
                 </div>
@@ -615,7 +615,7 @@ export default async function LandingPage() {
                     href="https://www.instagram.com/haris_devre_/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-zinc-500 hover:text-amber-400 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 text-zinc-500 hover:text-gold-400 transition-colors text-sm"
                   >
                     <Instagram className="h-4 w-4" />
                     @haris_devre_
@@ -636,20 +636,20 @@ export default async function LandingPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <p className="text-amber-400 text-xs font-semibold tracking-[0.2em] uppercase mb-1">{t('team.angelosRole')}</p>
+                    <p className="text-gold-400 text-xs font-semibold tracking-[0.2em] uppercase mb-1">{t('team.angelosRole')}</p>
                     <h3 className="text-3xl font-black text-white">{t('team.angelosName')}</h3>
                   </div>
                 </div>
                 <div className="p-8">
                   <p className="text-zinc-400 leading-relaxed text-sm mb-4">{t('team.angelosBio')}</p>
                   <div className="flex items-center gap-4">
-                    <a href="https://www.instagram.com/a.devre/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-zinc-500 hover:text-amber-400 transition-colors text-sm">
+                    <a href="https://www.instagram.com/a.devre/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-zinc-500 hover:text-gold-400 transition-colors text-sm">
                       <Instagram className="h-4 w-4" /> @a.devre
                     </a>
-                    <a href="https://www.tiktok.com/@a.devre" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-amber-400 transition-colors" title="TikTok">
+                    <a href="https://www.tiktok.com/@a.devre" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-gold-400 transition-colors" title="TikTok">
                       <TikTokIcon />
                     </a>
-                    <a href="https://www.linkedin.com/in/angelos-devrentlis-28387894" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-amber-400 transition-colors" title="LinkedIn">
+                    <a href="https://www.linkedin.com/in/angelos-devrentlis-28387894" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-gold-400 transition-colors" title="LinkedIn">
                       <Linkedin className="h-4 w-4" />
                     </a>
                   </div>
@@ -664,7 +664,7 @@ export default async function LandingPage() {
           STATS — Animated counters with glow
       ════════════════════════════════════════════════════════════ */}
       <section className="relative py-24 md:py-32 bg-zinc-900/40 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_50%_50%,rgba(245,158,11,0.05),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_50%_50%,rgba(201,160,51,0.05),transparent)]" />
 
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
@@ -675,7 +675,7 @@ export default async function LandingPage() {
               { end: 3, suffix: '+', label: t('stats.years') },
             ].map((stat, i) => (
               <ScrollReveal key={i} delay={i * 100} className="text-center">
-                <div className="text-5xl md:text-7xl font-black text-amber-500 mb-2">
+                <div className="text-5xl md:text-7xl font-black text-gold-500 mb-2">
                   <CountUp end={stat.end} suffix={stat.suffix} />
                 </div>
                 <div className="text-zinc-500 font-medium text-sm">{stat.label}</div>
@@ -692,7 +692,7 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('pricing.label')}</span>
+              <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('pricing.label')}</span>
               <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05]">
                 {t('pricing.title')}
               </h2>
@@ -716,7 +716,7 @@ export default async function LandingPage() {
                 <ul className="space-y-3 mb-8">
                   {[t('pricing.feature1filming'), t('pricing.featureEditing'), t('pricing.featureBrief'), t('pricing.featureRevision')].map((feat, i) => (
                     <li key={i} className="flex items-start gap-2.5">
-                      <CheckCircle2 className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-4 w-4 text-gold-500 flex-shrink-0 mt-0.5" />
                       <span className="text-zinc-400 text-sm">{feat}</span>
                     </li>
                   ))}
@@ -731,25 +731,25 @@ export default async function LandingPage() {
 
             {/* Growth — Featured */}
             <ScrollReveal delay={150}>
-              <div className="relative glass-card rounded-2xl p-8 h-full border-amber-500/30 pricing-popular">
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amber-500 text-black text-[10px] font-bold tracking-wider uppercase">
+              <div className="relative glass-card rounded-2xl p-8 h-full border-gold-500/30 pricing-popular">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gold-500 text-black text-[10px] font-bold tracking-wider uppercase">
                   {t('pricing.mostPopular')}
                 </div>
                 <h4 className="text-lg font-bold text-white mb-2">{t('pricing.growth')}</h4>
                 <div className="mb-6">
-                  <span className="text-5xl font-black text-amber-500">8</span>
+                  <span className="text-5xl font-black text-gold-500">8</span>
                   <span className="text-zinc-500 ml-1 text-sm">{t('pricing.videosMonth')}</span>
                 </div>
                 <ul className="space-y-3 mb-8">
                   {[t('pricing.feature2filming'), t('pricing.featureEditing'), t('pricing.featureBrief'), t('pricing.featureRevision'), t('pricing.featureDrone')].map((feat, i) => (
                     <li key={i} className="flex items-start gap-2.5">
-                      <CheckCircle2 className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-4 w-4 text-gold-500 flex-shrink-0 mt-0.5" />
                       <span className="text-zinc-400 text-sm">{feat}</span>
                     </li>
                   ))}
                 </ul>
                 <Link href="#contact">
-                  <Button className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold h-11">
+                  <Button className="w-full bg-gold-500 hover:bg-gold-400 text-black font-bold h-11">
                     {t('pricing.getQuote')}
                   </Button>
                 </Link>
@@ -767,7 +767,7 @@ export default async function LandingPage() {
                 <ul className="space-y-3 mb-8">
                   {[t('pricing.feature2filming'), t('pricing.featureEditing'), t('pricing.featureBrief'), t('pricing.featureRevision'), t('pricing.featureDrone'), t('pricing.sameDayDelivery')].map((feat, i) => (
                     <li key={i} className="flex items-start gap-2.5">
-                      <CheckCircle2 className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-4 w-4 text-gold-500 flex-shrink-0 mt-0.5" />
                       <span className="text-zinc-400 text-sm">{feat}</span>
                     </li>
                   ))}
@@ -828,7 +828,7 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('whyUs.label')}</span>
+              <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('whyUs.label')}</span>
               <h2 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05]">
                 {t('whyUs.title')}
               </h2>
@@ -847,8 +847,8 @@ export default async function LandingPage() {
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 100}>
                 <div className="glass-card rounded-xl p-6 h-full">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center mb-4">
-                    <div className="w-2 h-2 rounded-full bg-amber-500" />
+                  <div className="w-8 h-8 rounded-lg bg-gold-500/10 flex items-center justify-center mb-4">
+                    <div className="w-2 h-2 rounded-full bg-gold-500" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
                   <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
@@ -866,15 +866,15 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <ScrollReveal>
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-7xl font-black text-amber-500/10 leading-none">05</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-amber-500/40 to-transparent" />
+              <span className="text-7xl font-black text-gold-500/10 leading-none">05</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" />
             </div>
           </ScrollReveal>
 
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
             <div>
               <ScrollReveal delay={100}>
-                <span className="text-amber-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('contact.label')}</span>
+                <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">{t('contact.label')}</span>
                 <h2 className="mt-4 text-4xl md:text-5xl font-black text-white leading-[1.05] mb-3">
                   {t('contact.title')}
                 </h2>
@@ -895,7 +895,7 @@ export default async function LandingPage() {
                 <ScrollReveal key={i} delay={300 + i * 100}>
                   <div className="glass-card rounded-xl p-6">
                     <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-amber-500" />
+                      <MapPin className="h-4 w-4 text-gold-500" />
                       {office.title}
                     </h3>
                     <p className="text-zinc-400 text-sm pl-6">{office.address}</p>
@@ -907,7 +907,7 @@ export default async function LandingPage() {
               <ScrollReveal delay={500}>
                 <div>
                   <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-amber-500" />
+                    <Phone className="h-4 w-4 text-gold-500" />
                     {t('contact.callUs')}
                   </h3>
                   <div className="text-zinc-400 text-sm pl-6 space-y-1">
@@ -921,10 +921,10 @@ export default async function LandingPage() {
               <ScrollReveal delay={600}>
                 <div>
                   <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-amber-500" />
+                    <Mail className="h-4 w-4 text-gold-500" />
                     {t('contact.emailUs')}
                   </h3>
-                  <a href="mailto:devremedia@gmail.com" className="text-amber-500 hover:text-amber-400 text-sm pl-6">
+                  <a href="mailto:devremedia@gmail.com" className="text-gold-500 hover:text-gold-400 text-sm pl-6">
                     devremedia@gmail.com
                   </a>
                 </div>
@@ -946,7 +946,7 @@ export default async function LandingPage() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:border-amber-500/30 transition-all"
+                        className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-gold-500 hover:border-gold-500/30 transition-all"
                       >
                         {social.icon}
                       </a>
@@ -964,13 +964,13 @@ export default async function LandingPage() {
       ════════════════════════════════════════════════════════════ */}
       <section className="relative py-32 md:py-40 overflow-hidden">
         <Image src="/images/hero/home2.jpg" alt="" fill className="object-cover opacity-[0.06]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgba(245,158,11,0.08),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgba(201,160,51,0.08),transparent)]" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
           <ScrollReveal>
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
               {t('cta.title1')}{' '}
-              <span className="text-amber-500">{t('cta.title2')}</span>
+              <span className="text-gold-500">{t('cta.title2')}</span>
             </h2>
           </ScrollReveal>
 
@@ -980,7 +980,7 @@ export default async function LandingPage() {
 
           <ScrollReveal delay={400}>
             <Link href="#contact">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-lg px-10 py-7 h-auto shadow-[0_0_60px_rgba(245,158,11,0.25)] animate-glow-pulse">
+              <Button size="lg" className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-lg px-10 py-7 h-auto shadow-[0_0_60px_rgba(201,160,51,0.25)] animate-glow-pulse">
                 {t('cta.button')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -1006,16 +1006,16 @@ export default async function LandingPage() {
               </Link>
               <p className="text-zinc-500 text-sm mb-6 max-w-xs leading-relaxed">{t('footer.tagline')}</p>
               <div className="flex items-center gap-3">
-                <a href="https://www.instagram.com/devre.media/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-amber-500 transition-colors">
+                <a href="https://www.instagram.com/devre.media/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-gold-500 transition-colors">
                   <Instagram className="h-4 w-4" />
                 </a>
-                <a href="https://www.tiktok.com/@devre.media" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-amber-500 transition-colors">
+                <a href="https://www.tiktok.com/@devre.media" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-gold-500 transition-colors">
                   <TikTokIcon />
                 </a>
-                <a href="https://www.linkedin.com/company/devre-media" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-amber-500 transition-colors">
+                <a href="https://www.linkedin.com/company/devre-media" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-gold-500 transition-colors">
                   <Linkedin className="h-4 w-4" />
                 </a>
-                <a href="https://www.youtube.com/@devremedia" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-amber-500 transition-colors">
+                <a href="https://www.youtube.com/@devremedia" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-gold-500 transition-colors">
                   <Youtube className="h-4 w-4" />
                 </a>
               </div>
@@ -1024,28 +1024,28 @@ export default async function LandingPage() {
             <div>
               <h3 className="text-white text-sm font-bold mb-4">{t('footer.servicesLabel')}</h3>
               <ul className="space-y-2.5">
-                <li><Link href="#services" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('services.socialTitle')}</Link></li>
-                <li><Link href="#services" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('services.podcastTitle')}</Link></li>
-                <li><Link href="#services" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('services.eventTitle')}</Link></li>
-                <li><Link href="#services" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('services.corporateTitle')}</Link></li>
+                <li><Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('services.socialTitle')}</Link></li>
+                <li><Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('services.podcastTitle')}</Link></li>
+                <li><Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('services.eventTitle')}</Link></li>
+                <li><Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('services.corporateTitle')}</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-white text-sm font-bold mb-4">{t('footer.companyLabel')}</h3>
               <ul className="space-y-2.5">
-                <li><Link href="#about" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('footer.aboutUs')}</Link></li>
-                <li><Link href="#team" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('footer.ourTeam')}</Link></li>
-                <li><Link href="#portfolio" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('footer.portfolio')}</Link></li>
-                <li><Link href="#work" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('footer.caseStudies')}</Link></li>
+                <li><Link href="#about" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('footer.aboutUs')}</Link></li>
+                <li><Link href="#team" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('footer.ourTeam')}</Link></li>
+                <li><Link href="#portfolio" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('footer.portfolio')}</Link></li>
+                <li><Link href="#work" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('footer.caseStudies')}</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-white text-sm font-bold mb-4">{t('footer.platformLabel')}</h3>
               <ul className="space-y-2.5">
-                <li><Link href="/login" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('nav.login')}</Link></li>
-                <li><Link href="/login" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{t('footer.createAccount')}</Link></li>
+                <li><Link href="/login" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('nav.login')}</Link></li>
+                <li><Link href="/login" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors">{t('footer.createAccount')}</Link></li>
               </ul>
             </div>
           </div>
@@ -1055,9 +1055,9 @@ export default async function LandingPage() {
               {t('footer.copyright')} {new Date().getFullYear()} Devre Media. {t('footer.city')}.
             </p>
             <div className="flex items-center gap-6">
-              <a href="#" className="text-zinc-600 hover:text-amber-500 text-xs transition-colors">{t('footer.impressum')}</a>
-              <a href="#" className="text-zinc-600 hover:text-amber-500 text-xs transition-colors">{t('footer.privacy')}</a>
-              <a href="mailto:devremedia@gmail.com" className="text-zinc-600 hover:text-amber-500 text-xs transition-colors">{t('footer.emailAddress')}</a>
+              <a href="#" className="text-zinc-600 hover:text-gold-500 text-xs transition-colors">{t('footer.impressum')}</a>
+              <a href="#" className="text-zinc-600 hover:text-gold-500 text-xs transition-colors">{t('footer.privacy')}</a>
+              <a href="mailto:devremedia@gmail.com" className="text-zinc-600 hover:text-gold-500 text-xs transition-colors">{t('footer.emailAddress')}</a>
             </div>
           </div>
         </div>
