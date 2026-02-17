@@ -152,7 +152,7 @@ export default async function LandingPage() {
 
             {/* Main headline — massive, powerful, golden glow */}
             <h1 className="hero-clip-reveal hero-text-glow-pulse" style={{ animationDelay: '0.6s' }}>
-              <span className="block text-[clamp(2.8rem,8vw,7rem)] font-black leading-[0.95] tracking-[-0.03em] text-gold-metallic">
+              <span className="block text-[clamp(2.8rem,8vw,7rem)] font-black text-white leading-[0.95] tracking-[-0.03em]">
                 {t('hero.titleLine1')}
               </span>
               <span className="block text-[clamp(2.8rem,8vw,7rem)] font-black leading-[0.95] tracking-[-0.03em] text-shimmer">
