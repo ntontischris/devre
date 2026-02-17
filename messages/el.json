@@ -1038,7 +1038,9 @@
     "articleContentPlaceholder": "Γράψτε το περιεχόμενο του άρθρου εδώ...",
     "categoryDescriptionPlaceholder": "Σύντομη περιγραφή αυτής της κατηγορίας",
     "selectParentCategory": "Επιλέξτε γονική κατηγορία",
-    "filterByCategory": "Φιλτράρισμα ανά κατηγορία"
+    "filterByCategory": "Φιλτράρισμα ανά κατηγορία",
+    "articlePreview": "Προεπισκόπηση Άρθρου",
+    "viewArticle": "Προβολή Άρθρου"
   },
 
   "salesResources": {
@@ -1356,23 +1358,42 @@
 
   "landing": {
     "nav": {
-      "approach": "Προσέγγιση",
+      "about": "Σχετικά",
       "services": "Υπηρεσίες",
-      "work": "Δουλειές",
+      "portfolio": "Portfolio",
+      "team": "Ομάδα",
       "pricing": "Τιμές",
       "contact": "Επικοινωνία",
       "clientPortal": "Client Portal",
       "bookCall": "Κλείσε Ραντεβού",
-      "login": "Σύνδεση"
+      "login": "Σύνδεση",
+      "approach": "Προσέγγιση",
+      "work": "Δουλειές"
     },
     "hero": {
-      "badge": "Social Entertainment",
-      "titleLine1": "Δεν φτιάχνουμε απλά βίντεο.",
-      "titleLine2": "Χτίζουμε την εικόνα σου.",
+      "badge": "Where Velocity Meets Vision",
+      "headline": "Όπου η Ταχύτητα, Συναντά το Όραμα.",
+      "subtitle": "Η Ιστορία Σου, Με Ταχύτητα Τώρα.",
+      "titleLine1": "Η Ιστορία Σου,",
+      "titleLine2": "Με Ταχύτητα Τώρα.",
       "description": "Video production & διαφημιστικό περιεχόμενο για brands που θέλουν να ξεχωρίσουν. Από monthly social media μέχρι full-scale παραγωγές — γινόμαστε ο στρατηγικός visual partner σου.",
       "ctaPrimary": "Κλείσε Discovery Call",
-      "ctaSecondary": "Δες τις Υπηρεσίες",
-      "trustedBy": "Μας εμπιστεύονται κορυφαία brands"
+      "ctaSecondary": "Δες το Showreel",
+      "trustedBy": "Μας εμπιστεύονται κορυφαία brands",
+      "scrollDown": "Κάνε scroll για να εξερευνήσεις"
+    },
+    "about": {
+      "label": "Σχετικά με Εμάς",
+      "title": "Δημιουργούμε Ιστορίες, Ένα Frame τη Φορά",
+      "description": "Με βάση τη Βιέννη και τη Θεσσαλονίκη, συνδυάζουμε την ταχύτητα της σύγχρονης ψηφιακής παραγωγής με τα ποιοτικά standards της παραδοσιακής κινηματογραφίας.",
+      "text1": "Η Devre Media γεννήθηκε από μια απλή πεποίθηση: κάθε brand αξίζει κινηματογραφικής ποιότητας περιεχόμενο χωρίς αναμονή. Ειδικευόμαστε σε social media videos, εταιρικές ταινίες, podcast production και event coverage — παρέχοντας ό,τι χρειάζεται το brand σου για να κυριαρχήσει στην οθόνη.",
+      "text2": "Η ελαφριά, ευέλικτη προσέγγισή μας σημαίνει ότι κινούμαστε γρήγορα χωρίς συμβιβασμούς στην ποιότητα. Εκεί που άλλοι χρειάζονται εβδομάδες, εμείς παραδίδουμε σε μέρες — γιατί το brand σου δεν μπορεί να περιμένει.",
+      "highlight1Title": "Γρήγορη Παράδοση",
+      "highlight1Desc": "7 εργάσιμες για social & podcast content",
+      "highlight2Title": "Πλήρης Υπηρεσία",
+      "highlight2Desc": "Από τη στρατηγική μέχρι το τελικό βίντεο, όλα κάτω από μία στέγη",
+      "highlight3Title": "Μακροπρόθεσμη Εστίαση",
+      "highlight3Desc": "Χτίζουμε συνεργασίες, όχι απλά projects"
     },
     "approach": {
       "label": "Η Προσέγγισή μας",
@@ -1401,10 +1422,29 @@
       "corporateTitle": "Corporate & Commercials",
       "corporateDesc": "Μεγάλες παραγωγές — brand films, TV-ready διαφημιστικά, εταιρικές παρουσιάσεις. Πλήρες scripting και post-production.",
       "corporateTag": "Κατόπιν προσφοράς",
+      "graphicTitle": "Graphic Design",
+      "graphicDesc": "Brand identity, social media γραφικά, thumbnails και visual assets που συμπληρώνουν τέλεια το video content σου.",
+      "graphicTag": "Brand identity",
+      "copyTitle": "Copywriting",
+      "copyDesc": "Συναρπαστικά scripts, captions και brand messaging που δίνουν στο visual content σου τις λέξεις που αξίζει.",
+      "copyTag": "Brand voice",
       "featureDrone": "Drone footage περιλαμβάνεται",
       "featureMusic": "Copyright-free μουσική",
       "featureSubs": "Υπότιτλοι περιλαμβάνονται",
       "featureStrategy": "Content strategy"
+    },
+    "portfolio": {
+      "label": "Portfolio",
+      "title": "Η Δουλειά μας Μιλάει Μόνη της",
+      "description": "Μια επιλογή από τις πρόσφατες παραγωγές μας — από εκθέσεις και εταιρικές ταινίες μέχρι social media content.",
+      "video1Title": "Exhibition Highlight Reel",
+      "video2Title": "Corporate Brand Film",
+      "video3Title": "Social Media Campaign",
+      "video4Title": "Event Coverage",
+      "video5Title": "Creative Storytelling",
+      "video6Title": "Product Showcase",
+      "watchOnYoutube": "Δες περισσότερα στο YouTube μας",
+      "playVideo": "Αναπαραγωγή βίντεο"
     },
     "process": {
       "label": "Διαδικασία",
@@ -1429,6 +1469,17 @@
       "ophthalmicaTag": "Ιατρικό",
       "ophthalmicaDesc": "8 βίντεο τον μήνα χτίζοντας την εικόνα μιας cutting-edge ιατρικής κλινικής. Επαγγελματικό, trust-building περιεχόμενο για τον κλάδο υγείας.",
       "alsoWorking": "Επίσης συνεργαζόμαστε με Almeco, MotoMarket, Sky Venue, UFC, AJP, REMAX Hellas και πολλούς ακόμα."
+    },
+    "team": {
+      "label": "Η Ομάδα μας",
+      "title": "Οι Άνθρωποι Πίσω από τον Φακό",
+      "description": "Μια μικρή, αφοσιωμένη ομάδα που αντιμετωπίζει κάθε project σαν δικό της.",
+      "harisName": "Χάρης Δεβρεντλής",
+      "harisRole": "Editing Director",
+      "harisBio": "Μάστερ του post-production με μάτι για κινηματογραφική αφήγηση. Ο Χάρης μετατρέπει raw footage σε συναρπαστικά οπτικά αφηγήματα που μαγνητίζουν το κοινό.",
+      "angelosName": "Άγγελος Δεβρεντλής",
+      "angelosRole": "Managing Director",
+      "angelosBio": "Το στρατηγικό μυαλό πίσω από τη Devre Media. Ο Άγγελος διαχειρίζεται τις σχέσεις με τους πελάτες, τη content strategy και εξασφαλίζει ότι κάθε project ξεπερνά τις προσδοκίες."
     },
     "pricing": {
       "label": "Πακέτα",
@@ -1479,23 +1530,57 @@
       "turnaround": "Ημέρες παράδοση",
       "years": "Χρόνια στο παιχνίδι"
     },
+    "contact": {
+      "label": "Επικοινωνία",
+      "title": "Ας Δημιουργήσουμε Κάτι Μαζί",
+      "description": "Έχεις ένα project στο μυαλό σου; Θα χαρούμε να το ακούσουμε. Συμπλήρωσε τη φόρμα ή επικοινώνησε μαζί μας απευθείας.",
+      "nameLabel": "Το Όνομά σου",
+      "namePlaceholder": "Ονοματεπώνυμο",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "Τηλέφωνο",
+      "phonePlaceholder": "+43 ή +30...",
+      "subjectLabel": "Θέμα",
+      "subjectPlaceholder": "Τι αφορά;",
+      "messageLabel": "Μήνυμα",
+      "messagePlaceholder": "Πες μας για το project σου, τους στόχους και το χρονοδιάγραμμα...",
+      "send": "Αποστολή Μηνύματος",
+      "sending": "Αποστολή...",
+      "sendAnother": "Στείλε άλλο μήνυμα",
+      "success": "Το μήνυμα στάλθηκε! Θα επικοινωνήσουμε μαζί σου εντός 24 ωρών.",
+      "error": "Αποτυχία αποστολής. Στείλε email στο devremedia@gmail.com",
+      "viennaOffice": "Γραφείο Βιέννης",
+      "viennaAddress": "Meidlgasse 25, 1110 Βιέννη, Αυστρία",
+      "thessalonikiOffice": "Γραφείο Ελλάδας",
+      "thessalonikiAddress": "Θεσσαλονίκη, Ελλάδα",
+      "emailUs": "Email",
+      "callUs": "Τηλεφωνήστε μας",
+      "followUs": "Ακολουθήστε μας"
+    },
     "cta": {
       "title1": "Έτοιμος να ανεβάσεις",
       "title2": "την εικόνα του brand σου;",
       "description": "Ας καθίσουμε 30 λεπτά να σχεδιάσουμε ένα content plan που πραγματικά βγάζει νόημα για τη δουλειά σου. Χωρίς πίεση — μια ειλικρινής κουβέντα για το πού μπορεί να φτάσει το brand σου.",
       "button": "Κλείσε Δωρεάν Discovery Call",
-      "location": "Θεσσαλονίκη & Αθήνα. Διαθέσιμοι για projects σε όλη την Ελλάδα και διεθνώς."
+      "location": "Βιέννη & Θεσσαλονίκη. Διαθέσιμοι για projects σε όλη την Ευρώπη και διεθνώς."
     },
     "footer": {
       "tagline": "Video production & διαφημιστικό περιεχόμενο. Χτίζουμε ολοκληρωμένες εικόνες brand από την πρώτη μέρα.",
       "servicesLabel": "Υπηρεσίες",
       "companyLabel": "Εταιρεία",
       "platformLabel": "Platform",
+      "connectLabel": "Σύνδεση",
       "ourApproach": "Η Προσέγγισή μας",
       "caseStudies": "Case Studies",
       "createAccount": "Δημιουργία Λογαριασμού",
       "copyright": "Με επιφύλαξη παντός δικαιώματος.",
-      "city": "Θεσσαλονίκη, Ελλάδα"
+      "city": "Βιέννη, Αυστρία & Θεσσαλονίκη, Ελλάδα",
+      "impressum": "Impressum",
+      "privacy": "Πολιτική Απορρήτου",
+      "emailAddress": "devremedia@gmail.com",
+      "aboutUs": "Σχετικά με Εμάς",
+      "portfolio": "Portfolio",
+      "ourTeam": "Η Ομάδα μας"
     }
   }
 }

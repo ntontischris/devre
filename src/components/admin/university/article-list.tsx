@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import { Pencil, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -145,7 +146,14 @@ export function ArticleList({ articles, categories, onDelete }: ArticleListProps
               ) : (
                 filteredArticles.map((article) => (
                   <TableRow key={article.id}>
-                    <TableCell className="font-medium">{article.title}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/admin/university/articles/${article.id}`}
+                        className="hover:underline hover:text-primary"
+                      >
+                        {article.title}
+                      </Link>
+                    </TableCell>
                     <TableCell>{article.category.title}</TableCell>
                     <TableCell>
                       <Badge
@@ -168,6 +176,14 @@ export function ArticleList({ articles, categories, onDelete }: ArticleListProps
                     <TableCell>{article.sort_order}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => router.push(`/admin/university/articles/${article.id}`)}
+                          title={t('viewArticle')}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"

@@ -131,6 +131,7 @@ export async function updateKbArticle(id: string, input: unknown): Promise<Actio
 
     revalidatePath('/admin/university');
     revalidatePath('/employee/university');
+    revalidatePath(`/admin/university/articles/${id}`);
     revalidatePath(`/admin/university/articles/${id}/edit`);
     return { data, error: null };
   } catch (error) {
@@ -148,6 +149,7 @@ export async function deleteKbArticle(id: string): Promise<ActionResult<void>> {
 
     revalidatePath('/admin/university');
     revalidatePath('/employee/university');
+    revalidatePath(`/admin/university/articles/${id}`);
     return { data: undefined, error: null };
   } catch {
     return { data: null, error: 'Failed to delete article' };
