@@ -20,6 +20,7 @@ import {
   UserPlus,
   GraduationCap,
   FolderOpen,
+  Bot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -91,6 +92,11 @@ export function Sidebar() {
       href: '/admin/sales-resources',
       icon: FolderOpen,
       label: t('salesResources'),
+    },
+    {
+      href: '/admin/chatbot',
+      icon: Bot,
+      label: t('chatbot'),
     },
     {
       href: '/admin/settings',

@@ -640,6 +640,56 @@ export type SalesResource = {
 };
 
 /**
+ * Chat Knowledge (RAG)
+ */
+export type ChatKnowledge = {
+  id: string;
+  category: string;
+  title: string;
+  content: string;
+  content_en: string | null;
+  content_el: string | null;
+  metadata: Record<string, unknown>;
+  embedding: number[] | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Chat Conversation
+ */
+export type ChatConversation = {
+  id: string;
+  session_id: string;
+  language: string;
+  page_url: string | null;
+  user_agent: string | null;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Chat Message
+ */
+export type ChatMessage = {
+  id: string;
+  conversation_id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  token_count: number | null;
+  context_chunks: Record<string, unknown>[] | null;
+  created_at: string;
+};
+
+/**
+ * Chat Conversation with Messages (for detail view)
+ */
+export type ChatConversationWithMessages = ChatConversation & {
+  messages: ChatMessage[];
+};
+
+/**
  * Filter and query types
  */
 export type ProjectFilters = {

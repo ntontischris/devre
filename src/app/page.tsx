@@ -29,6 +29,7 @@ import { CountUp } from '@/components/shared/count-up';
 import { LandingMobileNav } from '@/components/shared/landing-mobile-nav';
 import { LandingContactForm } from '@/components/shared/landing-contact-form';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
+import { ChatWidget } from '@/components/shared/chatbot/chat-widget';
 
 const CLIENT_LOGOS = [
   { name: 'UFC', src: '/images/clients/ufc.png' },
@@ -1062,6 +1063,9 @@ export default async function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* AI Chatbot Widget */}
+      <ChatWidget />
     </div>
   );
 }

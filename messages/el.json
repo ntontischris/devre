@@ -121,7 +121,8 @@
     "bookFilming": "Κράτηση Γυρίσματος",
     "navigation": "Πλοήγηση",
     "expandSidebar": "Ανάπτυξη πλευρικής μπάρας",
-    "collapseSidebar": "Σύμπτυξη πλευρικής μπάρας"
+    "collapseSidebar": "Σύμπτυξη πλευρικής μπάρας",
+    "chatbot": "AI Chatbot"
   },
 
   "auth": {

@@ -121,7 +121,8 @@
     "bookFilming": "Book Filming",
     "navigation": "Navigation",
     "expandSidebar": "Expand sidebar",
-    "collapseSidebar": "Collapse sidebar"
+    "collapseSidebar": "Collapse sidebar",
+    "chatbot": "AI Chatbot"
   },
 
   "auth": {

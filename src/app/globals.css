@@ -439,6 +439,24 @@
   background: rgba(201, 160, 51, 0.5);
 }
 
+/* Thin scrollbar for chat widget */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* Video thumbnail hover effect */
 .video-card {
   position: relative;
@@ -459,6 +477,12 @@
 }
 
 /* Pricing card popular glow */
+/* Chatbot typing indicator bounce */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
 .pricing-popular {
   position: relative;
 }

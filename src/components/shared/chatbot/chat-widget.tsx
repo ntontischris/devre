@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
@@ -17,24 +17,35 @@ function getSessionId(): string {
   return id;
 }
 
+function resetSessionId(): string {
+  const KEY = 'devre-chat-session-id';
+  const id = crypto.randomUUID();
+  localStorage.setItem(KEY, id);
+  return id;
+}
+
 /** Inner component — only mounted once sessionId is available */
-function ChatWidgetInner({ sessionId }: { sessionId: string }) {
+function ChatWidgetInner({ sessionId: initialSessionId }: { sessionId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [sessionId, setSessionId] = useState(initialSessionId);
   const locale = useLocale();
 
-  const chatHelpers = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      body: {
-        sessionId,
-        language: locale,
-        pageUrl: typeof window !== 'undefined' ? window.location.pathname : '/',
-      },
-    }),
-  });
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: '/api/chat',
+        body: {
+          sessionId,
+          language: locale,
+          pageUrl: typeof window !== 'undefined' ? window.location.pathname : '/',
+        },
+      }),
+    [sessionId, locale]
+  );
 
-  const { messages, sendMessage, status, error } = chatHelpers;
+  const chatHelpers = useChat({ transport });
+  const { messages, sendMessage, setMessages, status, error } = chatHelpers;
   const isLoading = status === 'submitted' || status === 'streaming';
 
   const handleSubmit = useCallback(
@@ -54,6 +65,13 @@ function ChatWidgetInner({ sessionId }: { sessionId: string }) {
     [sendMessage]
   );
 
+  const handleNewChat = useCallback(() => {
+    setMessages([]);
+    setInputValue('');
+    const newId = resetSessionId();
+    setSessionId(newId);
+  }, [setMessages]);
+
   return (
     <>
       {isOpen && (
@@ -64,10 +82,11 @@ function ChatWidgetInner({ sessionId }: { sessionId: string }) {
             isLoading={isLoading}
             language={locale}
             error={error}
-            onInputChange={(e) => setInputValue(e.target.value)}
+            onInputChange={setInputValue}
             onSubmit={handleSubmit}
             onQuickAction={handleQuickAction}
             onClose={() => setIsOpen(false)}
+            onNewChat={handleNewChat}
           />
         </div>
       )}
