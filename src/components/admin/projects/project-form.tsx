@@ -32,6 +32,7 @@ import {
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 
 interface ProjectFormProps {
   project?: ProjectWithClient;
@@ -41,6 +42,8 @@ interface ProjectFormProps {
 type FormData = z.input<typeof createProjectSchema>;
 
 export function ProjectForm({ project, clients }: ProjectFormProps) {
+  const t = useTranslations('projects');
+  const tc = useTranslations('common');
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -64,7 +67,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
 
     if (!result.error) {
       toast.success(
-        project ? 'Project updated successfully' : 'Project created successfully'
+        project ? t('projectUpdated') : t('projectCreated')
       );
       router.push('/admin/projects');
       router.refresh();
@@ -81,9 +84,9 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>{t('projectName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter project title" {...field} />
+                <Input placeholder={t('projectName')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,10 +98,10 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{tc('description')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter project description"
+                  placeholder={tc('description')}
                   rows={4}
                   {...field}
                 />
@@ -113,11 +116,11 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
           name="client_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Client</FormLabel>
+              <FormLabel>{t('client')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a client" />
+                    <SelectValue placeholder={t('selectClient')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -139,14 +142,14 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             name="project_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Project Type</FormLabel>
+                <FormLabel>{t('projectType')}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={t('projectType')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -167,14 +170,14 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             name="priority"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Priority</FormLabel>
+                <FormLabel>{tc('priority')}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue placeholder={tc('priority')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -197,7 +200,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             name="start_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{t('startDate')}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -211,7 +214,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             name="deadline"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Deadline</FormLabel>
+                <FormLabel>{t('endDate')}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -226,7 +229,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
           name="budget"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Budget</FormLabel>
+              <FormLabel>{t('budget')}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -248,17 +251,17 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
         <div className="flex gap-4">
           <Button type="submit" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting
-              ? 'Saving...'
+              ? tc('saving')
               : project
-              ? 'Update Project'
-              : 'Create Project'}
+              ? t('editProject')
+              : t('addProject')}
           </Button>
           <Button
             type="button"
             variant="outline"
             onClick={() => router.back()}
           >
-            Cancel
+            {tc('cancel')}
           </Button>
         </div>
       </form>

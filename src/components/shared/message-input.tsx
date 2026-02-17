@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 import { STORAGE_BUCKETS, MAX_FILE_SIZES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import type { Attachment } from '@/lib/schemas/message';
+import { useTranslations } from 'next-intl';
 
 interface MessageInputProps {
   projectId: string;
@@ -31,6 +32,7 @@ function formatFileSize(bytes: number): string {
 }
 
 export function MessageInput({ projectId, onMessageSent, className }: MessageInputProps) {
+  const t = useTranslations('messages');
   const [content, setContent] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
@@ -44,7 +46,7 @@ export function MessageInput({ projectId, onMessageSent, className }: MessageInp
     // Validate file sizes
     const oversizedFiles = files.filter(f => f.size > MAX_FILE_SIZES.attachment);
     if (oversizedFiles.length > 0) {
-      toast.error(`Some files exceed the ${Math.round(MAX_FILE_SIZES.attachment / 1024 / 1024)}MB limit`);
+      toast.error(t('fileSizeExceeded', { size: Math.round(MAX_FILE_SIZES.attachment / 1024 / 1024) }));
       return;
     }
 
@@ -89,7 +91,7 @@ export function MessageInput({ projectId, onMessageSent, className }: MessageInp
           .upload(filePath, file);
 
         if (uploadError) {
-          throw new Error(`Failed to upload ${file.name}`);
+          throw new Error(t('failedToUpload', { name: file.name }));
         }
 
         // Get public URL
@@ -115,7 +117,7 @@ export function MessageInput({ projectId, onMessageSent, className }: MessageInp
     const trimmedContent = content.trim();
 
     if (!trimmedContent && pendingFiles.length === 0) {
-      toast.error('Please enter a message or attach a file');
+      toast.error(t('enterMessageOrAttach'));
       return;
     }
 
@@ -128,7 +130,7 @@ export function MessageInput({ projectId, onMessageSent, className }: MessageInp
       // Send message
       const result = await createMessage({
         project_id: projectId,
-        content: trimmedContent || '(attachment)',
+        content: trimmedContent || t('attachment'),
         attachments: attachments.length > 0 ? attachments : undefined,
       });
 
@@ -150,7 +152,7 @@ export function MessageInput({ projectId, onMessageSent, className }: MessageInp
       // Focus back on textarea
       textareaRef.current?.focus();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to send message');
+      toast.error(error instanceof Error ? error.message : t('failedToSend'));
     } finally {
       setIsSending(false);
     }
@@ -232,7 +234,7 @@ export function MessageInput({ projectId, onMessageSent, className }: MessageInp
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message... (Shift+Enter for new line)"
+          placeholder={t('typeMessage')}
           disabled={isDisabled}
           className="min-h-[44px] max-h-[200px] resize-none"
           rows={1}

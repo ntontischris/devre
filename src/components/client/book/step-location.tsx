@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MapPin, DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { BookingFormData } from './booking-wizard';
 
 interface StepLocationProps {
@@ -17,32 +18,34 @@ interface StepLocationProps {
   updateFormData: (data: Partial<BookingFormData>) => void;
 }
 
-const BUDGET_RANGES = [
-  { value: 'under_1000', label: 'Under €1,000' },
-  { value: '1000_2500', label: '€1,000 - €2,500' },
-  { value: '2500_5000', label: '€2,500 - €5,000' },
-  { value: '5000_10000', label: '€5,000 - €10,000' },
-  { value: '10000_plus', label: '€10,000+' },
-  { value: 'flexible', label: 'Flexible / To Be Discussed' },
-];
-
 export function StepLocation({ formData, updateFormData }: StepLocationProps) {
+  const t = useTranslations('booking');
+
+  const BUDGET_RANGES = [
+    { value: 'under_1000', label: t('budgetUnder1000') },
+    { value: '1000_2500', label: t('budget1000_2500') },
+    { value: '2500_5000', label: t('budget2500_5000') },
+    { value: '5000_10000', label: t('budget5000_10000') },
+    { value: '10000_plus', label: t('budget10000Plus') },
+    { value: 'flexible', label: t('budgetFlexible') },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Location */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-muted-foreground" />
-          <Label htmlFor="location">Filming Location (Optional)</Label>
+          <Label htmlFor="location">{t('filmingLocationLabel')}</Label>
         </div>
         <Input
           id="location"
           value={formData.location}
           onChange={(e) => updateFormData({ location: e.target.value })}
-          placeholder="e.g., Athens, Greece or Our Office at 123 Main St"
+          placeholder={t('filmingLocationPlaceholder')}
         />
         <p className="text-xs text-muted-foreground">
-          Where will the filming take place?
+          {t('whereWillFilming')}
         </p>
       </div>
 
@@ -50,14 +53,14 @@ export function StepLocation({ formData, updateFormData }: StepLocationProps) {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-muted-foreground" />
-          <Label htmlFor="budget">Budget Range (Optional)</Label>
+          <Label htmlFor="budget">{t('budgetRangeLabel')}</Label>
         </div>
         <Select
           value={formData.budget_range}
           onValueChange={(value) => updateFormData({ budget_range: value })}
         >
           <SelectTrigger id="budget">
-            <SelectValue placeholder="Select your budget range" />
+            <SelectValue placeholder={t('selectBudgetRange')} />
           </SelectTrigger>
           <SelectContent>
             {BUDGET_RANGES.map((range) => (
@@ -68,7 +71,7 @@ export function StepLocation({ formData, updateFormData }: StepLocationProps) {
           </SelectContent>
         </Select>
         <p className="text-xs text-muted-foreground">
-          This helps us tailor our proposal to your needs
+          {t('locationHelperText')}
         </p>
       </div>
     </div>

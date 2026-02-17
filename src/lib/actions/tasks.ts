@@ -2,11 +2,11 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createTaskSchema, updateTaskSchema } from '@/lib/schemas/task';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, Task } from '@/types/index';
 import type { TaskStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
-export async function getTasksByProject(projectId: string): Promise<ActionResult<any[]>> {
+export async function getTasksByProject(projectId: string): Promise<ActionResult<Task[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -18,12 +18,12 @@ export async function getTasksByProject(projectId: string): Promise<ActionResult
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch tasks' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch tasks' };
   }
 }
 
-export async function getTask(id: string): Promise<ActionResult<any>> {
+export async function getTask(id: string): Promise<ActionResult<Task>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -34,12 +34,12 @@ export async function getTask(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch task' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch task' };
   }
 }
 
-export async function createTask(input: unknown): Promise<ActionResult<any>> {
+export async function createTask(input: unknown): Promise<ActionResult<Task>> {
   try {
     const validated = createTaskSchema.parse(input);
     const supabase = await createClient();
@@ -65,7 +65,7 @@ export async function createTask(input: unknown): Promise<ActionResult<any>> {
   }
 }
 
-export async function updateTask(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateTask(id: string, input: unknown): Promise<ActionResult<Task>> {
   try {
     const validated = updateTaskSchema.parse(input);
     const supabase = await createClient();
@@ -95,7 +95,7 @@ export async function updateTaskStatus(
   id: string,
   status: TaskStatus,
   sortOrder?: number
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<Task>> {
   try {
     const supabase = await createClient();
 
@@ -117,8 +117,8 @@ export async function updateTaskStatus(
       revalidatePath(`/admin/projects/${data.project_id}`);
     }
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to update task status' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to update task status' };
   }
 }
 
@@ -143,7 +143,7 @@ export async function deleteTask(id: string): Promise<ActionResult<void>> {
       revalidatePath(`/admin/projects/${task.project_id}`);
     }
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete task' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete task' };
   }
 }

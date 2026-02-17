@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getClient } from '@/lib/actions/clients';
+import { getContractsByClient } from '@/lib/actions/contracts';
 import { Client } from '@/types/index';
 import { ClientDetail } from './client-detail';
 
@@ -15,10 +17,11 @@ export async function generateMetadata({
 }: ClientDetailPageProps): Promise<Metadata> {
   const { clientId } = await params;
   const result = await getClient(clientId);
+  const t = await getTranslations('clients');
 
   if (result.error || !result.data) {
     return {
-      title: 'Client Not Found',
+      title: t('clientDetails'),
     };
   }
 
@@ -32,13 +35,24 @@ export default async function ClientDetailPage({
   params,
 }: ClientDetailPageProps) {
   const { clientId } = await params;
-  const result = await getClient(clientId);
+  const [clientResult, contractsResult] = await Promise.all([
+    getClient(clientId),
+    getContractsByClient(clientId),
+  ]);
 
-  if (result.error || !result.data) {
+  if (clientResult.error || !clientResult.data) {
     notFound();
   }
 
-  const client = result.data as Client;
+  const client = clientResult.data as Client;
+  const contracts = (contractsResult.data ?? []) as Array<{
+    id: string;
+    title: string;
+    status: string;
+    project: { title: string } | null;
+    created_at: string;
+    signed_at: string | null;
+  }>;
 
-  return <ClientDetail client={client} />;
+  return <ClientDetail client={client} contracts={contracts} />;
 }

@@ -5,7 +5,7 @@ import { CONTRACT_STATUSES } from '@/lib/constants';
  * Create contract schema validation
  */
 export const createContractSchema = z.object({
-  project_id: z.string().uuid('Invalid project ID'),
+  project_id: z.string().uuid('Invalid project ID').optional().nullable(),
   client_id: z.string().uuid('Invalid client ID'),
   title: z.string().min(1, 'Title is required').max(255, 'Title must be at most 255 characters'),
   content: z.string().min(1, 'Content is required').max(50000, 'Content must be at most 50000 characters'),

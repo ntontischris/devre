@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { createExpenseSchema } from '@/lib/schemas/expense';
 import { createExpense } from '@/lib/actions/expenses';
 import { Button } from '@/components/ui/button';
@@ -16,16 +17,23 @@ import { z } from 'zod';
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS } from '@/lib/constants';
 import { Upload } from 'lucide-react';
 
+type ProjectOption = {
+  id: string;
+  title: string;
+};
+
 interface ExpenseFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projects: any[];
+  projects: ProjectOption[];
   onSuccess: () => void;
 }
 
 type FormData = z.input<typeof createExpenseSchema>;
 
 export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: ExpenseFormProps) {
+  const t = useTranslations('invoices');
+  const tc = useTranslations('common');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<FormData>({
@@ -46,9 +54,9 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
     setIsSubmitting(false);
 
     if (result.error) {
-      toast.error('Failed to create expense', { description: result.error });
+      toast.error(t('failedToCreateExpense'), { description: result.error });
     } else {
-      toast.success('Expense created successfully');
+      toast.success(t('expenseCreatedSuccess'));
       form.reset();
       onSuccess();
     }
@@ -58,7 +66,7 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Expense</DialogTitle>
+          <DialogTitle>{t('addExpenseTitle')}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -67,11 +75,11 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>{t('expenseCategory')}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder={t('selectCategory')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -92,10 +100,10 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
+                  <FormLabel>{t('descriptionOptional')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter expense description..."
+                      placeholder={t('enterExpenseDescription')}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -110,7 +118,7 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount (EUR)</FormLabel>
+                  <FormLabel>{t('amountEur')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -131,7 +139,7 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel>{t('expenseDate')}</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
@@ -145,15 +153,15 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
               name="project_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project (Optional)</FormLabel>
+                  <FormLabel>{t('projectOptional')}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select project" />
+                        <SelectValue placeholder={t('selectProject')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="">{t('noProject')}</SelectItem>
                       {projects.map((project) => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.title}
@@ -167,14 +175,14 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
             />
 
             <div>
-              <FormLabel>Receipt Upload</FormLabel>
+              <FormLabel>{t('receiptUpload')}</FormLabel>
               <div className="mt-2">
                 <Button type="button" variant="outline" disabled className="w-full">
                   <Upload className="mr-2 h-4 w-4" />
-                  Upload Receipt (Coming Soon)
+                  {t('uploadReceiptComingSoon')}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Receipt upload functionality will be available soon
+                  {t('receiptUploadAvailableSoon')}
                 </p>
               </div>
             </div>
@@ -186,10 +194,10 @@ export function ExpenseForm({ open, onOpenChange, projects, onSuccess }: Expense
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Cancel
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Creating...' : 'Create Expense'}
+                {isSubmitting ? t('creating') : t('addExpense')}
               </Button>
             </DialogFooter>
           </form>

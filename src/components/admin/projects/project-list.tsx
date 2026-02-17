@@ -5,11 +5,7 @@ import { ProjectWithClient } from '@/types';
 import { DataTable } from '@/components/shared/data-table';
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header';
 import { StatusBadge } from '@/components/shared/status-badge';
-import {
-  PROJECT_TYPE_LABELS,
-  PROJECT_STATUS_LABELS,
-  PRIORITY_LABELS,
-} from '@/lib/constants';
+import { PROJECT_TYPE_LABELS } from '@/lib/constants';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -25,12 +21,15 @@ import { deleteProject } from '@/lib/actions/projects';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
+import { useTranslations } from 'next-intl';
 
 interface ProjectListProps {
   projects: ProjectWithClient[];
 }
 
 export function ProjectList({ projects }: ProjectListProps) {
+  const t = useTranslations('projects');
+  const tc = useTranslations('common');
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -43,7 +42,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     const result = await deleteProject(projectToDelete);
 
     if (!result.error) {
-      toast.success('Project deleted successfully');
+      toast.success(t('projectDeleted'));
       setDeleteDialogOpen(false);
       setProjectToDelete(null);
       router.refresh();
@@ -57,7 +56,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     {
       accessorKey: 'title',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title={t('projectName')} />
       ),
       cell: ({ row }) => (
         <Link
@@ -71,7 +70,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     {
       accessorKey: 'client',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Client" />
+        <DataTableColumnHeader column={column} title={t('client')} />
       ),
       cell: ({ row }) => (
         <div className="text-sm">
@@ -82,7 +81,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     {
       accessorKey: 'project_type',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Type" />
+        <DataTableColumnHeader column={column} title={t('projectType')} />
       ),
       cell: ({ row }) => (
         <div className="text-sm">
@@ -93,21 +92,21 @@ export function ProjectList({ projects }: ProjectListProps) {
     {
       accessorKey: 'status',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <DataTableColumnHeader column={column} title={t('projectStatus')} />
       ),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       accessorKey: 'priority',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Priority" />
+        <DataTableColumnHeader column={column} title={tc('priority')} />
       ),
       cell: ({ row }) => <StatusBadge status={row.original.priority} />,
     },
     {
       accessorKey: 'deadline',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Deadline" />
+        <DataTableColumnHeader column={column} title={t('endDate')} />
       ),
       cell: ({ row }) => (
         <div className="text-sm">
@@ -120,7 +119,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     {
       accessorKey: 'budget',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Budget" />
+        <DataTableColumnHeader column={column} title={t('budget')} />
       ),
       cell: ({ row }) => (
         <div className="text-sm">
@@ -135,7 +134,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     },
     {
       id: 'actions',
-      header: () => <div className="text-right">Actions</div>,
+      header: () => <div className="text-right">{tc('actions')}</div>,
       cell: ({ row }) => (
         <div className="text-right">
           <DropdownMenu>
@@ -148,13 +147,13 @@ export function ProjectList({ projects }: ProjectListProps) {
               <DropdownMenuItem asChild>
                 <Link href={`/admin/projects/${row.original.id}`}>
                   <Eye className="h-4 w-4 mr-2" />
-                  View
+                  {tc('view')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/admin/projects/${row.original.id}/edit`}>
                   <Edit className="h-4 w-4 mr-2" />
-                  Edit
+                  {tc('edit')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -165,7 +164,7 @@ export function ProjectList({ projects }: ProjectListProps) {
                 className="text-destructive"
               >
                 <Trash className="h-4 w-4 mr-2" />
-                Delete
+                {tc('delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -180,16 +179,16 @@ export function ProjectList({ projects }: ProjectListProps) {
         columns={columns}
         data={projects}
         searchKey="title"
-        searchPlaceholder="Search projects..."
+        searchPlaceholder={tc('searchPlaceholder')}
         mobileHiddenColumns={['project_type', 'priority', 'deadline', 'budget']}
       />
 
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Project"
-        description="Are you sure you want to delete this project? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t('deleteProject')}
+        description={tc('confirmDeleteMessage')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDelete}
         destructive
         loading={isDeleting}

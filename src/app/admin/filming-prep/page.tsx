@@ -1,26 +1,31 @@
 import { getProjects } from '@/lib/actions/projects';
 import { PageHeader } from '@/components/shared/page-header';
 import { ProjectPrepList } from '@/components/admin/filming-prep/project-prep-list';
+import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Filming Preparation - Devre Media',
-  description: 'Prepare equipment lists, shot lists, and concept notes for upcoming projects',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('filmingPrep');
+  return {
+    title: `${t('title')} - Devre Media`,
+    description: t('description'),
+  };
+}
 
 export default async function FilmingPrepIndexPage() {
+  const t = await getTranslations('filmingPrep');
   const result = await getProjects();
   const projects = (result.data ?? []).filter(
-    (p: any) => p.status !== 'archived' && p.status !== 'delivered'
+    (p) => p.status !== 'archived' && p.status !== 'delivered'
   );
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Filming Preparation"
-        description="Manage equipment lists, shot lists, and concept notes for your projects"
+        title={t('title')}
+        description={t('description')}
       />
-      <ProjectPrepList projects={projects} />
+      <ProjectPrepList projects={projects as any} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import type { MonthlyRevenue, PaymentMethodBreakdown } from '@/lib/queries/reports';
@@ -18,6 +19,8 @@ const PAYMENT_COLORS = [
 ];
 
 export function RevenueReport({ monthlyData, paymentMethodData }: RevenueReportProps) {
+  const t = useTranslations('reports');
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('el-GR', {
       style: 'currency',
@@ -46,7 +49,7 @@ export function RevenueReport({ monthlyData, paymentMethodData }: RevenueReportP
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Monthly Revenue</CardTitle>
+          <CardTitle>{t('revenueByMonth')}</CardTitle>
           <CardDescription>Revenue breakdown by month</CardDescription>
         </CardHeader>
         <CardContent>

@@ -7,13 +7,16 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { format } from 'date-fns';
 import { FileText, Edit } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import type { ContractWithRelations } from '@/types';
 
 interface ContractsTabProps {
-  contracts: any[];
+  contracts: ContractWithRelations[];
 }
 
 export function ContractsTab({ contracts }: ContractsTabProps) {
   const router = useRouter();
+  const t = useTranslations('client.projects');
 
   if (contracts.length === 0) {
     return (
@@ -21,8 +24,8 @@ export function ContractsTab({ contracts }: ContractsTabProps) {
         <CardContent className="py-12">
           <EmptyState
             icon={FileText}
-            title="No contracts yet"
-            description="Project contracts will appear here once created"
+            title={t('noContracts')}
+            description={t('contractsWillAppear')}
           />
         </CardContent>
       </Card>
@@ -67,10 +70,10 @@ export function ContractsTab({ contracts }: ContractsTabProps) {
               </div>
             </div>
           </CardHeader>
-          {contract.description && (
+          {(contract as any).description && (
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                {contract.description}
+                {(contract as any).description}
               </p>
             </CardContent>
           )}

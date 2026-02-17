@@ -34,10 +34,10 @@ export default async function ClientProjectDetailPage({ params }: PageProps) {
 
   // Fetch related data
   const deliverablesResult = await getDeliverablesByProject(projectId);
-  const deliverables = deliverablesResult.data ?? [];
+  const deliverables = (deliverablesResult.data ?? []) as import('@/types').Deliverable[];
 
   const contractsResult = await getContractsByProject(projectId);
-  const contracts = contractsResult.data ?? [];
+  const contracts = (contractsResult.data ?? []) as import('@/types').ContractWithRelations[];
 
   return (
     <ClientProjectDetail

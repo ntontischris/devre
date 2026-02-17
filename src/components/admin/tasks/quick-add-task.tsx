@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createTask } from '@/lib/actions/tasks'
+import { useTranslations } from 'next-intl'
 
 type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done'
 
@@ -16,6 +17,8 @@ type QuickAddTaskProps = {
 }
 
 export function QuickAddTask({ projectId, status }: QuickAddTaskProps) {
+  const t = useTranslations('tasks')
+  const tc = useTranslations('common')
   const router = useRouter()
   const [isAdding, setIsAdding] = useState(false)
   const [title, setTitle] = useState('')
@@ -25,7 +28,7 @@ export function QuickAddTask({ projectId, status }: QuickAddTaskProps) {
     e.preventDefault()
 
     if (!title.trim()) {
-      toast.error('Task title is required')
+      toast.error(tc('required'))
       return
     }
 
@@ -40,11 +43,9 @@ export function QuickAddTask({ projectId, status }: QuickAddTaskProps) {
     setIsLoading(false)
 
     if (result.error) {
-      toast.error('Failed to create task', {
-        description: result.error,
-      })
+      toast.error(result.error)
     } else {
-      toast.success('Task created successfully')
+      toast.success(t('taskCreated'))
       setTitle('')
       setIsAdding(false)
       router.refresh()
@@ -65,7 +66,7 @@ export function QuickAddTask({ projectId, status }: QuickAddTaskProps) {
         onClick={() => setIsAdding(true)}
       >
         <Plus className="h-4 w-4 mr-2" />
-        Add task
+        {t('addTask')}
       </Button>
     )
   }
@@ -73,7 +74,7 @@ export function QuickAddTask({ projectId, status }: QuickAddTaskProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       <Input
-        placeholder="Task title..."
+        placeholder={t('taskName')}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         disabled={isLoading}
@@ -86,7 +87,7 @@ export function QuickAddTask({ projectId, status }: QuickAddTaskProps) {
       />
       <div className="flex gap-2">
         <Button type="submit" size="sm" disabled={isLoading} className="flex-1">
-          Add
+          {tc('add')}
         </Button>
         <Button
           type="button"

@@ -16,7 +16,31 @@ import type {
   FilmingRequestStatus,
   ShotType,
   ExpenseCategory,
+  LeadStage,
+  LeadSource,
+  LeadActivityType,
+  KbArticleStatus,
 } from '@/lib/constants';
+
+// Re-export constant types for use in components
+export type {
+  UserRole,
+  ClientStatus,
+  ProjectType,
+  ProjectStatus,
+  Priority,
+  TaskStatus,
+  DeliverableStatus,
+  InvoiceStatus,
+  ContractStatus,
+  FilmingRequestStatus,
+  ShotType,
+  ExpenseCategory,
+  LeadStage,
+  LeadSource,
+  LeadActivityType,
+  KbArticleStatus,
+};
 
 /**
  * Generic action result type for server actions and API responses
@@ -220,7 +244,7 @@ export type Message = {
  */
 export type Contract = {
   id: string;
-  project_id: string;
+  project_id: string | null;
   client_id: string;
   template_id: string | null;
   title: string;
@@ -398,11 +422,12 @@ export type MessageWithUser = Message & {
 export type InvoiceWithRelations = Invoice & {
   client: Client;
   project: Project;
+  tax_rate?: number;
 };
 
 export type ContractWithRelations = Contract & {
   client: Client;
-  project: Project;
+  project: Project | null;
 };
 
 export type FilmingRequestWithProject = FilmingRequest & {
@@ -514,6 +539,107 @@ export type CreateConceptNoteInput = Omit<
 export type UpdateConceptNoteInput = Partial<CreateConceptNoteInput>;
 
 /**
+ * Lead (CRM)
+ */
+export type Lead = {
+  id: string;
+  contact_name: string;
+  email: string;
+  phone: string | null;
+  company_name: string | null;
+  source: LeadSource;
+  stage: LeadStage;
+  deal_value: number | null;
+  probability: number;
+  notes: string | null;
+  assigned_to: string;
+  lost_reason: string | null;
+  expected_close_date: string | null;
+  last_contacted_at: string | null;
+  converted_to_client_id: string | null;
+  converted_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Lead Activity
+ */
+export type LeadActivity = {
+  id: string;
+  lead_id: string;
+  user_id: string;
+  activity_type: LeadActivityType;
+  title: string;
+  description: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type LeadWithActivities = Lead & {
+  activities: LeadActivity[];
+};
+
+/**
+ * Knowledge Base Category
+ */
+export type KbCategory = {
+  id: string;
+  title: string;
+  description: string | null;
+  slug: string;
+  sort_order: number;
+  parent_id: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Knowledge Base Article
+ */
+export type KbArticle = {
+  id: string;
+  category_id: string;
+  title: string;
+  slug: string;
+  content: string;
+  summary: string | null;
+  video_urls: string[];
+  published: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Sales Resource Category
+ */
+export type SalesResourceCategory = {
+  id: string;
+  title: string;
+  description: string | null;
+  sort_order: number;
+  created_at: string;
+};
+
+/**
+ * Sales Resource
+ */
+export type SalesResource = {
+  id: string;
+  category_id: string;
+  title: string;
+  description: string | null;
+  file_path: string;
+  file_name: string;
+  file_size: number;
+  file_type: string;
+  uploaded_by: string;
+  created_at: string;
+};
+
+/**
  * Filter and query types
  */
 export type ProjectFilters = {
@@ -561,6 +687,15 @@ export type ExpenseFilters = {
 export type ClientFilters = {
   status?: ClientStatus | ClientStatus[];
   search?: string;
+};
+
+export type LeadFilters = {
+  stage?: LeadStage | LeadStage[];
+  source?: LeadSource | LeadSource[];
+  assigned_to?: string;
+  search?: string;
+  expected_close_from?: string;
+  expected_close_to?: string;
 };
 
 /**

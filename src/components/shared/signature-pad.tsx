@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { RotateCcw, Check } from 'lucide-react';
 import type SignatureCanvasType from 'react-signature-canvas';
+import { useTranslations } from 'next-intl';
 
 const LazySignatureCanvas = lazy(() => import('react-signature-canvas'));
 
@@ -15,6 +16,7 @@ interface SignaturePadProps {
 }
 
 export function SignaturePad({ onSign, disabled }: SignaturePadProps) {
+  const t = useTranslations('contracts');
   const sigCanvas = useRef<SignatureCanvasType>(null);
   const [isEmpty, setIsEmpty] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
@@ -53,7 +55,7 @@ export function SignaturePad({ onSign, disabled }: SignaturePadProps) {
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium mb-2 block">
-            Sign below
+            {t('signature')}
           </label>
           <div className="border-2 border-dashed rounded-lg bg-muted/10">
             {isMounted ? (
@@ -80,7 +82,7 @@ export function SignaturePad({ onSign, disabled }: SignaturePadProps) {
             )}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Draw your signature using your mouse or touchscreen
+            {t('drawSignature')}
           </p>
         </div>
 
@@ -93,7 +95,7 @@ export function SignaturePad({ onSign, disabled }: SignaturePadProps) {
             className="flex-1"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
-            Clear
+            {t('clearSignature')}
           </Button>
           <Button
             type="button"
@@ -102,7 +104,7 @@ export function SignaturePad({ onSign, disabled }: SignaturePadProps) {
             className="flex-1"
           >
             <Check className="h-4 w-4 mr-2" />
-            Sign Contract
+            {t('signContract')}
           </Button>
         </div>
       </div>

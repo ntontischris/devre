@@ -5,6 +5,22 @@ const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/update-passwor
 const AUTH_ROUTES = ['/login', '/signup', '/forgot-password', '/update-password'];
 const ADMIN_ROUTES_PREFIX = '/admin';
 const CLIENT_ROUTES_PREFIX = '/client';
+const EMPLOYEE_ROUTES_PREFIX = '/employee';
+const SALESMAN_ROUTES_PREFIX = '/salesman';
+
+function getDashboardForRole(role: string): string {
+  switch (role) {
+    case 'super_admin':
+    case 'admin':
+      return '/admin/dashboard';
+    case 'employee':
+      return '/employee/dashboard';
+    case 'salesman':
+      return '/salesman/dashboard';
+    default:
+      return '/client/dashboard';
+  }
+}
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -66,32 +82,47 @@ export async function middleware(request: NextRequest) {
 
   const role = profile?.role ?? 'client';
   const isAdmin = role === 'super_admin' || role === 'admin';
+  const dashboard = getDashboardForRole(role);
 
   // Redirect authenticated users away from auth pages
   if (AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
     const url = request.nextUrl.clone();
-    url.pathname = isAdmin ? '/admin/dashboard' : '/client/dashboard';
+    url.pathname = dashboard;
     return NextResponse.redirect(url);
   }
 
   // Redirect root to appropriate dashboard
   if (pathname === '/') {
     const url = request.nextUrl.clone();
-    url.pathname = isAdmin ? '/admin/dashboard' : '/client/dashboard';
+    url.pathname = dashboard;
     return NextResponse.redirect(url);
   }
 
   // Protect admin routes — only admin/super_admin
   if (pathname.startsWith(ADMIN_ROUTES_PREFIX) && !isAdmin) {
     const url = request.nextUrl.clone();
-    url.pathname = '/client/dashboard';
+    url.pathname = dashboard;
     return NextResponse.redirect(url);
   }
 
   // Protect client routes — only clients (admins can also access for testing)
   if (pathname.startsWith(CLIENT_ROUTES_PREFIX) && role !== 'client' && !isAdmin) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    url.pathname = dashboard;
+    return NextResponse.redirect(url);
+  }
+
+  // Protect employee routes — only employees (admins can also access)
+  if (pathname.startsWith(EMPLOYEE_ROUTES_PREFIX) && role !== 'employee' && !isAdmin) {
+    const url = request.nextUrl.clone();
+    url.pathname = dashboard;
+    return NextResponse.redirect(url);
+  }
+
+  // Protect salesman routes — only salesmen (admins can also access)
+  if (pathname.startsWith(SALESMAN_ROUTES_PREFIX) && role !== 'salesman' && !isAdmin) {
+    const url = request.nextUrl.clone();
+    url.pathname = dashboard;
     return NextResponse.redirect(url);
   }
 

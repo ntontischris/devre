@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, CheckCircle, FileSignature } from 'lucide-react';
@@ -16,6 +19,8 @@ type PendingActionsProps = {
 };
 
 export function PendingActions({ actions }: PendingActionsProps) {
+  const t = useTranslations('dashboard');
+
   const getIcon = (type: PendingAction['type']) => {
     switch (type) {
       case 'invoice':
@@ -41,11 +46,11 @@ export function PendingActions({ actions }: PendingActionsProps) {
   const getTypeLabel = (type: PendingAction['type']) => {
     switch (type) {
       case 'invoice':
-        return 'Invoice';
+        return t('invoice');
       case 'deliverable':
-        return 'Deliverable';
+        return t('deliverable');
       case 'contract':
-        return 'Contract';
+        return t('contract');
     }
   };
 
@@ -53,12 +58,12 @@ export function PendingActions({ actions }: PendingActionsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Pending Actions</CardTitle>
-          <CardDescription>Items that need your attention</CardDescription>
+          <CardTitle>{t('pendingActions')}</CardTitle>
+          <CardDescription>{t('pendingActionsDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-8">
-            No pending actions
+            {t('noPendingActions')}
           </p>
         </CardContent>
       </Card>
@@ -68,8 +73,8 @@ export function PendingActions({ actions }: PendingActionsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pending Actions</CardTitle>
-        <CardDescription>Items that need your attention</CardDescription>
+        <CardTitle>{t('pendingActions')}</CardTitle>
+        <CardDescription>{t('pendingActionsDesc')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -88,7 +93,7 @@ export function PendingActions({ actions }: PendingActionsProps) {
                   </Badge>
                   {action.daysOverdue && action.daysOverdue > 0 && (
                     <Badge variant="destructive" className="text-xs">
-                      {action.daysOverdue}d overdue
+                      {t('daysOverdue', { days: action.daysOverdue })}
                     </Badge>
                   )}
                 </div>

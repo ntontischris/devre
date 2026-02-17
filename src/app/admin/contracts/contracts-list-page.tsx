@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { FileText, Eye, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
@@ -12,11 +13,26 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { deleteContract } from '@/lib/actions/contracts';
 import { toast } from 'sonner';
 
+interface ContractItem {
+  id: string;
+  title: string;
+  status: string;
+  created_at: string;
+  client?: {
+    company_name?: string;
+    contact_name?: string;
+  } | null;
+  project?: {
+    title?: string;
+  } | null;
+}
+
 interface ContractsListPageProps {
-  contracts: any[];
+  contracts: ContractItem[];
 }
 
 export function ContractsListPage({ contracts: initialContracts }: ContractsListPageProps) {
+  const t = useTranslations('contracts');
   const [contracts, setContracts] = useState(initialContracts);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -32,7 +48,7 @@ export function ContractsListPage({ contracts: initialContracts }: ContractsList
       return;
     }
 
-    toast.success('Contract deleted successfully');
+    toast.success(t('contractDeletedSuccess'));
     setContracts((prev) => prev.filter((c) => c.id !== deleteId));
     setDeleteId(null);
     setIsDeleting(false);

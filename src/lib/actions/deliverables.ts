@@ -2,27 +2,27 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createDeliverableSchema, createAnnotationSchema } from '@/lib/schemas/deliverable';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, Deliverable, VideoAnnotation } from '@/types/index';
 import type { DeliverableStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
-export async function getDeliverablesByProject(projectId: string): Promise<ActionResult<any[]>> {
+export async function getDeliverablesByProject(projectId: string): Promise<ActionResult<Deliverable[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('deliverables')
       .select('*')
       .eq('project_id', projectId)
-      .order('version_number', { ascending: false });
+      .order('version', { ascending: false });
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch deliverables' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch deliverables' };
   }
 }
 
-export async function getDeliverable(id: string): Promise<ActionResult<any>> {
+export async function getDeliverable(id: string): Promise<ActionResult<Deliverable>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -33,12 +33,12 @@ export async function getDeliverable(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch deliverable' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch deliverable' };
   }
 }
 
-export async function createDeliverable(input: unknown): Promise<ActionResult<any>> {
+export async function createDeliverable(input: unknown): Promise<ActionResult<Deliverable>> {
   try {
     const validated = createDeliverableSchema.parse(input);
     const supabase = await createClient();
@@ -48,20 +48,20 @@ export async function createDeliverable(input: unknown): Promise<ActionResult<an
 
     const { data: maxVersion } = await supabase
       .from('deliverables')
-      .select('version_number')
+      .select('version')
       .eq('project_id', validated.project_id)
-      .order('version_number', { ascending: false })
+      .order('version', { ascending: false })
       .limit(1)
       .single();
 
-    const versionNumber = maxVersion ? maxVersion.version_number + 1 : 1;
+    const versionNumber = maxVersion ? maxVersion.version + 1 : 1;
 
     const { data, error } = await supabase
       .from('deliverables')
       .insert({
         ...validated,
         uploaded_by: user.id,
-        version_number: versionNumber,
+        version: versionNumber,
         status: 'pending_review',
       })
       .select()
@@ -82,7 +82,7 @@ export async function createDeliverable(input: unknown): Promise<ActionResult<an
 export async function updateDeliverableStatus(
   id: string,
   status: DeliverableStatus
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<Deliverable>> {
   try {
     const supabase = await createClient();
 
@@ -99,8 +99,8 @@ export async function updateDeliverableStatus(
       revalidatePath(`/admin/projects/${data.project_id}`);
     }
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to update deliverable status' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to update deliverable status' };
   }
 }
 
@@ -125,12 +125,12 @@ export async function deleteDeliverable(id: string): Promise<ActionResult<void>>
       revalidatePath(`/admin/projects/${deliverable.project_id}`);
     }
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete deliverable' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete deliverable' };
   }
 }
 
-export async function getAnnotations(deliverableId: string): Promise<ActionResult<any[]>> {
+export async function getAnnotations(deliverableId: string): Promise<ActionResult<VideoAnnotation[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -141,12 +141,12 @@ export async function getAnnotations(deliverableId: string): Promise<ActionResul
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch annotations' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch annotations' };
   }
 }
 
-export async function createAnnotation(input: unknown): Promise<ActionResult<any>> {
+export async function createAnnotation(input: unknown): Promise<ActionResult<VideoAnnotation>> {
   try {
     const validated = createAnnotationSchema.parse(input);
     const supabase = await createClient();
@@ -172,7 +172,7 @@ export async function createAnnotation(input: unknown): Promise<ActionResult<any
   }
 }
 
-export async function resolveAnnotation(id: string): Promise<ActionResult<any>> {
+export async function resolveAnnotation(id: string): Promise<ActionResult<VideoAnnotation>> {
   try {
     const supabase = await createClient();
 
@@ -195,7 +195,7 @@ export async function resolveAnnotation(id: string): Promise<ActionResult<any>> 
       revalidatePath(`/admin/deliverables/${data.deliverable_id}`);
     }
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to resolve annotation' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to resolve annotation' };
   }
 }

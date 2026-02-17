@@ -12,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { DeliverablesTab } from '@/components/client/projects/deliverables-tab';
 import { ContractsTab } from '@/components/client/projects/contracts-tab';
+import type { ProjectWithClient, Deliverable, ContractWithRelations } from '@/types';
 
 interface ClientProjectDetailProps {
-  project: any;
-  deliverables: any[];
-  contracts: any[];
+  project: ProjectWithClient;
+  deliverables: Deliverable[];
+  contracts: ContractWithRelations[];
   currentUserId: string;
 }
 
@@ -111,22 +112,22 @@ export function ClientProjectDetail({
                   </p>
                 </div>
 
-                {project.filming_date && (
+                {(project as any).filming_date && (
                   <div>
                     <h3 className="font-medium text-sm mb-2">Filming Date</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
-                      {format(new Date(project.filming_date), 'MMMM d, yyyy')}
+                      {format(new Date((project as any).filming_date), 'MMMM d, yyyy')}
                     </div>
                   </div>
                 )}
 
-                {project.location && (
+                {(project as any).location && (
                   <div>
                     <h3 className="font-medium text-sm mb-2">Location</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      {project.location}
+                      {(project as any).location}
                     </div>
                   </div>
                 )}

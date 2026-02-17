@@ -5,7 +5,7 @@ import { createMessageSchema } from '@/lib/schemas/message';
 import type { ActionResult } from '@/types/index';
 import { revalidatePath } from 'next/cache';
 
-export async function getMessagesByProject(projectId: string): Promise<ActionResult<any[]>> {
+export async function getMessagesByProject(projectId: string): Promise<ActionResult<unknown[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -16,12 +16,12 @@ export async function getMessagesByProject(projectId: string): Promise<ActionRes
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch messages' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch messages' };
   }
 }
 
-export async function createMessage(input: unknown): Promise<ActionResult<any>> {
+export async function createMessage(input: unknown): Promise<ActionResult<unknown>> {
   try {
     const validated = createMessageSchema.parse(input);
     const supabase = await createClient();
@@ -68,7 +68,7 @@ export async function markMessagesAsRead(projectId: string): Promise<ActionResul
 
     revalidatePath(`/admin/projects/${projectId}`);
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to mark messages as read' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to mark messages as read' };
   }
 }

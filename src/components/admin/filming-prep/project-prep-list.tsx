@@ -6,18 +6,22 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Film, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
+import type { Project } from '@/types';
 
 interface ProjectPrepListProps {
-  projects: any[];
+  projects: (Project & { client?: { contact_name?: string; company_name?: string | null } | null })[];
 }
 
 export function ProjectPrepList({ projects }: ProjectPrepListProps) {
+  const t = useTranslations('filmingPrep');
+
   if (projects.length === 0) {
     return (
       <EmptyState
         icon={Film}
-        title="No projects available"
-        description="There are no active projects to prepare for filming."
+        title={t('noProjectsAvailable')}
+        description={t('noProjectsForFilming')}
       />
     );
   }
@@ -44,13 +48,13 @@ export function ProjectPrepList({ projects }: ProjectPrepListProps) {
                   {project.client.company_name || project.client.contact_name}
                 </p>
               )}
-              {project.filming_date && (
+              {(project as any).filming_date && (
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <CalendarDays className="h-3.5 w-3.5" />
-                  {format(new Date(project.filming_date), 'MMM d, yyyy')}
+                  {format(new Date((project as any).filming_date), 'MMM d, yyyy')}
                 </div>
               )}
-              {project.start_date && !project.filming_date && (
+              {project.start_date && !(project as any).filming_date && (
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <CalendarDays className="h-3.5 w-3.5" />
                   {format(new Date(project.start_date), 'MMM d, yyyy')}

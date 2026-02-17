@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getClient } from '@/lib/actions/clients';
 import { Client } from '@/types/index';
 import { PageHeader } from '@/components/shared/page-header';
@@ -8,14 +9,17 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export const metadata: Metadata = {
-  title: 'Edit Client',
-};
-
 interface EditClientPageProps {
   params: Promise<{
     clientId: string;
   }>;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('clients');
+  return {
+    title: t('editClient'),
+  };
 }
 
 export default async function EditClientPage({ params }: EditClientPageProps) {
@@ -27,17 +31,19 @@ export default async function EditClientPage({ params }: EditClientPageProps) {
   }
 
   const client = result.data as Client;
+  const t = await getTranslations('clients');
+  const tc = await getTranslations('common');
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Edit Client"
-        description={`Update information for ${client.contact_name}`}
+        title={t('editClient')}
+        description={`${tc('edit')} ${client.contact_name}`}
       >
         <Button variant="outline" asChild>
           <Link href={`/admin/clients/${clientId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Client
+            {tc('back')}
           </Link>
         </Button>
       </PageHeader>

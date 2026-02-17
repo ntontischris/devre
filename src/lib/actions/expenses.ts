@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createExpenseSchema, updateExpenseSchema } from '@/lib/schemas/expense';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, Expense } from '@/types/index';
 import type { ExpenseCategory } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
@@ -13,7 +13,7 @@ interface ExpenseFilters {
   date_to?: string;
 }
 
-export async function getExpenses(filters?: ExpenseFilters): Promise<ActionResult<any[]>> {
+export async function getExpenses(filters?: ExpenseFilters): Promise<ActionResult<Expense[]>> {
   try {
     const supabase = await createClient();
     let query = supabase
@@ -41,12 +41,12 @@ export async function getExpenses(filters?: ExpenseFilters): Promise<ActionResul
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch expenses' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch expenses' };
   }
 }
 
-export async function getExpense(id: string): Promise<ActionResult<any>> {
+export async function getExpense(id: string): Promise<ActionResult<Expense>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -57,12 +57,12 @@ export async function getExpense(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch expense' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch expense' };
   }
 }
 
-export async function createExpense(input: unknown): Promise<ActionResult<any>> {
+export async function createExpense(input: unknown): Promise<ActionResult<Expense>> {
   try {
     const validated = createExpenseSchema.parse(input);
     const supabase = await createClient();
@@ -94,7 +94,7 @@ export async function createExpense(input: unknown): Promise<ActionResult<any>> 
   }
 }
 
-export async function updateExpense(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateExpense(id: string, input: unknown): Promise<ActionResult<Expense>> {
   try {
     const validated = updateExpenseSchema.parse(input);
     const supabase = await createClient();
@@ -143,7 +143,7 @@ export async function deleteExpense(id: string): Promise<ActionResult<void>> {
       revalidatePath(`/admin/projects/${expense.project_id}`);
     }
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete expense' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete expense' };
   }
 }

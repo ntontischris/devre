@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { getShotLists, createShotList, updateShotList } from '@/lib/actions/filming-prep';
 import type { Shot } from '@/lib/schemas/filming-prep';
 import { SHOT_TYPES, SHOT_TYPE_LABELS } from '@/lib/constants';
@@ -15,49 +16,57 @@ import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { Plus, Trash2, Camera } from 'lucide-react';
 import { toast } from 'sonner';
 
+type ShotListData = {
+  id: string;
+  project_id: string;
+  shots: Shot[];
+  created_at: string;
+  updated_at: string;
+};
+
 interface ShotListProps {
   projectId: string;
 }
 
 export function ShotList({ projectId }: ShotListProps) {
-  const [shotLists, setShotLists] = useState<any[]>([]);
+  const t = useTranslations('filmingPrep');
+  const [shotLists, setShotLists] = useState<ShotListData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [activeShotListId, setActiveShotListId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadShotLists();
-  }, [projectId]);
-
-  const loadShotLists = async () => {
+  const loadShotLists = useCallback(async () => {
     setLoading(true);
     const result = await getShotLists(projectId);
     if (result.error) {
-      toast.error('Failed to load shot lists');
+      toast.error(t('failedToLoadShotLists'));
       setLoading(false);
       return;
     }
 
-    setShotLists(result.data || []);
+    setShotLists(result.data as any || []);
     if (result.data && result.data.length > 0) {
       setActiveShotListId(result.data[0].id);
     }
     setLoading(false);
-  };
+  }, [projectId]);
+
+  useEffect(() => {
+    loadShotLists();
+  }, [loadShotLists]);
 
   const handleCreateShotList = async () => {
-    setSaving(true);
+    setLoading(true);
     const result = await createShotList(projectId);
-    setSaving(false);
+    setLoading(false);
 
     if (result.error) {
-      toast.error('Failed to create shot list');
+      toast.error(t('failedToCreateShotList'));
       return;
     }
 
-    toast.success('Shot list created');
+    toast.success(t('shotListCreated'));
     await loadShotLists();
-    setActiveShotListId(result.data.id);
+    setActiveShotListId(result.data!.id);
   };
 
   if (loading) {
@@ -76,9 +85,9 @@ export function ShotList({ projectId }: ShotListProps) {
         <CardContent className="py-12">
           <EmptyState
             icon={Camera}
-            title="No shot list"
-            description="Create your first shot list to plan your filming"
-            action={{ label: 'Create Shot List', onClick: handleCreateShotList }}
+            title={t('noShotList')}
+            description={t('createFirstShotList')}
+            action={{ label: t('createShotList'), onClick: handleCreateShotList }}
           />
         </CardContent>
       </Card>
@@ -90,8 +99,8 @@ export function ShotList({ projectId }: ShotListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Shot List</CardTitle>
-        <CardDescription>Plan and track your filming shots</CardDescription>
+        <CardTitle>{t('shotList')}</CardTitle>
+        <CardDescription>{t('planAndTrackShots')}</CardDescription>
       </CardHeader>
       <CardContent>
         {activeShotList && (
@@ -106,11 +115,13 @@ export function ShotList({ projectId }: ShotListProps) {
 }
 
 interface ShotListTableProps {
-  shotList: any;
+  shotList: ShotListData;
   onUpdate: () => void;
 }
 
-function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
+function ShotListTable({ shotList }: ShotListTableProps) {
+  const t = useTranslations('filmingPrep');
+  const tc = useTranslations('common');
   const [shots, setShots] = useState<Shot[]>(shotList.shots || []);
   const [saving, setSaving] = useState(false);
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -126,7 +137,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
       setSaving(false);
 
       if (result.error) {
-        toast.error('Failed to save shot list');
+        toast.error(t('failedToSaveShotList'));
       }
     }, 500);
 
@@ -168,7 +179,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
     }));
     setShots(reNumberedShots);
     debouncedSave(reNumberedShots);
-    toast.success('Shot removed');
+    toast.success(t('shotRemoved'));
   };
 
   const toggleCompleted = (index: number) => {
@@ -190,7 +201,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
         <div className="text-sm text-muted-foreground">
           {shots.length > 0 && (
             <span className="font-medium">
-              {completedCount}/{shots.length} shots completed
+              {t('shotsCompleted', { completed: completedCount, total: shots.length })}
             </span>
           )}
         </div>
@@ -198,12 +209,12 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
           {saving && (
             <span className="text-sm text-muted-foreground flex items-center gap-2">
               <LoadingSpinner size="sm" />
-              Saving...
+              {tc('saving')}
             </span>
           )}
           <Button onClick={addShot} size="sm">
             <Plus className="h-4 w-4 mr-2" />
-            Add Shot
+            {t('addShot')}
           </Button>
         </div>
       </div>
@@ -211,8 +222,8 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
       {shots.length === 0 ? (
         <EmptyState
           icon={Camera}
-          title="No shots"
-          description="Add your first shot to start planning"
+          title={t('noShotsYet')}
+          description={t('addFirstShot')}
         />
       ) : (
         <div className="border rounded-lg">
@@ -220,12 +231,12 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">#</TableHead>
-                <TableHead className="w-[200px]">Description</TableHead>
-                <TableHead className="w-[140px]">Shot Type</TableHead>
-                <TableHead className="w-[160px]">Location</TableHead>
-                <TableHead className="w-[120px]">Duration Est.</TableHead>
-                <TableHead className="w-[160px]">Notes</TableHead>
-                <TableHead className="w-[80px]">Done</TableHead>
+                <TableHead className="w-[200px]">{tc('description')}</TableHead>
+                <TableHead className="w-[140px]">{t('shotType')}</TableHead>
+                <TableHead className="w-[160px]">{t('locationPlaceholder')}</TableHead>
+                <TableHead className="w-[120px]">{t('durationEstimate')}</TableHead>
+                <TableHead className="w-[160px]">{tc('notes')}</TableHead>
+                <TableHead className="w-[80px]">{t('doneLabel')}</TableHead>
                 <TableHead className="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -239,7 +250,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
                     <Input
                       value={shot.description}
                       onChange={(e) => updateShot(index, { description: e.target.value })}
-                      placeholder="Shot description"
+                      placeholder={t('shotDescriptionPlaceholder')}
                       className="h-9"
                     />
                   </TableCell>
@@ -264,7 +275,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
                     <Input
                       value={shot.location || ''}
                       onChange={(e) => updateShot(index, { location: e.target.value })}
-                      placeholder="Location"
+                      placeholder={t('locationPlaceholder')}
                       className="h-9"
                     />
                   </TableCell>
@@ -272,7 +283,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
                     <Input
                       value={shot.duration_est || ''}
                       onChange={(e) => updateShot(index, { duration_est: e.target.value })}
-                      placeholder="e.g., 30s"
+                      placeholder={t('durationPlaceholder')}
                       className="h-9"
                     />
                   </TableCell>
@@ -280,7 +291,7 @@ function ShotListTable({ shotList, onUpdate }: ShotListTableProps) {
                     <Input
                       value={shot.notes || ''}
                       onChange={(e) => updateShot(index, { notes: e.target.value })}
-                      placeholder="Notes"
+                      placeholder={t('shotNotesPlaceholder')}
                       className="h-9"
                     />
                   </TableCell>

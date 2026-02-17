@@ -32,12 +32,12 @@ const statusColorMap: Record<string, string> = {
   urgent: 'bg-red-100 text-red-800 hover:bg-red-100',
   revision_requested: 'bg-red-100 text-red-800 hover:bg-red-100',
 
-  // Gray - neutral states
-  neutral: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
-  draft: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
-  inactive: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
-  lead: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
-  archived: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
+  // Stone - neutral states
+  neutral: 'bg-stone-100 text-stone-800 hover:bg-stone-100',
+  draft: 'bg-stone-100 text-stone-800 hover:bg-stone-100',
+  inactive: 'bg-stone-100 text-stone-800 hover:bg-stone-100',
+  lead: 'bg-stone-100 text-stone-800 hover:bg-stone-100',
+  archived: 'bg-stone-100 text-stone-800 hover:bg-stone-100',
 
   // Blue - info states
   info: 'bg-blue-100 text-blue-800 hover:bg-blue-100',

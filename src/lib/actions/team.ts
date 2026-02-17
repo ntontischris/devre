@@ -13,7 +13,7 @@ export async function getTeamMembers(): Promise<ActionResult<UserProfile[]>> {
     const { data, error } = await supabase
       .from('user_profiles')
       .select('*')
-      .in('role', ['super_admin', 'admin'])
+      .in('role', ['super_admin', 'admin', 'employee', 'salesman'])
       .order('created_at', { ascending: true });
 
     if (error) {

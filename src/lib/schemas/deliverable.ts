@@ -31,7 +31,7 @@ export type UpdateDeliverableInput = z.infer<typeof updateDeliverableSchema>;
  */
 export const deliverableResponseSchema = createDeliverableSchema.extend({
   id: z.string().uuid(),
-  version_number: z.number(),
+  version: z.number(),
   status: z.enum(DELIVERABLE_STATUSES),
   uploaded_by: z.string().uuid(),
   created_at: z.string().datetime(),

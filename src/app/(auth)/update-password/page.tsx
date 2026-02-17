@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { createClient } from '@/lib/supabase/client';
 import { updatePasswordSchema } from '@/lib/schemas/auth';
@@ -18,6 +19,7 @@ type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;
 
 export default function UpdatePasswordPage() {
   const router = useRouter();
+  const t = useTranslations('auth');
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -41,14 +43,14 @@ export default function UpdatePasswordPage() {
         return;
       }
 
-      toast.success('Password updated successfully!');
+      toast.success(t('passwordUpdated'));
 
       // Redirect to login after a short delay
       setTimeout(() => {
         router.push('/login');
       }, 1500);
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error(t('unexpectedError'));
       console.error(error);
     } finally {
       setIsLoading(false);

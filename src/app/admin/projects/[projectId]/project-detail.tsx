@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ProjectWithClient } from '@/types';
+import { format } from 'date-fns';
+import { ProjectWithClient, Contract } from '@/types';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
@@ -17,12 +18,10 @@ import {
   Trash,
   Building2,
   Calendar,
-  DollarSign,
   FileText,
   CheckSquare,
   Package,
   MessageSquare,
-  FileSignature,
   Mail,
   Phone,
   MapPin,
@@ -31,20 +30,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { deleteProject } from '@/lib/actions/projects';
 import { toast } from 'sonner';
-import { format, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 import { createClient } from '@/lib/supabase/client';
 import {
   PROJECT_TYPE_LABELS,
   PROJECT_STATUS_LABELS,
   PRIORITY_LABELS,
 } from '@/lib/constants';
+import { useTranslations } from 'next-intl';
 
 interface ProjectDetailProps {
   project: ProjectWithClient;
-  contracts: any[];
+  contracts: Contract[];
 }
 
 export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
+  const t = useTranslations('projects');
+  const tc = useTranslations('common');
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -52,7 +54,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }: { data: any }) => {
+    supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });
   }, []);
@@ -62,7 +64,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
     const result = await deleteProject(project.id);
 
     if (!result.error) {
-      toast.success('Project deleted successfully');
+      toast.success(t('projectDeleted'));
       router.push('/admin/projects');
       router.refresh();
     } else {
@@ -92,13 +94,13 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
           <Button variant="outline" size="sm" asChild>
             <Link href="/admin/projects">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+              {tc('back')}
             </Link>
           </Button>
           <Button variant="outline" size="sm" asChild>
             <Link href={`/admin/projects/${project.id}/edit`}>
               <Edit className="h-4 w-4 mr-2" />
-              Edit
+              {tc('edit')}
             </Link>
           </Button>
           <Button
@@ -108,7 +110,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             className="text-destructive hover:text-destructive"
           >
             <Trash className="h-4 w-4 mr-2" />
-            Delete
+            {tc('delete')}
           </Button>
         </div>
       </PageHeader>
@@ -130,11 +132,11 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
       <Tabs defaultValue="overview" className="space-y-6">
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
           <TabsList className="inline-flex w-auto min-w-full sm:min-w-0">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="tasks">Tasks</TabsTrigger>
-            <TabsTrigger value="deliverables">Deliverables</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="contracts">Contracts</TabsTrigger>
+            <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
+            <TabsTrigger value="tasks">{t('tasks')}</TabsTrigger>
+            <TabsTrigger value="deliverables">{t('deliverables')}</TabsTrigger>
+            <TabsTrigger value="messages">{tc('messages')}</TabsTrigger>
+            <TabsTrigger value="contracts">{t('contracts')}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -143,7 +145,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Project Type
+                  {t('projectType')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -156,7 +158,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Status
+                  {t('projectStatus')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -169,7 +171,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Priority
+                  {tc('priority')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -182,7 +184,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Budget
+                  {t('budget')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -203,7 +205,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
-                  Description
+                  {tc('description')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -218,29 +220,29 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Timeline
+                {tc('timeline')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-1">
-                    Start Date
+                    {t('startDate')}
                   </div>
                   <div className="text-lg">
                     {project.start_date
                       ? format(new Date(project.start_date), 'MMM d, yyyy')
-                      : 'Not set'}
+                      : tc('notSet')}
                   </div>
                 </div>
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-1">
-                    Deadline
+                    {t('endDate')}
                   </div>
                   <div className="text-lg">
                     {project.deadline
                       ? format(new Date(project.deadline), 'MMM d, yyyy')
-                      : 'Not set'}
+                      : tc('notSet')}
                   </div>
                   {daysUntilDeadline !== null && (
                     <div
@@ -253,8 +255,8 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
                       }`}
                     >
                       {daysUntilDeadline < 0
-                        ? `${Math.abs(daysUntilDeadline)} days overdue`
-                        : `${daysUntilDeadline} days remaining`}
+                        ? `${Math.abs(daysUntilDeadline)} ${tc('daysOverdue')}`
+                        : `${daysUntilDeadline} ${tc('daysRemaining')}`}
                     </div>
                   )}
                 </div>
@@ -263,7 +265,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
               {project.start_date && project.deadline && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Progress</span>
+                    <span className="text-muted-foreground">{tc('progress')}</span>
                     <span className="font-medium">{Math.round(progress)}%</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -278,7 +280,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
               {project.completion_date && (
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-1">
-                    Completed On
+                    {tc('completedOn')}
                   </div>
                   <div className="text-lg">
                     {format(new Date(project.completion_date), 'MMM d, yyyy')}
@@ -292,13 +294,13 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Client Information
+                {tc('clientInformation')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
                 <div className="text-sm font-medium text-muted-foreground">
-                  Company
+                  {tc('company')}
                 </div>
                 <div className="text-lg">
                   {project.client.company_name || '-'}
@@ -306,7 +308,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
               </div>
               <div>
                 <div className="text-sm font-medium text-muted-foreground">
-                  Contact
+                  {tc('contact')}
                 </div>
                 <div className="text-lg">{project.client.contact_name}</div>
               </div>
@@ -338,7 +340,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
               )}
               <Button asChild variant="outline" size="sm" className="w-full mt-4">
                 <Link href={`/admin/clients/${project.client_id}`}>
-                  View Client Details
+                  {tc('viewDetails')}
                 </Link>
               </Button>
             </CardContent>
@@ -348,16 +350,16 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
         <TabsContent value="tasks">
           <EmptyState
             icon={CheckSquare}
-            title="No tasks yet"
-            description="Tasks will be managed in the Tasks tab"
+            title={tc('noTasksYet')}
+            description={tc('noTasksDescription')}
           />
         </TabsContent>
 
         <TabsContent value="deliverables">
           <EmptyState
             icon={Package}
-            title="No deliverables yet"
-            description="Project deliverables will appear here"
+            title={tc('noDeliverablesYet')}
+            description={tc('noDeliverablesDescription')}
           />
         </TabsContent>
 
@@ -367,8 +369,8 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
           ) : (
             <EmptyState
               icon={MessageSquare}
-              title="Loading messages..."
-              description="Please wait while we load your messages"
+              title={tc('loading')}
+              description={tc('pleaseWait')}
             />
           )}
         </TabsContent>
@@ -381,9 +383,9 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Project"
-        description="Are you sure you want to delete this project? This action cannot be undone and will remove all associated data."
-        confirmLabel="Delete Project"
+        title={t('deleteProject')}
+        description={tc('confirmDeleteMessage')}
+        confirmLabel={t('deleteProject')}
         onConfirm={handleDelete}
         destructive
         loading={isDeleting}

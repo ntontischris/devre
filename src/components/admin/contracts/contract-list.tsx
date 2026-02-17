@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { FileText, Eye, Send, Trash2, Download } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -18,13 +19,16 @@ import {
 } from '@/components/ui/table';
 import { deleteContract, sendContract } from '@/lib/actions/contracts';
 import { toast } from 'sonner';
+import type { Contract } from '@/types';
 
 interface ContractListProps {
-  contracts: any[];
+  contracts: Contract[];
   onDelete: (id: string) => void;
 }
 
 export function ContractList({ contracts, onDelete }: ContractListProps) {
+  const t = useTranslations('contracts');
+  const tc = useTranslations('common');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -40,7 +44,7 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
       return;
     }
 
-    toast.success('Contract deleted successfully');
+    toast.success(t('contractDeletedSuccess'));
     onDelete(deleteId);
     setDeleteId(null);
     setIsDeleting(false);
@@ -52,7 +56,7 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
       toast.error(result.error);
       return;
     }
-    toast.success('Contract sent to client');
+    toast.success(t('contractSentToClient'));
     onDelete(contractId); // Trigger refresh from parent
   };
 
@@ -73,9 +77,9 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast.success('PDF downloaded successfully');
-    } catch (error) {
-      toast.error('Failed to download PDF');
+      toast.success(t('pdfDownloaded'));
+    } catch {
+      toast.error(t('pdfDownloadFailed'));
     }
   };
 
@@ -83,8 +87,8 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
     return (
       <EmptyState
         icon={FileText}
-        title="No contracts yet"
-        description="Create your first contract for this project"
+        title={t('noContracts')}
+        description={t('noContractsProject')}
       />
     );
   }
@@ -165,9 +169,9 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Delete Contract"
-        description="Are you sure you want to delete this contract? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t('deleteContract')}
+        description={t('deleteContractConfirm')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDelete}
         loading={isDeleting}
         destructive

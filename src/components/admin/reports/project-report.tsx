@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import type { ProjectTypeBreakdown } from '@/lib/queries/reports';
@@ -38,8 +39,10 @@ export function ProjectReport({
   projectsByType,
   averageDuration,
 }: ProjectReportProps) {
+  const t = useTranslations('reports');
+
   const statusChartData = Object.entries(projectsByStatus)
-    .filter(([_, count]) => count > 0)
+    .filter(([, count]) => count > 0)
     .map(([status, count]) => ({
       name: PROJECT_STATUS_LABELS[status as ProjectStatus],
       value: count,
@@ -56,7 +59,7 @@ export function ProjectReport({
     <div className="grid gap-6 md:grid-cols-3">
       <Card>
         <CardHeader>
-          <CardTitle>Projects by Status</CardTitle>
+          <CardTitle>{t('projectsByStatus')}</CardTitle>
           <CardDescription>Current project distribution</CardDescription>
         </CardHeader>
         <CardContent>

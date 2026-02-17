@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { LoadingSpinner } from './loading-spinner';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -30,12 +31,13 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   destructive = false,
   loading = false,
 }: ConfirmDialogProps) {
+  const t = useTranslations('common');
   const handleConfirm = () => {
     onConfirm();
   };
@@ -50,7 +52,7 @@ export function ConfirmDialog({
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>{cancelLabel ?? t('cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={loading}
@@ -62,10 +64,10 @@ export function ConfirmDialog({
             {loading ? (
               <div className="flex items-center gap-2">
                 <LoadingSpinner size="sm" />
-                <span>Loading...</span>
+                <span>{t('loading')}</span>
               </div>
             ) : (
-              confirmLabel
+              confirmLabel ?? t('confirm')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

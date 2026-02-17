@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Calendar, Trash2 } from 'lucide-react'
 import {
   Sheet,
@@ -55,10 +56,11 @@ type TaskDetailSheetProps = {
   task: Task | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  projectId: string
 }
 
-export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDetailSheetProps) {
+export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
+  const t = useTranslations('tasks')
+  const tc = useTranslations('common')
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -83,13 +85,14 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
     const result = await updateTask(task.id, { [field]: value })
 
     if (result.error) {
-      toast.error('Failed to update task', {
+      toast.error(t('failedToUpdate'), {
         description: result.error,
       })
-    } else {
-      toast.success('Task updated successfully')
-      router.refresh()
+      return
     }
+
+    toast.success(t('updatedSuccessfully'))
+    router.refresh()
   }
 
   const handleTitleBlur = () => {
@@ -133,11 +136,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
     setIsDeleting(false)
 
     if (result.error) {
-      toast.error('Failed to delete task', {
+      toast.error(t('failedToDelete'), {
         description: result.error,
       })
     } else {
-      toast.success('Task deleted successfully')
+      toast.success(t('deletedSuccessfully'))
       setShowDeleteDialog(false)
       onOpenChange(false)
       router.refresh()
@@ -151,12 +154,12 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Task Details</SheetTitle>
+            <SheetTitle>{t('taskDetails')}</SheetTitle>
           </SheetHeader>
 
           <div className="space-y-6 mt-6">
             <div className="space-y-2">
-              <Label htmlFor="task-title">Title</Label>
+              <Label htmlFor="task-title">{t('taskTitle')}</Label>
               <Input
                 id="task-title"
                 value={editedTitle}
@@ -172,20 +175,20 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="task-description">Description</Label>
+              <Label htmlFor="task-description">{t('description')}</Label>
               <Textarea
                 id="task-description"
                 value={editedDescription}
                 onChange={(e) => setEditedDescription(e.target.value)}
                 onBlur={handleDescriptionBlur}
-                placeholder="Add a description..."
+                placeholder={t('addDescription')}
                 rows={4}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="task-status">Status</Label>
+                <Label htmlFor="task-status">{t('status')}</Label>
                 <Select value={task.status} onValueChange={handleStatusChange}>
                   <SelectTrigger id="task-status">
                     <SelectValue />
@@ -201,7 +204,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="task-priority">Priority</Label>
+                <Label htmlFor="task-priority">{t('priority')}</Label>
                 <Select value={task.priority} onValueChange={handlePriorityChange}>
                   <SelectTrigger id="task-priority">
                     <SelectValue />
@@ -219,7 +222,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="task-due-date">Due Date</Label>
+                <Label htmlFor="task-due-date">{t('dueDate')}</Label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
@@ -233,13 +236,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="task-assigned-to">Assigned To</Label>
+                <Label htmlFor="task-assigned-to">{t('assignedTo')}</Label>
                 <Input
                   id="task-assigned-to"
                   value={editedAssignedTo}
                   onChange={(e) => setEditedAssignedTo(e.target.value)}
                   onBlur={handleAssignedToBlur}
-                  placeholder="Assignee name..."
+                  placeholder={t('assigneePlaceholder')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.currentTarget.blur()
@@ -261,7 +264,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
                 className="w-full"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Delete Task
+                {t('deleteTask')}
               </Button>
             </div>
           </div>
@@ -271,10 +274,10 @@ export function TaskDetailSheet({ task, open, onOpenChange, projectId }: TaskDet
       <ConfirmDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        title="Delete Task"
-        description="Are you sure you want to delete this task? This action cannot be undone."
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        title={t('deleteTask')}
+        description={t('deleteTaskConfirm')}
+        confirmLabel={tc('delete')}
+        cancelLabel={tc('cancel')}
         onConfirm={handleDelete}
         destructive
         loading={isDeleting}

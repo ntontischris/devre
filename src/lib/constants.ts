@@ -1,5 +1,5 @@
 // User Roles
-export const USER_ROLES = ['super_admin', 'admin', 'client'] as const;
+export const USER_ROLES = ['super_admin', 'admin', 'client', 'employee', 'salesman'] as const;
 export type UserRole = typeof USER_ROLES[number];
 
 // Client Status
@@ -14,6 +14,7 @@ export const PROJECT_TYPES = [
   'commercial',
   'documentary',
   'music_video',
+  'podcast',
   'other',
 ] as const;
 export type ProjectType = typeof PROJECT_TYPES[number];
@@ -206,6 +207,7 @@ export const PROJECT_TYPE_LABELS: Record<ProjectType, string> = {
   commercial: 'Commercial',
   documentary: 'Documentary',
   music_video: 'Music Video',
+  podcast: 'Podcast',
   other: 'Other',
 };
 
@@ -235,4 +237,337 @@ export const USER_ROLE_LABELS: Record<UserRole, string> = {
   super_admin: 'Super Admin',
   admin: 'Admin',
   client: 'Client',
+  employee: 'Employee',
+  salesman: 'Salesman',
+};
+
+// Lead Stages (CRM pipeline)
+export const LEAD_STAGES = [
+  'new',
+  'contacted',
+  'qualified',
+  'proposal',
+  'negotiation',
+  'won',
+  'lost',
+] as const;
+export type LeadStage = typeof LEAD_STAGES[number];
+
+export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
+  new: 'New',
+  contacted: 'Contacted',
+  qualified: 'Qualified',
+  proposal: 'Proposal',
+  negotiation: 'Negotiation',
+  won: 'Won',
+  lost: 'Lost',
+};
+
+// Lead Sources
+export const LEAD_SOURCES = [
+  'referral',
+  'website',
+  'social_media',
+  'cold_call',
+  'event',
+  'advertisement',
+  'other',
+] as const;
+export type LeadSource = typeof LEAD_SOURCES[number];
+
+export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
+  referral: 'Referral',
+  website: 'Website',
+  social_media: 'Social Media',
+  cold_call: 'Cold Call',
+  event: 'Event',
+  advertisement: 'Advertisement',
+  other: 'Other',
+};
+
+// Lead Activity Types
+export const LEAD_ACTIVITY_TYPES = [
+  'call',
+  'email',
+  'meeting',
+  'note',
+  'stage_change',
+  'other',
+] as const;
+export type LeadActivityType = typeof LEAD_ACTIVITY_TYPES[number];
+
+export const LEAD_ACTIVITY_TYPE_LABELS: Record<LeadActivityType, string> = {
+  call: 'Call',
+  email: 'Email',
+  meeting: 'Meeting',
+  note: 'Note',
+  stage_change: 'Stage Change',
+  other: 'Other',
+};
+
+// Equipment Catalog (Devre Media inventory)
+export const EQUIPMENT_CATEGORIES = [
+  'camera',
+  'microphone',
+  'drone',
+  'gimbal',
+  'lights',
+  'tripod',
+  'computer',
+  'storage',
+] as const;
+export type EquipmentCategory = typeof EQUIPMENT_CATEGORIES[number];
+
+export const EQUIPMENT_CATEGORY_LABELS: Record<EquipmentCategory, string> = {
+  camera: 'Κάμερα',
+  microphone: 'Μικρόφωνο',
+  drone: 'Drone',
+  gimbal: 'Gimbal',
+  lights: 'Φώτα',
+  tripod: 'Τρίποδα',
+  computer: 'Υπολογιστής',
+  storage: 'Σκληροί Δίσκοι',
+};
+
+export interface CatalogEquipmentItem {
+  name: string;
+  category: EquipmentCategory;
+  description: string;
+}
+
+export const EQUIPMENT_CATALOG: CatalogEquipmentItem[] = [
+  // Cameras
+  { name: 'iPhone 17 Pro Max 1TB', category: 'camera', description: 'Main camera' },
+  { name: 'iPhone 16 Pro Max 1TB', category: 'camera', description: 'Secondary camera' },
+  { name: 'Insta 360 X5', category: 'camera', description: 'Action Camera' },
+  // Microphones
+  { name: 'DJI Mic 2', category: 'microphone', description: 'Διπλό μικρόφωνο' },
+  { name: 'DJI Mic 1', category: 'microphone', description: 'Μονό μικρόφωνο' },
+  // Drone
+  { name: 'DJI Mini 4 Pro', category: 'drone', description: 'Drone' },
+  // Gimbal
+  { name: 'DJI Osmo Mobile 6', category: 'gimbal', description: 'Σταθεροποιητής πλάνων' },
+  // Lights
+  { name: 'GODOX', category: 'lights', description: 'Main light' },
+  { name: 'DIGIPOWER RGB Led', category: 'lights', description: 'RGB Led Video Light' },
+  // Tripods
+  { name: 'Απλό Τρίποδο (1)', category: 'tripod', description: 'Για κινητό' },
+  { name: 'Απλό Τρίποδο (2)', category: 'tripod', description: 'Για κινητό' },
+  { name: 'Επιτραπέζιο Τρίποδο', category: 'tripod', description: 'Για κινητό' },
+  // Computer
+  { name: 'MacBook M3 Pro', category: 'computer', description: 'Laptop' },
+  // Storage
+  { name: 'Corsair 1TB SSD', category: 'storage', description: 'Αποθήκευση' },
+  { name: 'Intenso 5TB HDD', category: 'storage', description: 'Κεντρικό BackUp' },
+  { name: 'OneDrive 1TB SSD', category: 'storage', description: 'Αποθήκευση' },
+  { name: 'Intenso 1TB SSD', category: 'storage', description: 'Αποθήκευση' },
+];
+
+// ============================================================
+// SERVICE PACKAGES & PRICING
+// ============================================================
+
+export interface ServicePackage {
+  id: string;
+  name: string;
+  deliverables: string;
+  includes: string;
+  price: number;
+  priceWithScripts?: number;
+  hasPrePayDiscount: boolean;
+  deliveryTime: string;
+  contractDuration?: string;
+  notes?: string;
+}
+
+export interface ServiceCategory {
+  projectType: ProjectType;
+  label: string;
+  description: string;
+  packages: ServicePackage[];
+  perCasePricing?: {
+    items: Array<{ label: string; price: string }>;
+    deliveryTime: string;
+    fastDeliveryFee?: number;
+    includes?: string;
+    note?: string;
+  };
+  cancellationPolicy: string;
+}
+
+export const SERVICE_CATEGORIES: ServiceCategory[] = [
+  // ── Social Media Content ──────────────────────────────────
+  {
+    projectType: 'social_media_content',
+    label: 'Social Media Content',
+    description: 'Short-form content for social platforms',
+    cancellationPolicy:
+      'Αλλαγή ημερομηνίας > 7 ημέρες πριν: δωρεάν, ανάλογα με διαθεσιμότητα. Αλλαγή / ακύρωση < 7 ημέρες πριν: τέλος 150\u20AC ανά ημέρα γυρίσματος.',
+    packages: [
+      {
+        id: 'social_a',
+        name: 'Πακέτο Α',
+        deliverables: '8 video / μήνα',
+        includes: '2 ημέρες γυρισμάτων, 1 κύκλο αλλαγών / video',
+        price: 1170,
+        priceWithScripts: 1404,
+        hasPrePayDiscount: true,
+        deliveryTime: '7 εργάσιμες από το κάθε γύρισμα',
+        contractDuration: '6 μήνες συμβόλαιο',
+      },
+      {
+        id: 'social_b',
+        name: 'Πακέτο Β',
+        deliverables: '12 video / μήνα',
+        includes: '2 ημέρες γυρισμάτων, 1 κύκλο αλλαγών / video',
+        price: 1350,
+        priceWithScripts: 1620,
+        hasPrePayDiscount: true,
+        deliveryTime: '7 εργάσιμες από το κάθε γύρισμα',
+        contractDuration: '6 μήνες συμβόλαιο',
+      },
+      {
+        id: 'social_c',
+        name: 'Πακέτο Γ',
+        deliverables: '20 video / μήνα',
+        includes: '3 ημέρες γυρισμάτων, 1 κύκλο αλλαγών / video',
+        price: 2220,
+        priceWithScripts: 2664,
+        hasPrePayDiscount: true,
+        deliveryTime: '7 εργάσιμες από το κάθε γύρισμα',
+        contractDuration: '6 μήνες συμβόλαιο',
+      },
+    ],
+  },
+
+  // ── Corporate Video (Εταιρικά Video) ──────────────────────
+  {
+    projectType: 'corporate_video',
+    label: 'Εταιρικά Video',
+    description:
+      'Εταιρικά video, video εταιρικής ευθύνης, ετήσια video. Κοστολόγηση ανά περίπτωση.',
+    cancellationPolicy:
+      'Αλλαγή ημερομηνίας > 7 ημέρες πριν: δωρεάν, ανάλογα με διαθεσιμότητα. Αλλαγή / ακύρωση < 7 ημέρες πριν: τέλος 150\u20AC ανά ημέρα γυρίσματος.',
+    packages: [],
+    perCasePricing: {
+      items: [
+        { label: 'Ημέρα γυρίσματος', price: '500\u20AC' },
+        { label: 'Video έως 2 λεπτά', price: '1.000\u20AC' },
+        { label: 'Reel', price: '150\u20AC' },
+        { label: 'Εξοπλισμός / ημέρα', price: '200\u20AC' },
+        { label: 'Μετακινήσεις & έξοδα', price: 'Επιπλέον' },
+      ],
+      deliveryTime: '14 εργάσιμες',
+      fastDeliveryFee: 350,
+      includes:
+        'Γύρισμα με 2 κάμερες, χρήση drone, μικροφώνου, πλήρη edit και έναν κύκλο αλλαγών',
+      note:
+        'Αν το video περιλαμβάνει πάνω από 2 τοποθεσίες χρειάζονται τουλάχιστον 2 μέρες γυρισμάτων. Αν περιλαμβάνει συνεντεύξεις προστίθεται μία ακόμη μέρα.',
+    },
+  },
+
+  // ── Content on the Spot — Event Coverage ──────────────────
+  {
+    projectType: 'event_coverage',
+    label: 'Content on the Spot — Κάλυψη Event',
+    description:
+      'Γύρισμα και edit επιτόπου. Ιδανικό για εγκαίνια, συνέδρια, εταιρικά events.',
+    cancellationPolicy:
+      'Η προκαταβολή δεν επιστρέφεται σε περίπτωση ακύρωσης. Μεταφορά σε άλλη ημερομηνία μόνο κατόπιν συνεννόησης & διαθεσιμότητας.',
+    packages: [
+      {
+        id: 'event_a',
+        name: 'Πακέτο Α',
+        deliverables: '3 video',
+        includes: 'Γύρισμα και edit on the spot',
+        price: 650,
+        hasPrePayDiscount: false,
+        deliveryTime: 'Παράδοση επιτόπου',
+        notes: 'Ιδανικό για εγκαίνια, συνέδρια, γάμους',
+      },
+      {
+        id: 'event_b',
+        name: 'Πακέτο Β',
+        deliverables: '5 video',
+        includes: 'Γύρισμα και edit on the spot',
+        price: 850,
+        hasPrePayDiscount: false,
+        deliveryTime: 'Παράδοση επιτόπου',
+      },
+    ],
+  },
+
+  // ── Podcasts ──────────────────────────────────────────────
+  {
+    projectType: 'podcast',
+    label: 'Podcasts',
+    description: 'Επαγγελματική παραγωγή podcast με 3 κάμερες και πλήρες μοντάζ.',
+    cancellationPolicy:
+      'Αλλαγή ημερομηνίας > 7 ημέρες πριν: δωρεάν, ανάλογα με διαθεσιμότητα. Αλλαγή / ακύρωση < 7 ημέρες πριν: τέλος 150\u20AC ανά ημέρα γυρίσματος.',
+    packages: [
+      {
+        id: 'podcast_a',
+        name: 'Πακέτο Α',
+        deliverables: '2 επεισόδια / μήνα',
+        includes:
+          '1 μέρα γυρισμάτων, γύρισμα με 3 κάμερες, full μοντάζ επεισοδίων',
+        price: 800,
+        hasPrePayDiscount: true,
+        deliveryTime: '7 εργάσιμες από το κάθε γύρισμα',
+        contractDuration: '6 μήνες συμβόλαιο',
+      },
+      {
+        id: 'podcast_b',
+        name: 'Πακέτο Β',
+        deliverables: '4 επεισόδια / μήνα',
+        includes:
+          '2 μέρες γυρισμάτων, γύρισμα με 3 κάμερες, full μοντάζ επεισοδίων',
+        price: 1200,
+        hasPrePayDiscount: true,
+        deliveryTime: '7 εργάσιμες από το κάθε γύρισμα',
+        contractDuration: '6 μήνες συμβόλαιο',
+      },
+      {
+        id: 'podcast_c',
+        name: 'Πακέτο Γ',
+        deliverables: '6 επεισόδια / μήνα',
+        includes:
+          '3 μέρες γυρισμάτων, γύρισμα με 3 κάμερες, full μοντάζ επεισοδίων',
+        price: 1500,
+        hasPrePayDiscount: true,
+        deliveryTime: '7 εργάσιμες από το κάθε γύρισμα',
+        contractDuration: '6 μήνες συμβόλαιο',
+      },
+    ],
+  },
+
+  // ── Custom Request ────────────────────────────────────────
+  {
+    projectType: 'other',
+    label: 'Custom Request',
+    description:
+      'Μεγαλύτερες παραγωγές, διαφημιστικά, ή οτιδήποτε δεν καλύπτεται από τα υπόλοιπα πακέτα. Θα σας στείλουμε προσφορά.',
+    cancellationPolicy: 'Κατόπιν συνεννόησης.',
+    packages: [],
+  },
+];
+
+/**
+ * Helper: find the service category for a given project type.
+ * Returns undefined for types without a dedicated service category
+ * (e.g. commercial, documentary, music_video).
+ */
+export function getServiceCategory(
+  projectType: ProjectType,
+): ServiceCategory | undefined {
+  return SERVICE_CATEGORIES.find((c) => c.projectType === projectType);
+}
+
+// Knowledge Base Article Statuses
+export const KB_ARTICLE_STATUSES = ['draft', 'published'] as const;
+export type KbArticleStatus = typeof KB_ARTICLE_STATUSES[number];
+
+export const KB_ARTICLE_STATUS_LABELS: Record<KbArticleStatus, string> = {
+  draft: 'Draft',
+  published: 'Published',
 };

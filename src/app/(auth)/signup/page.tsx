@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { createClient } from '@/lib/supabase/client';
 import { signupSchema } from '@/lib/schemas/auth';
@@ -23,18 +24,23 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const signupFormSchema = signupSchema
-  .extend({
-    confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type SignupFormInput = z.infer<typeof signupFormSchema>;
+function createSignupFormSchema(t: (key: string) => string) {
+  return signupSchema
+    .extend({
+      confirmPassword: z.string().min(6, t('passwordMinLength')),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('passwordsDontMatch'),
+      path: ['confirmPassword'],
+    });
+}
 
 function SignupForm() {
+  const t = useTranslations('auth');
+  const tc = useTranslations('common');
+  const tToast = useTranslations('toast');
+  const signupFormSchema = createSignupFormSchema(t);
+  type SignupFormInput = z.infer<typeof signupFormSchema>;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -79,12 +85,12 @@ function SignupForm() {
         return;
       }
 
-      toast.success('Account created! Please check your email to confirm your account.');
+      toast.success(t('accountCreated'));
       setTimeout(() => {
         router.push('/login');
       }, 2000);
     } catch {
-      toast.error('An unexpected error occurred');
+      toast.error(tToast('genericError'));
     } finally {
       setIsLoading(false);
     }
@@ -93,17 +99,17 @@ function SignupForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{token ? 'Accept Invitation' : 'Create an account'}</CardTitle>
+        <CardTitle>{token ? t('acceptInvite') : t('createAccount')}</CardTitle>
         <CardDescription>
           {token
-            ? 'Complete your profile to accept the invitation'
-            : 'Enter your information to get started'}
+            ? t('inviteAccepted')
+            : t('onboardingDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="display_name">Display Name</Label>
+            <Label htmlFor="display_name">{t('displayName')}</Label>
             <Input
               id="display_name"
               type="text"
@@ -117,11 +123,11 @@ function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc('email')}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t('enterEmail')}
               autoComplete="email"
               disabled={!!inviteEmail}
               {...register('email')}
@@ -130,11 +136,11 @@ function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{tc('password')}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Create a strong password"
+              placeholder={t('enterNewPassword')}
               autoComplete="new-password"
               {...register('password')}
             />
@@ -144,11 +150,11 @@ function SignupForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
             <Input
               id="confirmPassword"
               type="password"
-              placeholder="Re-enter your password"
+              placeholder={t('confirmNewPassword')}
               autoComplete="new-password"
               {...register('confirmPassword')}
             />
@@ -158,15 +164,15 @@ function SignupForm() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create account'}
+            {isLoading ? t('creatingAccount') : t('createAccount')}
           </Button>
         </form>
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          Already have an account?{' '}
+          {t('hasAccount')}{' '}
           <Link href="/login" className="font-medium text-foreground hover:underline">
-            Sign in
+            {t('login')}
           </Link>
         </p>
       </CardFooter>

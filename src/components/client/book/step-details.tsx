@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { BookingFormData } from './booking-wizard';
 
 interface StepDetailsProps {
@@ -13,6 +14,8 @@ interface StepDetailsProps {
 }
 
 export function StepDetails({ formData, updateFormData }: StepDetailsProps) {
+  const t = useTranslations('booking');
+
   const addReferenceLink = () => {
     updateFormData({
       reference_links: [...formData.reference_links, ''],
@@ -58,7 +61,7 @@ export function StepDetails({ formData, updateFormData }: StepDetailsProps) {
           id="description"
           value={formData.description}
           onChange={(e) => updateFormData({ description: e.target.value })}
-          placeholder="Describe what you're looking to create, your goals, target audience, and any specific requirements..."
+          placeholder={t('describeProject')}
           rows={6}
         />
         <p className="text-xs text-muted-foreground">

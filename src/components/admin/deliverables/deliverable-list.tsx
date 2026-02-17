@@ -1,11 +1,11 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { DELIVERABLE_STATUS_LABELS } from '@/lib/constants'
 import type { DeliverableStatus } from '@/lib/constants'
 import { FileVideo, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
+import { useTranslations } from 'next-intl'
 
 type Deliverable = {
   id: string
@@ -43,25 +43,27 @@ const getStatusColor = (status: DeliverableStatus) => {
   }
 }
 
-const formatFileSize = (bytes: number | null) => {
-  if (!bytes) return 'Unknown size'
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
-}
-
 export function DeliverableList({ deliverables, onSelect }: DeliverableListProps) {
+  const t = useTranslations('deliverables')
+  const tc = useTranslations('common')
+
+  const formatFileSize = (bytes: number | null) => {
+    if (!bytes) return tc('unknownSize')
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
   if (deliverables.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-12">
         <div className="flex flex-col items-center justify-center text-center space-y-3">
           <FileVideo className="h-12 w-12 text-muted-foreground" />
           <div className="space-y-1">
-            <p className="text-sm font-medium">No deliverables yet</p>
+            <p className="text-sm font-medium">{t('noDeliverablesYet')}</p>
             <p className="text-sm text-muted-foreground">
-              Upload your first video deliverable to get started
+              {t('uploadFirstVideo')}
             </p>
           </div>
         </div>

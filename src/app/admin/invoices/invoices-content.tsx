@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
 interface Invoice {
   id: string;
@@ -37,6 +38,8 @@ const formatCurrency = (amount: number) => {
 
 export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentProps) {
   const router = useRouter();
+  const t = useTranslations('invoices');
+  const tc = useTranslations('common');
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
@@ -55,9 +58,9 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
     setIsDeleting(false);
 
     if (result.error) {
-      toast.error('Failed to delete invoice', { description: result.error });
+      toast.error(tc('failedToDelete'), { description: result.error });
     } else {
-      toast.success('Invoice deleted successfully');
+      toast.success(t('invoiceDeleted'));
       setDeleteDialogOpen(false);
       setDeletingId(null);
       router.refresh();
@@ -67,7 +70,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
   const columns: ColumnDef<Invoice>[] = [
     {
       accessorKey: 'invoice_number',
-      header: 'Invoice #',
+      header: t('invoiceNumber'),
       cell: ({ row }) => (
         <Link
           href={`/admin/invoices/${row.original.id}`}
@@ -79,7 +82,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
     },
     {
       accessorKey: 'client',
-      header: 'Client',
+      header: tc('client'),
       cell: ({ row }) => {
         const client = row.original.client;
         return client.company_name || client.contact_name;
@@ -87,22 +90,22 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
     },
     {
       accessorKey: 'total',
-      header: 'Amount',
+      header: tc('amount'),
       cell: ({ row }) => formatCurrency(row.original.total),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: tc('status'),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       accessorKey: 'issue_date',
-      header: 'Issue Date',
+      header: t('issueDate'),
       cell: ({ row }) => format(new Date(row.original.issue_date), 'MMM d, yyyy'),
     },
     {
       accessorKey: 'due_date',
-      header: 'Due Date',
+      header: t('dueDate'),
       cell: ({ row }) => format(new Date(row.original.due_date), 'MMM d, yyyy'),
     },
     {
@@ -121,13 +124,13 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
               <DropdownMenuItem asChild>
                 <Link href={`/admin/invoices/${invoice.id}`}>
                   <Eye className="mr-2 h-4 w-4" />
-                  View
+                  {tc('view')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/admin/invoices/${invoice.id}/edit`}>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {tc('edit')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -138,7 +141,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
                 }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tc('delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -150,11 +153,11 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
   return (
     <>
       <div className="space-y-6">
-        <PageHeader title="Invoices">
+        <PageHeader title={t('title')}>
           <Link href="/admin/invoices/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              New Invoice
+              {t('addInvoice')}
             </Button>
           </Link>
         </PageHeader>
@@ -162,10 +165,10 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
         <div className="flex items-center gap-4">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by status" />
+              <SelectValue placeholder={tc('filterByStatus')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="all">{tc('allStatuses')}</SelectItem>
               {INVOICE_STATUSES.map((status) => (
                 <SelectItem key={status} value={status}>
                   {INVOICE_STATUS_LABELS[status]}
@@ -179,7 +182,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
           columns={columns}
           data={filteredInvoices}
           searchKey="invoice_number"
-          searchPlaceholder="Search invoices..."
+          searchPlaceholder={tc('searchPlaceholder', { item: t('title').toLowerCase() })}
           mobileHiddenColumns={['client', 'issue_date', 'due_date']}
         />
       </div>
@@ -187,9 +190,9 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Invoice"
-        description="Are you sure you want to delete this invoice? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t('deleteInvoice')}
+        description={tc('deleteConfirmation')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDelete}
         destructive
         loading={isDeleting}

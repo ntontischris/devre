@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   getConceptNotes,
   createConceptNote,
@@ -37,7 +38,7 @@ interface ConceptNote {
   project_id: string;
   title: string;
   content: string | null;
-  attachments: any[];
+  attachments: unknown[];
   created_at: string;
   updated_at: string;
 }
@@ -47,6 +48,8 @@ interface ConceptNotesProps {
 }
 
 export function ConceptNotes({ projectId }: ConceptNotesProps) {
+  const t = useTranslations('filmingPrep');
+  const tc = useTranslations('common');
   const [notes, setNotes] = useState<ConceptNote[]>([]);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,43 +57,43 @@ export function ConceptNotes({ projectId }: ConceptNotesProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    loadNotes();
-  }, [projectId]);
-
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     setLoading(true);
     const result = await getConceptNotes(projectId);
     if (result.error) {
-      toast.error('Failed to load concept notes');
+      toast.error(t('failedToLoadNotes'));
       setLoading(false);
       return;
     }
 
-    setNotes(result.data || []);
+    setNotes(result.data as any || []);
     if (result.data && result.data.length > 0 && !selectedNoteId) {
       setSelectedNoteId(result.data[0].id);
     }
     setLoading(false);
-  };
+  }, [projectId, selectedNoteId]);
+
+  useEffect(() => {
+    loadNotes();
+  }, [loadNotes]);
 
   const handleCreateNote = async () => {
     setCreating(true);
     const result = await createConceptNote({
-      title: 'Untitled Note',
+      title: t('untitledNote'),
       content: '',
       project_id: projectId,
     });
     setCreating(false);
 
     if (result.error) {
-      toast.error('Failed to create note');
+      toast.error(t('failedToCreateNote'));
       return;
     }
 
-    toast.success('Note created');
+    toast.success(t('noteCreated'));
     await loadNotes();
-    setSelectedNoteId(result.data.id);
+    setSelectedNoteId(result.data!.id);
   };
 
   const handleDeleteNote = async () => {
@@ -102,11 +105,11 @@ export function ConceptNotes({ projectId }: ConceptNotesProps) {
     setDeleteDialogOpen(false);
 
     if (result.error) {
-      toast.error('Failed to delete note');
+      toast.error(t('failedToDeleteNote'));
       return;
     }
 
-    toast.success('Note deleted');
+    toast.success(t('noteDeleted'));
     const remainingNotes = notes.filter(note => note.id !== selectedNoteId);
     setNotes(remainingNotes);
     setSelectedNoteId(remainingNotes.length > 0 ? remainingNotes[0].id : null);
@@ -130,9 +133,9 @@ export function ConceptNotes({ projectId }: ConceptNotesProps) {
         <CardContent className="py-12">
           <EmptyState
             icon={FileText}
-            title="No concept notes"
-            description="Create your first concept note to document ideas and inspiration"
-            action={{ label: 'New Note', onClick: handleCreateNote }}
+            title={t('noConceptNotes')}
+            description={t('createFirstConceptNote')}
+            action={{ label: t('newNote'), onClick: handleCreateNote }}
           />
         </CardContent>
       </Card>
@@ -148,7 +151,7 @@ export function ConceptNotes({ projectId }: ConceptNotesProps) {
               <div className="space-y-3">
                 <Button onClick={handleCreateNote} disabled={creating} className="w-full">
                   <Plus className="h-4 w-4 mr-2" />
-                  New Note
+                  {t('newNote')}
                 </Button>
                 <ScrollArea className="h-[600px]">
                   <div className="space-y-2">
@@ -192,8 +195,8 @@ export function ConceptNotes({ projectId }: ConceptNotesProps) {
               <CardContent className="py-12">
                 <EmptyState
                   icon={FileText}
-                  title="Select a note"
-                  description="Choose a note from the list to view and edit"
+                  title={t('selectNote')}
+                  description={t('selectNoteDescription')}
                 />
               </CardContent>
             </Card>
@@ -204,9 +207,9 @@ export function ConceptNotes({ projectId }: ConceptNotesProps) {
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete note?"
-        description="This action cannot be undone. The note will be permanently deleted."
-        confirmLabel="Delete"
+        title={t('deleteNote')}
+        description={t('deleteNoteConfirm')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDeleteNote}
         destructive
         loading={deleting}
@@ -222,6 +225,8 @@ interface NoteEditorProps {
 }
 
 function NoteEditor({ note, onUpdate, onDelete }: NoteEditorProps) {
+  const t = useTranslations('filmingPrep');
+  const tc = useTranslations('common');
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content || '');
   const [saving, setSaving] = useState(false);
@@ -230,7 +235,7 @@ function NoteEditor({ note, onUpdate, onDelete }: NoteEditorProps) {
   useEffect(() => {
     setTitle(note.title);
     setContent(note.content || '');
-  }, [note.id]);
+  }, [note.id, note.title, note.content]);
 
   const debouncedSave = async (updates: { title?: string; content?: string }) => {
     if (saveTimeout) {
@@ -243,7 +248,7 @@ function NoteEditor({ note, onUpdate, onDelete }: NoteEditorProps) {
       setSaving(false);
 
       if (result.error) {
-        toast.error('Failed to save note');
+        toast.error(t('failedToSaveNote'));
       } else {
         onUpdate();
       }
@@ -269,30 +274,30 @@ function NoteEditor({ note, onUpdate, onDelete }: NoteEditorProps) {
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           className="text-2xl font-bold border-0 px-0 focus-visible:ring-0"
-          placeholder="Note title"
+          placeholder={t('noteTitlePlaceholder')}
         />
         <div className="flex items-center gap-2">
           {saving && (
             <span className="text-sm text-muted-foreground flex items-center gap-2">
               <LoadingSpinner size="sm" />
-              Saving...
+              {tc('saving')}
             </span>
           )}
           <Button variant="destructive" size="sm" onClick={onDelete}>
             <Trash2 className="h-4 w-4 mr-2" />
-            Delete
+            {tc('delete')}
           </Button>
         </div>
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Last updated: {format(new Date(note.updated_at), 'PPpp')}
+        {t('lastUpdated')}: {format(new Date(note.updated_at), 'PPpp')}
       </div>
 
       <TiptapEditor
         content={content}
         onChange={handleContentChange}
-        placeholder="Start writing your concept notes..."
+        placeholder={t('noteContentPlaceholder')}
       />
     </div>
   );

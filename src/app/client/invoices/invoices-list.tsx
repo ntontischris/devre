@@ -7,9 +7,10 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { format } from 'date-fns';
 import { Receipt, CreditCard, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import type { InvoiceWithRelations } from '@/types';
 
 interface InvoicesListProps {
-  invoices: any[];
+  invoices: InvoiceWithRelations[];
 }
 
 export function InvoicesList({ invoices }: InvoicesListProps) {

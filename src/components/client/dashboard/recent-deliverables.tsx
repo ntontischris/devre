@@ -6,25 +6,39 @@ import { format } from 'date-fns';
 import { Video, FileVideo } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { EmptyState } from '@/components/shared/empty-state';
+import { useTranslations } from 'next-intl';
+
+type DeliverableWithProject = {
+  id: string;
+  title: string;
+  status: string;
+  version_number: number;
+  created_at: string;
+  project_id: string;
+  project?: {
+    title: string;
+  };
+};
 
 interface RecentDeliverablesProps {
-  deliverables: any[];
+  deliverables: DeliverableWithProject[];
 }
 
 export function RecentDeliverables({ deliverables }: RecentDeliverablesProps) {
   const router = useRouter();
+  const t = useTranslations('client.dashboard');
 
   if (deliverables.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Deliverables</CardTitle>
+          <CardTitle>{t('recentDeliverables')}</CardTitle>
         </CardHeader>
         <CardContent>
           <EmptyState
             icon={FileVideo}
-            title="No deliverables"
-            description="You don't have any deliverables yet"
+            title={t('noDeliverables')}
+            description={t('noDeliverablesDescription')}
           />
         </CardContent>
       </Card>
@@ -34,7 +48,7 @@ export function RecentDeliverables({ deliverables }: RecentDeliverablesProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Deliverables</CardTitle>
+        <CardTitle>{t('recentDeliverables')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

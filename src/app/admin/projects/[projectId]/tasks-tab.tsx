@@ -5,6 +5,7 @@ import { TaskBoard } from '@/components/admin/tasks/task-board'
 import { TaskFilters } from '@/components/admin/tasks/task-filters'
 import { getTasksByProject } from '@/lib/actions/tasks'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done'
 type Priority = 'low' | 'medium' | 'high' | 'urgent'
@@ -30,6 +31,7 @@ type TasksTabProps = {
 }
 
 export function TasksTab({ projectId }: TasksTabProps) {
+  const t = useTranslations('tasks')
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -45,7 +47,7 @@ export function TasksTab({ projectId }: TasksTabProps) {
       if (result.error) {
         setError(result.error)
       } else {
-        setTasks((result.data as Task[]) ?? [])
+        setTasks((result.data as unknown as Task[]) ?? [])
       }
 
       setIsLoading(false)
@@ -80,7 +82,7 @@ export function TasksTab({ projectId }: TasksTabProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-destructive">Failed to load tasks</p>
+          <p className="text-sm font-medium text-destructive">{t('loadError')}</p>
           <p className="text-sm text-muted-foreground">{error}</p>
         </div>
       </div>

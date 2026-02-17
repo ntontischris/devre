@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Expense, Project } from '@/types';
+import { useTranslations } from 'next-intl';
 
 interface ExpensesContentProps {
   expenses: Expense[];
@@ -31,6 +32,8 @@ const formatCurrency = (amount: number) => {
 
 export function ExpensesContent({ expenses: initialExpenses, projects }: ExpensesContentProps) {
   const router = useRouter();
+  const t = useTranslations('invoices');
+  const tc = useTranslations('common');
   const [categoryFilter, setCategoryFilter] = React.useState<string>('all');
   const [dateFrom, setDateFrom] = React.useState<string>('');
   const [dateTo, setDateTo] = React.useState<string>('');
@@ -70,9 +73,9 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
     setIsDeleting(false);
 
     if (result.error) {
-      toast.error('Failed to delete expense', { description: result.error });
+      toast.error(tc('failedToDelete'), { description: result.error });
     } else {
-      toast.success('Expense deleted successfully');
+      toast.success(t('expenseDeleted'));
       setDeleteDialogOpen(false);
       setDeletingId(null);
       router.refresh();
@@ -88,27 +91,27 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
   const columns: ColumnDef<Expense>[] = [
     {
       accessorKey: 'category',
-      header: 'Category',
+      header: t('expenseCategory'),
       cell: ({ row }) => EXPENSE_CATEGORY_LABELS[row.original.category as keyof typeof EXPENSE_CATEGORY_LABELS] || row.original.category,
     },
     {
       accessorKey: 'description',
-      header: 'Description',
+      header: tc('description'),
       cell: ({ row }) => row.original.description || '-',
     },
     {
       accessorKey: 'amount',
-      header: 'Amount',
+      header: t('expenseAmount'),
       cell: ({ row }) => formatCurrency(row.original.amount),
     },
     {
       accessorKey: 'date',
-      header: 'Date',
+      header: t('expenseDate'),
       cell: ({ row }) => format(new Date(row.original.date), 'MMM d, yyyy'),
     },
     {
       accessorKey: 'project_id',
-      header: 'Project',
+      header: tc('project'),
       cell: ({ row }) => getProjectName(row.original.project_id),
     },
     {
@@ -132,7 +135,7 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
                 }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tc('delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -144,24 +147,24 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
   return (
     <>
       <div className="space-y-6">
-        <PageHeader title="Expenses">
+        <PageHeader title={t('expenses')}>
           <Button variant="outline" onClick={() => setExportDialogOpen(true)}>
             <FileDown className="mr-2 h-4 w-4" />
-            Quarterly Export
+            {t('quarterlyExport')}
           </Button>
           <Button onClick={() => setExpenseDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Expense
+            {t('addExpense')}
           </Button>
         </PageHeader>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-end gap-3">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-full lg:w-[180px]">
-              <SelectValue placeholder="Filter by category" />
+              <SelectValue placeholder={tc('filterByCategory')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">{tc('allCategories')}</SelectItem>
               {EXPENSE_CATEGORIES.map((category) => (
                 <SelectItem key={category} value={category}>
                   {EXPENSE_CATEGORY_LABELS[category]}
@@ -194,19 +197,19 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
                 setDateTo('');
               }}
             >
-              Clear Filters
+              {tc('clearFilters')}
             </Button>
           )}
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Total Expenses</CardTitle>
+            <CardTitle>{t('expenses')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCurrency(totalExpenses)}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              {filteredExpenses.length} expense{filteredExpenses.length !== 1 ? 's' : ''}
+              {filteredExpenses.length} {t('expenses').toLowerCase()}
             </p>
           </CardContent>
         </Card>
@@ -215,7 +218,7 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
           columns={columns}
           data={filteredExpenses}
           searchKey="description"
-          searchPlaceholder="Search expenses..."
+          searchPlaceholder={tc('searchPlaceholder', { item: t('expenses').toLowerCase() })}
           mobileHiddenColumns={['description', 'project_id']}
         />
       </div>
@@ -238,9 +241,9 @@ export function ExpensesContent({ expenses: initialExpenses, projects }: Expense
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Expense"
-        description="Are you sure you want to delete this expense? This action cannot be undone."
-        confirmLabel="Delete"
+        title={tc('deleteItem', { item: t('expenses').toLowerCase() })}
+        description={tc('deleteConfirmation')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDelete}
         destructive
         loading={isDeleting}

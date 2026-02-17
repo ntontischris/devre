@@ -6,8 +6,10 @@ import { NotificationPreferences } from '@/components/client/settings/notificati
 import { ChangePassword } from '@/components/client/settings/change-password';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Bell, Lock } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ClientSettingsPage() {
+  const t = await getTranslations('client.settings');
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -25,8 +27,8 @@ export default async function ClientSettingsPage() {
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 space-y-6">
       <PageHeader
-        title="Settings"
-        description="Manage your account settings and preferences"
+        title={t('title')}
+        description={t('description')}
       />
 
       <Tabs defaultValue="profile" className="space-y-6">
@@ -34,15 +36,15 @@ export default async function ClientSettingsPage() {
           <TabsList className="inline-flex w-auto min-w-full sm:min-w-0">
             <TabsTrigger value="profile" className="gap-2">
               <User className="h-4 w-4" />
-              Profile
+              {t('profileTab')}
             </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2">
               <Bell className="h-4 w-4" />
-              Notifications
+              {t('notificationsTab')}
             </TabsTrigger>
             <TabsTrigger value="security" className="gap-2">
               <Lock className="h-4 w-4" />
-              Security
+              {t('securityTab')}
             </TabsTrigger>
           </TabsList>
         </div>

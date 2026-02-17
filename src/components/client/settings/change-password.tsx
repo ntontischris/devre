@@ -7,8 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
+import { useTranslations } from 'next-intl';
 
 export function ChangePassword() {
+  const t = useTranslations('client.settings');
+  const tCommon = useTranslations('common');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     currentPassword: '',
@@ -20,12 +23,12 @@ export function ChangePassword() {
     e.preventDefault();
 
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error(t('passwordsDoNotMatch'));
       return;
     }
 
     if (formData.newPassword.length < 8) {
-      toast.error('Password must be at least 8 characters');
+      toast.error(t('passwordTooShort'));
       return;
     }
 
@@ -41,7 +44,7 @@ export function ChangePassword() {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success('Password changed successfully');
+      toast.success(t('passwordChangeSuccess'));
       setFormData({
         currentPassword: '',
         newPassword: '',
@@ -55,16 +58,16 @@ export function ChangePassword() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Change Password</CardTitle>
+        <CardTitle>{t('changePasswordTitle')}</CardTitle>
         <CardDescription>
-          Update your password to keep your account secure
+          {t('changePasswordDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Current Password */}
           <div className="space-y-2">
-            <Label htmlFor="current-password">Current Password</Label>
+            <Label htmlFor="current-password">{t('currentPassword')}</Label>
             <Input
               id="current-password"
               type="password"
@@ -76,7 +79,7 @@ export function ChangePassword() {
 
           {/* New Password */}
           <div className="space-y-2">
-            <Label htmlFor="new-password">New Password</Label>
+            <Label htmlFor="new-password">{t('newPassword')}</Label>
             <Input
               id="new-password"
               type="password"
@@ -85,13 +88,13 @@ export function ChangePassword() {
               required
             />
             <p className="text-xs text-muted-foreground">
-              Must be at least 8 characters
+              {t('passwordRequirements')}
             </p>
           </div>
 
           {/* Confirm Password */}
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm New Password</Label>
+            <Label htmlFor="confirm-password">{t('confirmNewPassword')}</Label>
             <Input
               id="confirm-password"
               type="password"
@@ -102,7 +105,7 @@ export function ChangePassword() {
           </div>
 
           <Button type="submit" disabled={loading}>
-            {loading ? 'Changing Password...' : 'Change Password'}
+            {loading ? t('changingPassword') : t('changePasswordButton')}
           </Button>
         </form>
       </CardContent>

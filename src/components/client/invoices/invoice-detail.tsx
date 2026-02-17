@@ -6,6 +6,7 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { format } from 'date-fns';
 import { ArrowLeft, Download, CreditCard } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Table,
   TableBody,
@@ -17,13 +18,15 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import type { InvoiceWithRelations } from '@/types';
 
 interface InvoiceDetailProps {
-  invoice: any;
+  invoice: InvoiceWithRelations;
 }
 
 export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const router = useRouter();
+  const t = useTranslations('invoices');
   const [loading, setLoading] = useState(false);
 
   const handlePayment = async () => {
@@ -31,7 +34,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
     // Placeholder for Stripe integration
     // In production, this would redirect to Stripe Checkout
-    toast.info('Payment integration coming soon');
+    toast.info(t('paymentComingSoon'));
 
     // Simulated redirect to success page after delay
     setTimeout(() => {
@@ -40,7 +43,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   };
 
   const handleDownloadPDF = () => {
-    toast.info('PDF download feature coming soon');
+    toast.info(t('pdfDownloadComingSoon'));
   };
 
   return (

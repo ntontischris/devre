@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/shared/status-badge';
 import dynamic from 'next/dynamic';
 import { EmptyState } from '@/components/shared/empty-state';
+import { useTranslations } from 'next-intl';
 
 const VideoPlayer = dynamic(
   () => import('@/components/shared/video-player').then((mod) => mod.VideoPlayer),
@@ -39,6 +40,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
+import type { Deliverable } from '@/types';
+
 type VideoAnnotation = {
   id: string;
   deliverable_id: string;
@@ -50,17 +53,19 @@ type VideoAnnotation = {
 };
 
 interface DeliverablesTabProps {
-  deliverables: any[];
+  deliverables: Deliverable[];
   projectId: string;
 }
 
-export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProps) {
+export function DeliverablesTab({ deliverables }: DeliverablesTabProps) {
   const router = useRouter();
-  const [selectedDeliverable, setSelectedDeliverable] = useState<any>(null);
+  const t = useTranslations('deliverables');
+  const [selectedDeliverable, setSelectedDeliverable] = useState<Deliverable | null>(null);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [reviewType, setReviewType] = useState<'approved' | 'revision_requested'>('approved');
   const [revisionNotes, setRevisionNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [reviewingDeliverableId, setReviewingDeliverableId] = useState<string | null>(null);
 
   // Annotation state
   const [annotations, setAnnotations] = useState<VideoAnnotation[]>([]);
@@ -75,6 +80,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
       fetchAnnotations();
       fetchVideoUrl();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDeliverable?.id]);
 
   const fetchAnnotations = async () => {
@@ -82,16 +88,16 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
     setIsLoadingAnnotations(true);
     const result = await getAnnotations(selectedDeliverable.id);
     if (result.error) {
-      toast.error('Failed to load annotations');
+      toast.error(t('failedToLoadAnnotations'));
     } else {
-      setAnnotations((result.data as VideoAnnotation[]) ?? []);
+      setAnnotations((result.data as unknown as VideoAnnotation[]) ?? []);
     }
     setIsLoadingAnnotations(false);
   };
 
   const fetchVideoUrl = async () => {
     if (!selectedDeliverable?.file_path) {
-      setVideoUrl(selectedDeliverable?.file_url ?? null);
+      setVideoUrl((selectedDeliverable as any)?.file_url ?? null);
       return;
     }
     try {
@@ -101,22 +107,18 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
         .getPublicUrl(selectedDeliverable.file_path);
       setVideoUrl(data.publicUrl);
     } catch {
-      setVideoUrl(selectedDeliverable?.file_url ?? null);
+      setVideoUrl((selectedDeliverable as any)?.file_url ?? null);
     }
   };
 
   const handleResolve = async (annotationId: string) => {
     const result = await resolveAnnotation(annotationId);
     if (result.error) {
-      toast.error('Failed to update annotation');
+      toast.error(t('failedToUpdateAnnotation'));
     } else {
-      toast.success('Annotation updated');
+      toast.success(t('annotationUpdated'));
       fetchAnnotations();
     }
-  };
-
-  const handleAnnotationClick = (_annotation: VideoAnnotation) => {
-    // Video player handles seeking via onAnnotationClick internally
   };
 
   const handleTimeClick = (seconds: number) => {
@@ -140,12 +142,12 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        toast.success('Download started');
+        toast.success(t('downloadStarted'));
       } catch {
-        toast.error('Failed to download file');
+        toast.error(t('failedToDownload'));
       }
-    } else if (deliverable.file_url) {
-      window.open(deliverable.file_url, '_blank');
+    } else if ((deliverable as any).file_url) {
+      window.open((deliverable as any).file_url, '_blank');
     }
   };
 
@@ -155,8 +157,8 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
         <CardContent className="py-12">
           <EmptyState
             icon={FileVideo}
-            title="No deliverables yet"
-            description="Your project deliverables will appear here once uploaded"
+            title={t('noDeliverables')}
+            description={t('deliverablesWillAppear')}
           />
         </CardContent>
       </Card>
@@ -165,7 +167,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
 
   const handleReview = async (deliverableId: string, status: 'approved' | 'revision_requested') => {
     if (status === 'revision_requested' && !revisionNotes.trim()) {
-      toast.error('Please provide revision notes');
+      toast.error(t('provideRevisionNotes'));
       return;
     }
 
@@ -187,7 +189,8 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
     setLoading(false);
   };
 
-  const openReviewDialog = (deliverable: any, type: 'approved' | 'revision_requested') => {
+  const openReviewDialog = (deliverable: Deliverable, type: 'approved' | 'revision_requested') => {
+    setReviewingDeliverableId(deliverable.id);
     setReviewType(type);
     setReviewDialogOpen(true);
   };
@@ -200,7 +203,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
 
   // ── Detail View ──
   if (selectedDeliverable) {
-    const resolvedVideoSrc = videoUrl ?? selectedDeliverable.file_url;
+    const resolvedVideoSrc = videoUrl ?? (selectedDeliverable as any).file_url;
 
     return (
       <>
@@ -216,7 +219,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                 <div className="flex items-center gap-2 mt-1">
                   <StatusBadge status={selectedDeliverable.status} />
                   <span className="text-sm text-muted-foreground">
-                    v{selectedDeliverable.version_number}
+                    v{(selectedDeliverable as any).version_number || selectedDeliverable.version}
                   </span>
                 </div>
               </div>
@@ -233,7 +236,6 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
               src={resolvedVideoSrc}
               annotations={annotations}
               onTimeClick={handleTimeClick}
-              onAnnotationClick={handleAnnotationClick}
             />
           ) : (
             <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
@@ -285,8 +287,12 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
             ) : (
               <AnnotationList
                 annotations={annotations}
-                onAnnotationClick={handleAnnotationClick}
                 onResolve={handleResolve}
+                onAnnotationClick={(annotation) => {
+                  if (annotation.timestamp_seconds) {
+                    handleTimeClick(annotation.timestamp_seconds);
+                  }
+                }}
               />
             )}
           </div>
@@ -322,7 +328,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                   id="revision-notes"
                   value={revisionNotes}
                   onChange={(e) => setRevisionNotes(e.target.value)}
-                  placeholder="Describe what needs to be changed..."
+                  placeholder={t('describeChanges')}
                   rows={4}
                 />
               </div>
@@ -340,7 +346,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                 onClick={() =>
                   selectedDeliverable && handleReview(selectedDeliverable.id, reviewType)
                 }
-                disabled={loading}
+                disabled={loading || !selectedDeliverable}
               >
                 {loading ? 'Submitting...' : reviewType === 'approved' ? 'Approve' : 'Submit'}
               </Button>
@@ -363,7 +369,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                   <CardTitle className="flex items-center gap-2">
                     {deliverable.title}
                     <span className="text-sm font-normal text-muted-foreground">
-                      v{deliverable.version_number}
+                      v{(deliverable as any).version_number || deliverable.version}
                     </span>
                   </CardTitle>
                   <div className="flex items-center gap-2 mt-2">
@@ -396,7 +402,6 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setSelectedDeliverable(deliverable);
                         openReviewDialog(deliverable, 'approved');
                       }}
                       className="gap-2"
@@ -407,7 +412,6 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setSelectedDeliverable(deliverable);
                         openReviewDialog(deliverable, 'revision_requested');
                       }}
                       className="gap-2"
@@ -453,7 +457,7 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
                 id="revision-notes-list"
                 value={revisionNotes}
                 onChange={(e) => setRevisionNotes(e.target.value)}
-                placeholder="Describe what needs to be changed..."
+                placeholder={t('describeChanges')}
                 rows={4}
               />
             </div>
@@ -468,10 +472,12 @@ export function DeliverablesTab({ deliverables, projectId }: DeliverablesTabProp
               Cancel
             </Button>
             <Button
-              onClick={() =>
-                selectedDeliverable && handleReview(selectedDeliverable.id, reviewType)
-              }
-              disabled={loading}
+              onClick={() => {
+                if (reviewingDeliverableId) {
+                  handleReview(reviewingDeliverableId, reviewType);
+                }
+              }}
+              disabled={loading || !reviewingDeliverableId}
             >
               {loading ? 'Submitting...' : reviewType === 'approved' ? 'Approve' : 'Submit'}
             </Button>

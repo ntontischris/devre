@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Upload } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ProfileFormProps {
   user: any;
@@ -18,6 +19,8 @@ interface ProfileFormProps {
 
 export function ProfileForm({ user, profile }: ProfileFormProps) {
   const router = useRouter();
+  const t = useTranslations('client.settings');
+  const tCommon = useTranslations('common');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: profile?.full_name || '',
@@ -37,9 +40,9 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
       .eq('id', user.id);
 
     if (error) {
-      toast.error('Failed to update profile');
+      toast.error(t('profileUpdateFailed'));
     } else {
-      toast.success('Profile updated successfully');
+      toast.success(t('profileUpdateSuccess'));
       router.refresh();
     }
 
@@ -52,7 +55,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
 
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size must be less than 5MB');
+      toast.error(t('fileSizeError'));
       return;
     }
 
@@ -69,7 +72,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
       .upload(filePath, file, { upsert: true });
 
     if (uploadError) {
-      toast.error('Failed to upload avatar');
+      toast.error(t('avatarUploadFailed'));
       setLoading(false);
       return;
     }
@@ -86,9 +89,9 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
       .eq('id', user.id);
 
     if (updateError) {
-      toast.error('Failed to update profile');
+      toast.error(t('profileUpdateFailed'));
     } else {
-      toast.success('Avatar updated successfully');
+      toast.success(t('avatarUpdateSuccess'));
       router.refresh();
     }
 
@@ -98,9 +101,9 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
+        <CardTitle>{t('profileTitle')}</CardTitle>
         <CardDescription>
-          Update your personal information and profile picture
+          {t('profileDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -116,7 +119,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
               <Label htmlFor="avatar" className="cursor-pointer">
                 <div className="flex items-center gap-2 text-sm text-primary hover:underline">
                   <Upload className="h-4 w-4" />
-                  Upload new photo
+                  {t('uploadPhoto')}
                 </div>
               </Label>
               <Input
@@ -128,14 +131,14 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
                 className="hidden"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                JPG, PNG or GIF. Max 5MB
+                {t('photoFormats')}
               </p>
             </div>
           </div>
 
           {/* Email (read-only) */}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('email')}</Label>
             <Input
               id="email"
               type="email"
@@ -146,40 +149,40 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
 
           {/* Full Name */}
           <div className="space-y-2">
-            <Label htmlFor="full_name">Full Name</Label>
+            <Label htmlFor="full_name">{t('fullName')}</Label>
             <Input
               id="full_name"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              placeholder="Enter your full name"
+              placeholder={t('fullNamePlaceholder')}
             />
           </div>
 
           {/* Company Name */}
           <div className="space-y-2">
-            <Label htmlFor="company_name">Company Name</Label>
+            <Label htmlFor="company_name">{t('companyName')}</Label>
             <Input
               id="company_name"
               value={formData.company_name}
               onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-              placeholder="Enter your company name"
+              placeholder={t('companyNamePlaceholder')}
             />
           </div>
 
           {/* Phone */}
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">{t('phone')}</Label>
             <Input
               id="phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="Enter your phone number"
+              placeholder={t('phonePlaceholder')}
             />
           </div>
 
           <Button type="submit" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? tCommon('saving') : tCommon('save')}
           </Button>
         </form>
       </CardContent>

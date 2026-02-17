@@ -7,8 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 export function StripeConfig() {
+  const tToast = useTranslations('toast');
+  const t = useTranslations('settings');
   const isStripeConfigured =
     typeof process !== 'undefined' &&
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY !== undefined;
@@ -20,15 +23,15 @@ export function StripeConfig() {
 
   const handleCopyWebhookUrl = () => {
     navigator.clipboard.writeText(webhookUrl);
-    toast.success('Webhook URL copied to clipboard');
+    toast.success(tToast('copySuccess'));
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Stripe Configuration</CardTitle>
+        <CardTitle>{t('stripeConfiguration')}</CardTitle>
         <CardDescription>
-          Payment processing and invoice management settings
+          {t('stripeDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -40,21 +43,21 @@ export function StripeConfig() {
               <XCircle className="h-5 w-5 text-red-600" />
             )}
             <div>
-              <p className="font-medium">Stripe Integration</p>
+              <p className="font-medium">{t('stripeIntegration')}</p>
               <p className="text-sm text-muted-foreground">
                 {isStripeConfigured
-                  ? 'API keys configured'
-                  : 'API keys not configured'}
+                  ? t('apiKeysConfigured')
+                  : t('apiKeysNotConfigured')}
               </p>
             </div>
           </div>
           <Badge variant={isStripeConfigured ? 'default' : 'destructive'}>
-            {isStripeConfigured ? 'Active' : 'Inactive'}
+            {isStripeConfigured ? t('active') : t('inactive')}
           </Badge>
         </div>
 
         <div className="space-y-2">
-          <Label>Webhook URL</Label>
+          <Label>{t('webhookUrl')}</Label>
           <div className="flex gap-2">
             <Input value={webhookUrl} readOnly />
             <Button
@@ -67,19 +70,19 @@ export function StripeConfig() {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Configure this URL in your Stripe Dashboard under Webhooks
+            {t('webhookDescription')}
           </p>
         </div>
 
         <div className="p-4 bg-muted rounded-lg space-y-2">
-          <p className="text-sm font-medium">Required Environment Variables</p>
+          <p className="text-sm font-medium">{t('requiredEnvVars')}</p>
           <ul className="text-xs text-muted-foreground space-y-1">
             <li>• NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</li>
             <li>• STRIPE_SECRET_KEY</li>
             <li>• STRIPE_WEBHOOK_SECRET</li>
           </ul>
           <p className="text-xs text-muted-foreground mt-2">
-            Add these to your .env.local file to enable Stripe integration
+            {t('envVarsInstruction')}
           </p>
         </div>
 
@@ -89,7 +92,7 @@ export function StripeConfig() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Open Stripe Dashboard
+            {t('openStripeDashboard')}
           </a>
         </Button>
       </CardContent>

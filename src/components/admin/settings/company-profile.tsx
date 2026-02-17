@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { updateCompanySettings } from '@/lib/actions/settings';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import type { CompanySettings } from '@/lib/actions/settings';
 
@@ -17,6 +18,9 @@ type CompanyProfileProps = {
 
 export function CompanyProfile({ settings }: CompanyProfileProps) {
   const router = useRouter();
+  const tToast = useTranslations('toast');
+  const t = useTranslations('settings');
+  const tc = useTranslations('common');
   const [formData, setFormData] = useState<CompanySettings>(settings);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,7 +33,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Company profile updated');
+      toast.success(tToast('saveSuccess'));
       router.refresh();
     }
 
@@ -39,15 +43,15 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Company Profile</CardTitle>
+        <CardTitle>{t('companyProfile')}</CardTitle>
         <CardDescription>
-          Update your company information shown on invoices and contracts
+          {t('companyProfileDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="company_name">Company Name</Label>
+            <Label htmlFor="company_name">{t('companyName')}</Label>
             <Input
               id="company_name"
               value={formData.company_name}
@@ -59,7 +63,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('companyEmail')}</Label>
             <Input
               id="email"
               type="email"
@@ -71,7 +75,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">{t('companyPhone')}</Label>
             <Input
               id="phone"
               value={formData.phone || ''}
@@ -82,7 +86,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{t('companyAddress')}</Label>
             <Textarea
               id="address"
               value={formData.address || ''}
@@ -94,7 +98,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="vat_number">VAT Number</Label>
+            <Label htmlFor="vat_number">{t('vatNumber')}</Label>
             <Input
               id="vat_number"
               value={formData.vat_number || ''}
@@ -105,7 +109,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo_url">Logo URL</Label>
+            <Label htmlFor="logo_url">{t('logoUrl')}</Label>
             <Input
               id="logo_url"
               type="url"
@@ -118,7 +122,7 @@ export function CompanyProfile({ settings }: CompanyProfileProps) {
           </div>
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? tc('saving') : t('saveChanges')}
           </Button>
         </form>
       </CardContent>

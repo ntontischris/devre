@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, LayoutDashboard, FolderKanban, Receipt, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,36 +10,39 @@ import { UserNav } from './user-nav';
 import { MobileNav } from './mobile-nav';
 import { useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
-
-const navLinks = [
-  {
-    href: '/client/dashboard',
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    href: '/client/projects',
-    label: 'Projects',
-    icon: FolderKanban,
-  },
-  {
-    href: '/client/invoices',
-    label: 'Invoices',
-    icon: Receipt,
-  },
-  {
-    href: '/client/book',
-    label: 'Book Filming',
-    icon: Video,
-  },
-];
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
+import { useTranslations } from 'next-intl';
 
 export function ClientNavbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = useTranslations('nav');
+
+  const navLinks = [
+    {
+      href: '/client/dashboard',
+      label: t('dashboard'),
+      icon: LayoutDashboard,
+    },
+    {
+      href: '/client/projects',
+      label: t('projects'),
+      icon: FolderKanban,
+    },
+    {
+      href: '/client/invoices',
+      label: t('invoices'),
+      icon: Receipt,
+    },
+    {
+      href: '/client/book',
+      label: t('bookFilming'),
+      icon: Video,
+    },
+  ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-stone-200 bg-stone-50/80 backdrop-blur-sm dark:bg-zinc-900/80 dark:border-zinc-800">
       <div className="flex h-16 items-center px-4 md:px-6">
         {/* Mobile menu button */}
         <Button
@@ -52,8 +56,14 @@ export function ClientNavbar() {
         </Button>
 
         {/* Logo */}
-        <Link href="/client/dashboard" className="flex items-center font-bold text-xl mr-6">
-          DMS
+        <Link href="/client/dashboard" className="flex items-center mr-6">
+          <Image
+            src="/images/LOGO.svg"
+            alt="Devre Media"
+            height={28}
+            width={120}
+            className="dark:invert"
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -67,9 +77,9 @@ export function ClientNavbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',
+                  'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-500/10 dark:hover:text-amber-400',
                   isActive
-                    ? 'bg-accent text-accent-foreground'
+                    ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
                     : 'text-muted-foreground'
                 )}
               >
@@ -82,6 +92,7 @@ export function ClientNavbar() {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2 ml-auto">
+          <LanguageSwitcher />
           <ThemeToggle />
           <UserNav />
         </div>

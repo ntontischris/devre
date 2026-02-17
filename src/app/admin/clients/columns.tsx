@@ -1,6 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { Client } from '@/types/index';
 import { UserAvatar } from '@/components/shared/user-avatar';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -28,6 +29,8 @@ interface ActionsMenuProps {
 }
 
 function ActionsMenu({ client }: ActionsMenuProps) {
+  const t = useTranslations('clients');
+  const tc = useTranslations('common');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -39,11 +42,11 @@ function ActionsMenu({ client }: ActionsMenuProps) {
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success('Client deleted successfully');
+        toast.success(t('clientDeleted'));
         router.refresh();
       }
-    } catch (error) {
-      toast.error('Failed to delete client');
+    } catch {
+      toast.error(t('clientDeleted'));
     } finally {
       setIsDeleting(false);
       setDeleteDialogOpen(false);
@@ -55,23 +58,23 @@ function ActionsMenu({ client }: ActionsMenuProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{tc('actions')}</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>{tc('actions')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href={`/admin/clients/${client.id}`}>
               <Eye className="mr-2 h-4 w-4" />
-              View
+              {t('clientDetails')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={`/admin/clients/${client.id}/edit`}>
               <Pencil className="mr-2 h-4 w-4" />
-              Edit
+              {tc('edit')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -83,7 +86,7 @@ function ActionsMenu({ client }: ActionsMenuProps) {
             }}
           >
             <Trash className="mr-2 h-4 w-4" />
-            Delete
+            {tc('delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -92,9 +95,9 @@ function ActionsMenu({ client }: ActionsMenuProps) {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleDelete}
-        title="Delete Client"
-        description={`Are you sure you want to delete ${client.contact_name}? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('deleteClient')}
+        description={t('deleteConfirm')}
+        confirmLabel={tc('delete')}
         loading={isDeleting}
         destructive
       />
@@ -102,81 +105,86 @@ function ActionsMenu({ client }: ActionsMenuProps) {
   );
 }
 
-export const columns: ColumnDef<Client>[] = [
-  {
-    accessorKey: 'avatar',
-    header: '',
-    cell: ({ row }) => (
-      <UserAvatar
-        name={row.original.contact_name}
-        src={row.original.avatar_url}
-      />
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'contact_name',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Contact Name" />
-    ),
-    cell: ({ row }) => (
-      <Link href={`/admin/clients/${row.original.id}`} className="font-medium hover:underline">
-        {row.getValue('contact_name')}
-      </Link>
-    ),
-  },
-  {
-    accessorKey: 'company_name',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Company" />
-    ),
-    cell: ({ row }) => {
-      const company = row.getValue('company_name') as string | null;
-      return <div>{company || '-'}</div>;
+export function useClientColumns(): ColumnDef<Client>[] {
+  const t = useTranslations('clients');
+  const tc = useTranslations('common');
+
+  return [
+    {
+      accessorKey: 'avatar',
+      header: '',
+      cell: ({ row }) => (
+        <UserAvatar
+          name={row.original.contact_name}
+          src={row.original.avatar_url}
+        />
+      ),
+      enableSorting: false,
     },
-  },
-  {
-    accessorKey: 'email',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
-    ),
-    cell: ({ row }) => (
-      <div className="text-muted-foreground">{row.getValue('email')}</div>
-    ),
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: ({ row }) => {
-      const phone = row.getValue('phone') as string | null;
-      return <div>{phone || '-'}</div>;
+    {
+      accessorKey: 'contact_name',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t('contactName')} />
+      ),
+      cell: ({ row }) => (
+        <Link href={`/admin/clients/${row.original.id}`} className="font-medium hover:underline">
+          {row.getValue('contact_name')}
+        </Link>
+      ),
     },
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <StatusBadge status={row.getValue('status')} />
-    ),
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+    {
+      accessorKey: 'company_name',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t('companyName')} />
+      ),
+      cell: ({ row }) => {
+        const company = row.getValue('company_name') as string | null;
+        return <div>{company || '-'}</div>;
+      },
     },
-  },
-  {
-    accessorKey: 'created_at',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created" />
-    ),
-    cell: ({ row }) => {
-      const date = row.getValue('created_at') as string;
-      return <div>{format(new Date(date), 'MMM d, yyyy')}</div>;
+    {
+      accessorKey: 'email',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={tc('email')} />
+      ),
+      cell: ({ row }) => (
+        <div className="text-muted-foreground">{row.getValue('email')}</div>
+      ),
     },
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <ActionsMenu client={row.original} />,
-    enableSorting: false,
-    enableHiding: false,
-  },
-];
+    {
+      accessorKey: 'phone',
+      header: tc('phone'),
+      cell: ({ row }) => {
+        const phone = row.getValue('phone') as string | null;
+        return <div>{phone || '-'}</div>;
+      },
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'status',
+      header: tc('status'),
+      cell: ({ row }) => (
+        <StatusBadge status={row.getValue('status')} />
+      ),
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
+    },
+    {
+      accessorKey: 'created_at',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={tc('date')} />
+      ),
+      cell: ({ row }) => {
+        const date = row.getValue('created_at') as string;
+        return <div>{format(new Date(date), 'MMM d, yyyy')}</div>;
+      },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => <ActionsMenu client={row.original} />,
+      enableSorting: false,
+      enableHiding: false,
+    },
+  ];
+}

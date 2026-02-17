@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createProjectSchema, updateProjectSchema } from '@/lib/schemas/project';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, ProjectWithClient, Project } from '@/types/index';
 import type { ProjectStatus, Priority } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
@@ -13,7 +13,7 @@ interface ProjectFilters {
   search?: string;
 }
 
-export async function getProjects(filters?: ProjectFilters): Promise<ActionResult<any[]>> {
+export async function getProjects(filters?: ProjectFilters): Promise<ActionResult<ProjectWithClient[]>> {
   try {
     const supabase = await createClient();
     let query = supabase
@@ -45,12 +45,12 @@ export async function getProjects(filters?: ProjectFilters): Promise<ActionResul
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch projects' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch projects' };
   }
 }
 
-export async function getProject(id: string): Promise<ActionResult<any>> {
+export async function getProject(id: string): Promise<ActionResult<ProjectWithClient>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -61,12 +61,12 @@ export async function getProject(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch project' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch project' };
   }
 }
 
-export async function createProject(input: unknown): Promise<ActionResult<any>> {
+export async function createProject(input: unknown): Promise<ActionResult<ProjectWithClient>> {
   try {
     const validated = createProjectSchema.parse(input);
     const supabase = await createClient();
@@ -92,7 +92,7 @@ export async function createProject(input: unknown): Promise<ActionResult<any>> 
   }
 }
 
-export async function updateProject(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateProject(id: string, input: unknown): Promise<ActionResult<ProjectWithClient>> {
   try {
     const validated = updateProjectSchema.parse(input);
     const supabase = await createClient();
@@ -117,7 +117,7 @@ export async function updateProject(id: string, input: unknown): Promise<ActionR
   }
 }
 
-export async function updateProjectStatus(id: string, status: ProjectStatus): Promise<ActionResult<any>> {
+export async function updateProjectStatus(id: string, status: ProjectStatus): Promise<ActionResult<Project>> {
   try {
     const supabase = await createClient();
 
@@ -133,8 +133,8 @@ export async function updateProjectStatus(id: string, status: ProjectStatus): Pr
     revalidatePath('/admin/projects');
     revalidatePath(`/admin/projects/${id}`);
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to update project status' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to update project status' };
   }
 }
 
@@ -150,7 +150,7 @@ export async function deleteProject(id: string): Promise<ActionResult<void>> {
 
     revalidatePath('/admin/projects');
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete project' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete project' };
   }
 }

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { onboardingSchema } from '@/lib/schemas/auth';
 import { completeOnboarding } from '@/lib/actions/auth';
@@ -24,6 +25,7 @@ type OnboardingInput = z.infer<typeof onboardingSchema>;
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const t = useTranslations('auth');
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -44,10 +46,10 @@ export default function OnboardingPage() {
         return;
       }
 
-      toast.success('Profile completed! Redirecting...');
+      toast.success(t('profileCompleted'));
       router.push('/client/dashboard');
     } catch {
-      toast.error('An unexpected error occurred');
+      toast.error(t('unexpectedError'));
     } finally {
       setIsLoading(false);
     }

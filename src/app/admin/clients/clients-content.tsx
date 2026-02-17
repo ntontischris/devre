@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Client } from '@/types/index';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/shared/data-table';
@@ -15,7 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { columns } from './columns';
+import { useClientColumns } from './columns';
 import { CLIENT_STATUSES, CLIENT_STATUS_LABELS } from '@/lib/constants';
 
 interface ClientsContentProps {
@@ -23,6 +24,9 @@ interface ClientsContentProps {
 }
 
 export function ClientsContent({ clients }: ClientsContentProps) {
+  const t = useTranslations('clients');
+  const tc = useTranslations('common');
+  const columns = useClientColumns();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -45,13 +49,13 @@ export function ClientsContent({ clients }: ClientsContentProps) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Clients"
-        description="Manage your client relationships and contacts"
+        title={t('title')}
+        description={t('description')}
       >
         <Button asChild>
           <Link href="/admin/clients/new">
             <Plus className="mr-2 h-4 w-4" />
-            Add Client
+            {t('addClient')}
           </Link>
         </Button>
       </PageHeader>
@@ -59,17 +63,17 @@ export function ClientsContent({ clients }: ClientsContentProps) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col sm:flex-row flex-1 gap-3">
           <SearchInput
-            placeholder="Search clients..."
+            placeholder={t('description')}
             value={search}
             onChange={setSearch}
             className="w-full sm:max-w-sm"
           />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by status" />
+              <SelectValue placeholder={tc('status')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="all">{tc('status')}</SelectItem>
               {CLIENT_STATUSES.map((status) => (
                 <SelectItem key={status} value={status}>
                   {CLIENT_STATUS_LABELS[status]}

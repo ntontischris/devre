@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { updateNotificationSettings } from '@/lib/actions/settings';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import type { NotificationSettings } from '@/lib/actions/settings';
 
@@ -17,6 +18,9 @@ type NotificationSettingsProps = {
 
 export function NotificationSettingsComponent({ userId, settings }: NotificationSettingsProps) {
   const router = useRouter();
+  const tToast = useTranslations('toast');
+  const t = useTranslations('settings');
+  const tc = useTranslations('common');
   const [formData, setFormData] = useState<NotificationSettings>(settings);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,7 +33,7 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Notification settings updated');
+      toast.success(tToast('saveSuccess'));
       router.refresh();
     }
 
@@ -43,9 +47,9 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Email Notifications</CardTitle>
+        <CardTitle>{t('emailNotifications')}</CardTitle>
         <CardDescription>
-          Configure which email notifications you want to receive
+          {t('emailNotificationsDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -53,9 +57,9 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email_new_project">New Project Created</Label>
+                <Label htmlFor="email_new_project">{t('newProjectCreated')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified when a new project is created
+                  {t('newProjectDescription')}
                 </p>
               </div>
               <Switch
@@ -67,9 +71,9 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email_project_deadline">Project Deadlines</Label>
+                <Label htmlFor="email_project_deadline">{t('projectDeadlines')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified about upcoming project deadlines
+                  {t('projectDeadlinesDescription')}
                 </p>
               </div>
               <Switch
@@ -81,9 +85,9 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email_invoice_paid">Invoice Paid</Label>
+                <Label htmlFor="email_invoice_paid">{t('invoicePaid')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified when an invoice is paid
+                  {t('invoicePaidDescription')}
                 </p>
               </div>
               <Switch
@@ -95,9 +99,9 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email_new_message">New Messages</Label>
+                <Label htmlFor="email_new_message">{t('newMessages')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified when you receive a new message
+                  {t('newMessagesDescription')}
                 </p>
               </div>
               <Switch
@@ -109,9 +113,9 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email_deliverable_feedback">Deliverable Feedback</Label>
+                <Label htmlFor="email_deliverable_feedback">{t('deliverableFeedback')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get notified when clients provide feedback on deliverables
+                  {t('deliverableFeedbackDescription')}
                 </p>
               </div>
               <Switch
@@ -125,7 +129,7 @@ export function NotificationSettingsComponent({ userId, settings }: Notification
           </div>
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? tc('saving') : t('saveChanges')}
           </Button>
         </form>
       </CardContent>

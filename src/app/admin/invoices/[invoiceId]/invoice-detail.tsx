@@ -11,6 +11,7 @@ import { PaymentActions } from '@/components/admin/invoices/payment-actions';
 import { deleteInvoice, updateInvoiceStatus } from '@/lib/actions/invoices';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { Pencil, Trash2, Download } from 'lucide-react';
@@ -48,6 +49,8 @@ const formatCurrency = (amount: number, currency: string = 'EUR') => {
 
 export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
   const router = useRouter();
+  const t = useTranslations('invoices');
+  const tc = useTranslations('common');
   const [invoice, setInvoice] = React.useState(initialInvoice);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -59,9 +62,9 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
     setIsDeleting(false);
 
     if (result.error) {
-      toast.error('Failed to delete invoice', { description: result.error });
+      toast.error(t('failedToDeleteInvoice'), { description: result.error });
     } else {
-      toast.success('Invoice deleted successfully');
+      toast.success(t('invoiceDeletedSuccess'));
       router.push('/admin/invoices');
     }
   };
@@ -74,16 +77,16 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
     setIsUpdatingStatus(false);
 
     if (result.error) {
-      toast.error('Failed to send invoice', { description: result.error });
+      toast.error(t('failedToSendInvoice'), { description: result.error });
     } else {
-      toast.success('Invoice marked as sent');
+      toast.success(t('invoiceMarkedSent'));
       setInvoice({ ...invoice, status: 'sent' });
       router.refresh();
     }
   };
 
   const handleDownloadPDF = () => {
-    toast.info('PDF generation coming soon');
+    toast.info(t('pdfComingSoon'));
   };
 
   const handleStatusChange = () => {
@@ -97,18 +100,18 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{invoice.invoice_number}</h1>
             <p className="text-muted-foreground mt-2">
-              Invoice details and payment information
+              {t('invoiceDetailsDescription')}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleDownloadPDF}>
               <Download className="mr-2 h-4 w-4" />
-              Download PDF
+              {t('downloadPdf')}
             </Button>
             <Link href={`/admin/invoices/${invoice.id}/edit`}>
               <Button variant="outline">
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {tc('edit')}
               </Button>
             </Link>
             <Button
@@ -116,7 +119,7 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
               onClick={() => setDeleteDialogOpen(true)}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              {tc('delete')}
             </Button>
           </div>
         </div>
@@ -124,30 +127,30 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Invoice Information</CardTitle>
+              <CardTitle>{t('invoiceInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Status</p>
+                <p className="text-sm font-medium text-muted-foreground">{tc('status')}</p>
                 <div className="mt-1">
                   <StatusBadge status={invoice.status} />
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Invoice Number</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('invoiceNumber')}</p>
                 <p className="mt-1 font-medium">{invoice.invoice_number}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Issue Date</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('issueDate')}</p>
                 <p className="mt-1">{format(new Date(invoice.issue_date), 'MMMM d, yyyy')}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Due Date</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('dueDate')}</p>
                 <p className="mt-1">{format(new Date(invoice.due_date), 'MMMM d, yyyy')}</p>
               </div>
               {invoice.project && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Project</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t('project')}</p>
                   <Link
                     href={`/admin/projects/${invoice.project.id}`}
                     className="mt-1 text-primary hover:underline"
@@ -161,21 +164,21 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Client Information</CardTitle>
+              <CardTitle>{t('clientInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Client Name</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('clientName')}</p>
                 <p className="mt-1 font-medium">
                   {invoice.client.company_name || invoice.client.contact_name}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Contact</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('contact')}</p>
                 <p className="mt-1">{invoice.client.contact_name}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p className="text-sm font-medium text-muted-foreground">{tc('email')}</p>
                 <a
                   href={`mailto:${invoice.client.email}`}
                   className="mt-1 text-primary hover:underline"
@@ -189,16 +192,16 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Line Items</CardTitle>
+            <CardTitle>{t('lineItems')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Quantity</TableHead>
-                  <TableHead className="text-right">Unit Price</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>{t('itemDescription')}</TableHead>
+                  <TableHead className="text-right">{t('quantity')}</TableHead>
+                  <TableHead className="text-right">{t('unitPrice')}</TableHead>
+                  <TableHead className="text-right">{t('lineTotal')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -221,7 +224,7 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{tc('subtotal')}</span>
                 <span>{formatCurrency(invoice.subtotal, invoice.currency)}</span>
               </div>
               <div className="flex justify-between text-sm">
@@ -230,14 +233,14 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
               </div>
               <Separator />
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
+                <span>{tc('total')}</span>
                 <span>{formatCurrency(invoice.total, invoice.currency)}</span>
               </div>
             </div>
 
             {invoice.notes && (
               <div className="mt-6">
-                <p className="text-sm font-medium text-muted-foreground">Notes</p>
+                <p className="text-sm font-medium text-muted-foreground">{tc('notes')}</p>
                 <p className="mt-2 text-sm whitespace-pre-wrap">{invoice.notes}</p>
               </div>
             )}
@@ -246,13 +249,13 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Payment & Actions</CardTitle>
+            <CardTitle>{t('paymentAndActions')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {invoice.status === 'draft' && (
                 <Button onClick={handleSendInvoice} disabled={isUpdatingStatus}>
-                  {isUpdatingStatus ? 'Sending...' : 'Mark as Sent'}
+                  {isUpdatingStatus ? t('sending') : t('markAsSent')}
                 </Button>
               )}
               <PaymentActions invoice={invoice} onStatusChange={handleStatusChange} />
@@ -264,9 +267,9 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Invoice"
-        description="Are you sure you want to delete this invoice? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t('deleteInvoice')}
+        description={t('deleteConfirmation')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDelete}
         destructive
         loading={isDeleting}

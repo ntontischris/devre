@@ -20,6 +20,7 @@ export const createFilmingRequestSchema = z.object({
   preferred_dates: z.array(preferredDateSchema).optional(),
   location: z.string().max(500, 'Location must be at most 500 characters').optional(),
   project_type: z.enum(PROJECT_TYPES).optional(),
+  selected_package: z.string().max(100, 'Package ID must be at most 100 characters').optional(),
   budget_range: z.string().max(100, 'Budget range must be at most 100 characters').optional(),
   reference_links: z.array(z.string().max(2048, 'URL must be at most 2048 characters')).max(20, 'At most 20 reference links allowed').optional(),
 });

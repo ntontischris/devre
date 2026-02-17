@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/page-header';
 import { DateRangeFilter } from '@/components/admin/reports/date-range-filter';
 import { RevenueReport } from '@/components/admin/reports/revenue-report';
@@ -26,6 +27,7 @@ export default async function ReportsPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const t = await getTranslations('reports');
   const params = await searchParams;
   const dateRange: DateRange | undefined =
     params.from && params.to
@@ -55,15 +57,15 @@ export default async function ReportsPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Reports & Analytics"
-        description="Comprehensive business insights and analytics"
+        title={t('title')}
+        description={t('description')}
       />
 
       <DateRangeFilter />
 
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold mb-4">Revenue Analysis</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('revenueReport')}</h2>
           <RevenueReport
             monthlyData={monthlyRevenue}
             paymentMethodData={paymentMethodData}
@@ -71,7 +73,7 @@ export default async function ReportsPage({
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-4">Project Analysis</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('projectReport')}</h2>
           <ProjectReport
             projectsByStatus={projectsByStatus}
             projectsByType={projectsByType}
@@ -80,12 +82,12 @@ export default async function ReportsPage({
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-4">Client Analysis</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('clientReport')}</h2>
           <ClientReport topClients={topClients} />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-4">Expense & Profit Analysis</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('expenseReport')}</h2>
           <ExpenseReport
             expensesByCategory={expensesByCategory}
             profitData={profitData}

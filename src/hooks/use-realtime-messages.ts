@@ -9,7 +9,7 @@ interface Message {
   project_id: string;
   sender_id: string;
   content: string;
-  attachments: any[];
+  attachments: { file_path: string; file_name: string; file_type: string; file_size: number }[];
   read_at: string | null;
   created_at: string;
   updated_at: string;
@@ -52,7 +52,7 @@ export function useRealtimeMessages(
             table: 'messages',
             filter: `project_id=eq.${projectId}`,
           },
-          async (payload: any) => {
+          async (payload: { new: { id: string } }) => {
             // Fetch the full message with sender details
             const { data: newMessage } = await supabase
               .from('messages')
@@ -79,7 +79,7 @@ export function useRealtimeMessages(
             table: 'messages',
             filter: `project_id=eq.${projectId}`,
           },
-          (payload: any) => {
+          (payload: { new: Message & { id: string } }) => {
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === payload.new.id

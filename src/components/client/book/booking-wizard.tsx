@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { StepProjectType } from './step-project-type';
+import { StepPackage } from './step-package';
 import { StepDetails } from './step-details';
 import { StepDates } from './step-dates';
 import { StepLocation } from './step-location';
@@ -14,17 +15,11 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { ProjectType } from '@/lib/constants';
-
-const STEPS = [
-  { id: 1, name: 'Project Type', component: StepProjectType },
-  { id: 2, name: 'Details', component: StepDetails },
-  { id: 3, name: 'Dates', component: StepDates },
-  { id: 4, name: 'Location & Budget', component: StepLocation },
-  { id: 5, name: 'Review', component: StepReview },
-];
+import { useTranslations } from 'next-intl';
 
 export interface BookingFormData {
   project_type?: ProjectType;
+  selected_package?: string;
   title: string;
   description: string;
   reference_links: string[];
@@ -35,6 +30,8 @@ export interface BookingFormData {
 
 export function BookingWizard() {
   const router = useRouter();
+  const t = useTranslations('booking');
+  const tCommon = useTranslations('common');
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<BookingFormData>({
@@ -46,6 +43,15 @@ export function BookingWizard() {
     budget_range: '',
   });
 
+  const STEPS = [
+    { id: 1, name: t('step') + ' 1: ' + t('projectType'), component: StepProjectType },
+    { id: 2, name: t('step') + ' 2: ' + t('package'), component: StepPackage },
+    { id: 3, name: t('step') + ' 3: ' + t('projectDetails'), component: StepDetails },
+    { id: 4, name: t('step') + ' 4: ' + t('dates'), component: StepDates },
+    { id: 5, name: t('step') + ' 5: ' + t('location'), component: StepLocation },
+    { id: 6, name: t('step') + ' 6: ' + t('review'), component: StepReview },
+  ];
+
   const updateFormData = (data: Partial<BookingFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
@@ -55,13 +61,15 @@ export function BookingWizard() {
       case 1:
         return !!formData.project_type;
       case 2:
-        return formData.title.trim().length > 0;
+        return true; // Package step — optional (per-case / custom don't need selection)
       case 3:
-        return true; // Optional
+        return formData.title.trim().length > 0;
       case 4:
-        return true; // Optional
+        return true; // Dates — optional
       case 5:
-        return true;
+        return true; // Location — optional
+      case 6:
+        return true; // Review
       default:
         return false;
     }
@@ -84,6 +92,7 @@ export function BookingWizard() {
 
     const result = await createFilmingRequest({
       project_type: formData.project_type,
+      selected_package: formData.selected_package || undefined,
       title: formData.title,
       description: formData.description || undefined,
       reference_links: formData.reference_links.length > 0 ? formData.reference_links : undefined,
@@ -95,7 +104,7 @@ export function BookingWizard() {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Filming request submitted successfully!');
+      toast.success(t('requestSubmitted'));
       router.push('/client/dashboard');
     }
 
@@ -165,17 +174,17 @@ export function BookingWizard() {
             disabled={currentStep === 1 || loading}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            {tCommon('back')}
           </Button>
 
           {currentStep < STEPS.length ? (
             <Button onClick={handleNext} disabled={!canGoNext()}>
-              Next
+              {tCommon('next')}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading || !canGoNext()}>
-              {loading ? 'Submitting...' : 'Submit Request'}
+              {loading ? t('submitting') : t('submitRequest')}
             </Button>
           )}
         </CardFooter>

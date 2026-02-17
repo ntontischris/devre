@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import type { ProjectStatus } from '@/lib/constants';
+import type { ActivityLog, ProjectWithClient } from '@/types';
 
 export async function getClientCount(): Promise<number> {
   try {
@@ -13,7 +14,7 @@ export async function getClientCount(): Promise<number> {
 
     if (error) return 0;
     return count || 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -35,7 +36,7 @@ export async function getProjectCount(status?: ProjectStatus): Promise<number> {
 
     if (error) return 0;
     return count || 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -50,7 +51,7 @@ export async function getPendingInvoiceCount(): Promise<number> {
 
     if (error) return 0;
     return count || 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -66,7 +67,7 @@ export async function getUnreadMessageCount(userId: string): Promise<number> {
 
     if (error) return 0;
     return count || 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -89,7 +90,7 @@ export async function getTotalRevenue(year?: number): Promise<number> {
 
     if (error || !data) return 0;
     return data.reduce((sum, invoice) => sum + (invoice.total || 0), 0);
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -109,12 +110,12 @@ export async function getTotalExpenses(projectId?: string): Promise<number> {
 
     if (error || !data) return 0;
     return data.reduce((sum, expense) => sum + (expense.amount || 0), 0);
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
 
-export async function getRecentActivity(limit: number = 10): Promise<any[]> {
+export async function getRecentActivity(limit: number = 10): Promise<ActivityLog[]> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -124,13 +125,13 @@ export async function getRecentActivity(limit: number = 10): Promise<any[]> {
       .limit(limit);
 
     if (error || !data) return [];
-    return data;
-  } catch (error) {
+    return data as ActivityLog[];
+  } catch {
     return [];
   }
 }
 
-export async function getUpcomingDeadlines(limit: number = 5): Promise<any[]> {
+export async function getUpcomingDeadlines(limit: number = 5): Promise<ProjectWithClient[]> {
   try {
     const supabase = await createClient();
     const today = new Date().toISOString().split('T')[0];
@@ -145,8 +146,8 @@ export async function getUpcomingDeadlines(limit: number = 5): Promise<any[]> {
       .limit(limit);
 
     if (error || !data) return [];
-    return data;
-  } catch (error) {
+    return data as ProjectWithClient[];
+  } catch {
     return [];
   }
 }
@@ -187,7 +188,7 @@ export async function getProjectsByStatus(): Promise<Record<ProjectStatus, numbe
       delivered: counts.delivered || 0,
       archived: counts.archived || 0,
     };
-  } catch (error) {
+  } catch {
     return {
       briefing: 0,
       pre_production: 0,

@@ -7,12 +7,15 @@ import { format } from 'date-fns';
 import { Video, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { PROJECT_TYPE_LABELS } from '@/lib/constants';
+import type { FilmingRequest } from '@/types';
+import { useTranslations } from 'next-intl';
 
 interface FilmingRequestsListProps {
-  requests: any[];
+  requests: FilmingRequest[];
 }
 
 export function FilmingRequestsList({ requests }: FilmingRequestsListProps) {
+  const t = useTranslations('filmingRequests');
   const router = useRouter();
 
   if (requests.length === 0) {
@@ -21,8 +24,8 @@ export function FilmingRequestsList({ requests }: FilmingRequestsListProps) {
         <CardContent className="py-12">
           <EmptyState
             icon={Video}
-            title="No filming requests"
-            description="No filming requests have been submitted yet"
+            title={t('noRequests')}
+            description={t('noSubmittedRequests')}
           />
         </CardContent>
       </Card>
@@ -42,7 +45,7 @@ export function FilmingRequestsList({ requests }: FilmingRequestsListProps) {
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="font-semibold text-sm truncate">
-                    {request.title}
+                    {(request as any).title}
                   </span>
                   <StatusBadge status={request.status} />
                 </div>
@@ -50,7 +53,7 @@ export function FilmingRequestsList({ requests }: FilmingRequestsListProps) {
                   <span>
                     {request.project_type
                       ? PROJECT_TYPE_LABELS[request.project_type as keyof typeof PROJECT_TYPE_LABELS]
-                      : 'Not specified'}
+                      : t('notSpecified')}
                   </span>
                   <span>{format(new Date(request.created_at), 'MMM d, yyyy')}</span>
                 </div>

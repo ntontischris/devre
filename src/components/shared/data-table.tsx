@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -46,9 +47,10 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder,
   mobileHiddenColumns = [],
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations('common');
   const isMobile = useIsMobile();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -89,7 +91,7 @@ export function DataTable<TData, TValue>({
       {searchKey && (
         <div className="flex items-center justify-between">
           <Input
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder ?? t('search')}
             value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn(searchKey)?.setFilterValue(event.target.value)
@@ -136,7 +138,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  {t('noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -154,19 +156,19 @@ interface DataTablePaginationProps<TData> {
 }
 
 function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+  const t = useTranslations('table');
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2">
       <div className="text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
           <span>
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {t('rowsSelected', { count: table.getFilteredSelectedRowModel().rows.length, total: table.getFilteredRowModel().rows.length })}
           </span>
         )}
       </div>
       <div className="flex items-center justify-between gap-4 sm:gap-6 lg:gap-8">
         <div className="hidden sm:flex items-center space-x-2">
-          <p className="text-sm font-medium whitespace-nowrap">Rows per page</p>
+          <p className="text-sm font-medium whitespace-nowrap">{t('rowsPerPage')}</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -186,8 +188,7 @@ function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) 
           </Select>
         </div>
         <div className="text-sm font-medium whitespace-nowrap">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          {t('pageOf', { current: table.getState().pagination.pageIndex + 1, total: table.getPageCount() })}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -196,7 +197,7 @@ function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) 
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">Go to first page</span>
+            <span className="sr-only">{t('firstPage')}</span>
             <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
@@ -205,7 +206,7 @@ function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) 
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">Go to previous page</span>
+            <span className="sr-only">{t('previousPage')}</span>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button
@@ -214,7 +215,7 @@ function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) 
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">Go to next page</span>
+            <span className="sr-only">{t('nextPage')}</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
@@ -223,7 +224,7 @@ function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) 
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">Go to last page</span>
+            <span className="sr-only">{t('lastPage')}</span>
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>

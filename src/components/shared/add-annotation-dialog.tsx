@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { createAnnotation } from '@/lib/actions/deliverables'
 import { toast } from 'sonner'
 import { Clock } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type AddAnnotationDialogProps = {
   open: boolean
@@ -37,12 +38,14 @@ export function AddAnnotationDialog({
   deliverableId,
   onCreated,
 }: AddAnnotationDialogProps) {
+  const t = useTranslations('deliverables');
+  const tCommon = useTranslations('common');
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async () => {
     if (!content.trim()) {
-      toast.error('Please enter annotation content')
+      toast.error(t('pleaseEnterAnnotation'))
       return
     }
 
@@ -59,7 +62,7 @@ export function AddAnnotationDialog({
         throw new Error(result.error)
       }
 
-      toast.success('Annotation added successfully')
+      toast.success(t('annotationAdded'))
       setContent('')
       onOpenChange(false)
       onCreated()
@@ -84,12 +87,12 @@ export function AddAnnotationDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Annotation</DialogTitle>
+          <DialogTitle>{t('addAnnotation')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Label>Timestamp:</Label>
+            <Label>{t('timestamp')}:</Label>
             <Badge variant="outline">
               <Clock className="h-3 w-3 mr-1" />
               {formatTimestamp(timestamp)}
@@ -97,12 +100,12 @@ export function AddAnnotationDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Comment</Label>
+            <Label htmlFor="content">{t('annotationText')}</Label>
             <Textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Enter your annotation or feedback..."
+              placeholder={t('enterAnnotation')}
               rows={4}
               disabled={isSubmitting}
             />
@@ -115,10 +118,10 @@ export function AddAnnotationDialog({
             onClick={() => handleOpenChange(false)}
             disabled={isSubmitting}
           >
-            Cancel
+            {tCommon('cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting || !content.trim()}>
-            {isSubmitting ? 'Adding...' : 'Add Annotation'}
+            {isSubmitting ? t('adding') : t('addAnnotation')}
           </Button>
         </DialogFooter>
       </DialogContent>

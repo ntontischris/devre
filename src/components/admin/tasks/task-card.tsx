@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { PRIORITY_LABELS } from '@/lib/constants'
+import { useTranslations } from 'next-intl'
 
 type Priority = 'low' | 'medium' | 'high' | 'urgent'
 
@@ -47,6 +48,7 @@ const priorityBadgeColors: Record<Priority, string> = {
 }
 
 export function TaskCard({ task, onClick }: TaskCardProps) {
+  const t = useTranslations('tasks')
   const {
     attributes,
     listeners,
@@ -116,7 +118,7 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
             {Array.isArray(task.metadata?.sub_tasks) && (task.metadata.sub_tasks as unknown[]).length > 0 && (
               <span className="text-xs text-muted-foreground">
                 {(task.metadata.sub_tasks as Array<{ completed: boolean }>).filter((st) => st.completed).length}/
-                {(task.metadata.sub_tasks as Array<unknown>).length} subtasks
+                {(task.metadata.sub_tasks as Array<unknown>).length} {t('subtasks')}
               </span>
             )}
           </div>

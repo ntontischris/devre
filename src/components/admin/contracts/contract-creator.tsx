@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { FileText, Wand2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import dynamic from 'next/dynamic';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const TiptapEditor = dynamic(
   () => import('@/components/shared/tiptap-editor').then((mod) => mod.TiptapEditor),
@@ -28,6 +29,7 @@ import { ContractPreview } from './contract-preview';
 import { createContract, getContractTemplates } from '@/lib/actions/contracts';
 import { createContractSchema } from '@/lib/schemas/contract';
 import { z } from 'zod';
+import type { Contract, ContractTemplate, Project } from '@/types';
 
 const formSchema = createContractSchema.extend({
   expires_at: z.string().optional(),
@@ -36,15 +38,15 @@ const formSchema = createContractSchema.extend({
 type FormData = z.infer<typeof formSchema>;
 
 interface ContractCreatorProps {
-  project: any;
-  onSuccess: (contract: any) => void;
+  project: Project & { client?: { contact_name?: string; company_name?: string } };
+  onSuccess: (contract: Contract) => void;
   onCancel: () => void;
 }
 
 export function ContractCreator({ project, onSuccess, onCancel }: ContractCreatorProps) {
+  const t = useTranslations('contracts');
   const [step, setStep] = useState<'template' | 'edit' | 'preview'>('template');
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
+  const [templates, setTemplates] = useState<ContractTemplate[]>([]);
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,11 +67,7 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
     },
   });
 
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     const result = await getContractTemplates();
     if (result.error) {
       toast.error(result.error);
@@ -77,10 +75,13 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
     }
     setTemplates(result.data ?? []);
     setIsLoading(false);
-  };
+  }, []);
 
-  const handleTemplateSelect = (template: any) => {
-    setSelectedTemplate(template);
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
+
+  const handleTemplateSelect = (template: ContractTemplate) => {
 
     // Auto-fill placeholders
     let filledContent = template.content;
@@ -97,13 +98,12 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
     });
 
     setContent(filledContent);
-    setValue('title', template.name);
+    setValue('title', template.title);
     setValue('template_id', template.id);
     setStep('edit');
   };
 
   const handleStartBlank = () => {
-    setSelectedTemplate(null);
     setContent('');
     setValue('title', `${project.title} - Contract`);
     setStep('edit');
@@ -134,8 +134,8 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
       return;
     }
 
-    toast.success('Contract created successfully');
-    onSuccess(result.data);
+    toast.success(t('contractCreatedSuccess'));
+    onSuccess(result.data!);
   };
 
   if (isLoading) {
@@ -179,9 +179,9 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Wand2 className="h-5 w-5" />
-                  {template.name}
+                  {template.title}
                 </CardTitle>
-                <CardDescription>{template.description || 'No description'}</CardDescription>
+                <CardDescription>{(template as any).description || 'No description'}</CardDescription>
               </CardHeader>
             </Card>
           ))}
@@ -270,7 +270,7 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
           <TiptapEditor
             content={content}
             onChange={setContent}
-            placeholder="Write your contract content here..."
+            placeholder={t('writeContractContent')}
           />
         </div>
       </div>

@@ -8,8 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTranslations } from 'next-intl';
 
 export function NotificationBell() {
+  const t = useTranslations('common');
   const hasUnread = true; // Hardcoded for now
 
   return (
@@ -24,7 +26,7 @@ export function NotificationBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuItem className="text-center text-muted-foreground cursor-default focus:bg-transparent">
-          No new notifications
+          {t('noNotifications')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

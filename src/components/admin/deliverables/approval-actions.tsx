@@ -17,7 +17,8 @@ import { updateDeliverableStatus } from '@/lib/actions/deliverables'
 import { DELIVERABLE_STATUS_LABELS } from '@/lib/constants'
 import type { DeliverableStatus } from '@/lib/constants'
 import { toast } from 'sonner'
-import { CheckCircle2, XCircle, Upload, Award } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { CheckCircle2, XCircle, Award } from 'lucide-react'
 
 type Deliverable = {
   id: string
@@ -56,6 +57,8 @@ const getStatusColor = (status: DeliverableStatus) => {
 }
 
 export function ApprovalActions({ deliverable, onStatusChange }: ApprovalActionsProps) {
+  const tToast = useTranslations('toast')
+  const t = useTranslations('deliverables')
   const [isRevisionDialogOpen, setIsRevisionDialogOpen] = useState(false)
   const [revisionComment, setRevisionComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -70,7 +73,7 @@ export function ApprovalActions({ deliverable, onStatusChange }: ApprovalActions
         throw new Error(result.error)
       }
 
-      toast.success(`Status updated to ${DELIVERABLE_STATUS_LABELS[newStatus]}`)
+      toast.success(t('statusUpdatedTo', { status: DELIVERABLE_STATUS_LABELS[newStatus] }))
       onStatusChange()
     } catch (error) {
       console.error('Status update error:', error)
@@ -82,7 +85,7 @@ export function ApprovalActions({ deliverable, onStatusChange }: ApprovalActions
 
   const handleRequestRevision = async () => {
     if (!revisionComment.trim()) {
-      toast.error('Please provide a revision comment')
+      toast.error(tToast('validationError'))
       return
     }
 
@@ -95,7 +98,7 @@ export function ApprovalActions({ deliverable, onStatusChange }: ApprovalActions
         throw new Error(result.error)
       }
 
-      toast.success('Revision requested')
+      toast.success(t('revisionRequested'))
       setRevisionComment('')
       setIsRevisionDialogOpen(false)
       onStatusChange()
@@ -187,7 +190,7 @@ export function ApprovalActions({ deliverable, onStatusChange }: ApprovalActions
               id="revision-comment"
               value={revisionComment}
               onChange={(e) => setRevisionComment(e.target.value)}
-              placeholder="Describe the changes needed..."
+              placeholder={t('describeChangesNeeded')}
               rows={5}
               disabled={isSubmitting}
             />

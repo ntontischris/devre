@@ -1,5 +1,8 @@
 import type { NextConfig } from 'next';
 import path from 'path';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
 
 const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
@@ -52,4 +55,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

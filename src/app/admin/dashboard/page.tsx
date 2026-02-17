@@ -1,9 +1,11 @@
+import { getTranslations } from 'next-intl/server';
 import { PageHeader } from '@/components/shared/page-header';
 import { KPICards } from '@/components/admin/dashboard/kpi-cards';
 import { RevenueChart } from '@/components/admin/dashboard/revenue-chart';
 import { ActivityFeed } from '@/components/admin/dashboard/activity-feed';
 import { PendingActions } from '@/components/admin/dashboard/pending-actions';
 import { ProjectStatusChart } from '@/components/admin/dashboard/project-status-chart';
+import { TodayTasks } from '@/components/admin/dashboard/today-tasks';
 import {
   getProjectCount,
   getPendingInvoiceCount,
@@ -17,6 +19,7 @@ import {
   getPendingInvoiceTotal,
 } from '@/lib/queries/reports';
 import { createClient } from '@/lib/supabase/server';
+import type { ActivityLogWithUser } from '@/types';
 
 type PendingAction = {
   type: 'invoice' | 'deliverable' | 'contract';
@@ -26,7 +29,7 @@ type PendingAction = {
   daysOverdue?: number;
 };
 
-async function getPendingActions(): Promise<PendingAction[]> {
+async function getPendingActions(t: (key: string) => string): Promise<PendingAction[]> {
   try {
     const supabase = await createClient();
     const actions: PendingAction[] = [];
@@ -47,8 +50,8 @@ async function getPendingActions(): Promise<PendingAction[]> {
         actions.push({
           type: 'invoice',
           id: inv.id,
-          title: `Invoice ${inv.invoice_number}`,
-          subtitle: `${(inv.client as any)?.contact_name || 'Unknown'} — €${inv.total?.toFixed(2)}`,
+          title: `${t('invoice')} ${inv.invoice_number}`,
+          subtitle: `${(inv.client as { contact_name?: string } | null)?.contact_name || t('unknown')} — €${inv.total?.toFixed(2)}`,
           daysOverdue: daysOverdue > 0 ? daysOverdue : undefined,
         });
       }
@@ -68,7 +71,7 @@ async function getPendingActions(): Promise<PendingAction[]> {
           type: 'contract',
           id: c.id,
           title: c.title,
-          subtitle: `Awaiting signature from ${(c.client as any)?.contact_name || 'client'}`,
+          subtitle: `${t('awaitingSignature')} ${(c.client as { contact_name?: string } | null)?.contact_name || t('client')}`,
         });
       }
     }
@@ -87,7 +90,7 @@ async function getPendingActions(): Promise<PendingAction[]> {
           type: 'deliverable',
           id: d.project_id,
           title: d.title,
-          subtitle: `Project: ${(d.project as any)?.title || 'Unknown'}`,
+          subtitle: `${t('project')}: ${(d.project as { title?: string } | null)?.title || t('unknown')}`,
         });
       }
     }
@@ -99,7 +102,40 @@ async function getPendingActions(): Promise<PendingAction[]> {
   }
 }
 
+async function getTodayTasks() {
+  try {
+    const supabase = await createClient();
+    const today = new Date().toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('id, title, status, priority, due_date, project_id, project:projects!inner(title), assigned_user:user_profiles!tasks_assigned_to_fkey(display_name)')
+      .or(`due_date.eq.${today},and(due_date.lt.${today},status.neq.done)`)
+      .neq('status', 'done')
+      .order('due_date', { ascending: true })
+      .limit(10);
+
+    if (error) return [];
+
+    // Transform data to match expected type
+    return (data ?? []).map((task) => ({
+      id: task.id,
+      title: task.title,
+      status: task.status,
+      priority: task.priority,
+      due_date: task.due_date,
+      project_id: task.project_id,
+      project: Array.isArray(task.project) ? task.project[0] : task.project,
+      assigned_user: Array.isArray(task.assigned_user) ? task.assigned_user[0] : task.assigned_user,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function DashboardPage() {
+  const t = await getTranslations('dashboard');
+
   const [
     activeProjects,
     revenueThisMonth,
@@ -110,6 +146,7 @@ export default async function DashboardPage() {
     projectsByStatus,
     monthlyRevenueData,
     pendingActions,
+    todayTasks,
   ] = await Promise.all([
     getProjectCount(),
     getRevenueThisMonth(),
@@ -119,14 +156,15 @@ export default async function DashboardPage() {
     getRecentActivity(10),
     getProjectsByStatus(),
     getMonthlyRevenue().then((data) => data.slice(-6)), // Last 6 months
-    getPendingActions(),
+    getPendingActions(t),
+    getTodayTasks(),
   ]);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
-        description="Welcome to the Devre Media System admin panel"
+        title={t('title')}
+        description={t('description')}
       />
 
       <KPICards
@@ -137,13 +175,15 @@ export default async function DashboardPage() {
         upcomingDeadlines={upcomingDeadlines}
       />
 
+      <TodayTasks tasks={todayTasks} />
+
       <div className="grid gap-6 md:grid-cols-2">
         <RevenueChart data={monthlyRevenueData} />
         <ProjectStatusChart data={projectsByStatus} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <ActivityFeed activities={recentActivity} />
+        <ActivityFeed activities={recentActivity as ActivityLogWithUser[]} />
         <PendingActions actions={pendingActions} />
       </div>
     </div>

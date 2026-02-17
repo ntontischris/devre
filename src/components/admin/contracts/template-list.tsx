@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { FileText, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,14 +11,17 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { deleteContractTemplate } from '@/lib/actions/contracts';
 import { toast } from 'sonner';
+import type { ContractTemplate } from '@/types';
 
 interface TemplateListProps {
-  templates: any[];
-  onEdit: (template: any) => void;
+  templates: ContractTemplate[];
+  onEdit: (template: ContractTemplate) => void;
   onDelete: (id: string) => void;
 }
 
 export function TemplateList({ templates, onEdit, onDelete }: TemplateListProps) {
+  const t = useTranslations('contracts');
+  const tc = useTranslations('common');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -33,7 +37,7 @@ export function TemplateList({ templates, onEdit, onDelete }: TemplateListProps)
       return;
     }
 
-    toast.success('Template deleted successfully');
+    toast.success(t('templateDeletedSuccess'));
     onDelete(deleteId);
     setDeleteId(null);
     setIsDeleting(false);
@@ -48,8 +52,8 @@ export function TemplateList({ templates, onEdit, onDelete }: TemplateListProps)
     return (
       <EmptyState
         icon={FileText}
-        title="No templates yet"
-        description="Create your first contract template to get started"
+        title={t('noTemplates')}
+        description={t('noTemplatesDescription')}
       />
     );
   }
@@ -62,9 +66,9 @@ export function TemplateList({ templates, onEdit, onDelete }: TemplateListProps)
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-lg">{template.name}</CardTitle>
+                  <CardTitle className="text-lg">{template.title}</CardTitle>
                   <CardDescription className="mt-1 line-clamp-2">
-                    {template.description || 'No description'}
+                    {(template as any).description || 'No description'}
                   </CardDescription>
                 </div>
               </div>
@@ -108,9 +112,9 @@ export function TemplateList({ templates, onEdit, onDelete }: TemplateListProps)
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Delete Template"
-        description="Are you sure you want to delete this template? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t('deleteTemplate')}
+        description={t('deleteTemplateConfirm')}
+        confirmLabel={tc('delete')}
         onConfirm={handleDelete}
         loading={isDeleting}
         destructive

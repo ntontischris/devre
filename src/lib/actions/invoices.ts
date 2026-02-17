@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createInvoiceSchema, updateInvoiceSchema, type LineItem } from '@/lib/schemas/invoice';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, InvoiceWithRelations } from '@/types/index';
 import type { InvoiceStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
@@ -14,7 +14,7 @@ interface InvoiceFilters {
   issue_date_to?: string;
 }
 
-export async function getInvoices(filters?: InvoiceFilters): Promise<ActionResult<any[]>> {
+export async function getInvoices(filters?: InvoiceFilters): Promise<ActionResult<unknown[]>> {
   try {
     const supabase = await createClient();
     let query = supabase
@@ -45,12 +45,12 @@ export async function getInvoices(filters?: InvoiceFilters): Promise<ActionResul
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch invoices' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch invoices' };
   }
 }
 
-export async function getInvoice(id: string): Promise<ActionResult<any>> {
+export async function getInvoice(id: string): Promise<ActionResult<InvoiceWithRelations>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -61,8 +61,8 @@ export async function getInvoice(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch invoice' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch invoice' };
   }
 }
 
@@ -71,7 +71,7 @@ export async function getNextInvoiceNumber(): Promise<string> {
     const supabase = await createClient();
     const currentYear = new Date().getFullYear();
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('invoices')
       .select('invoice_number')
       .like('invoice_number', `DMS-${currentYear}-%`)
@@ -79,20 +79,20 @@ export async function getNextInvoiceNumber(): Promise<string> {
       .limit(1)
       .single();
 
-    if (error || !data) {
+    if (!data) {
       return `DMS-${currentYear}-001`;
     }
 
     const lastNumber = parseInt(data.invoice_number.split('-')[2] || '0', 10);
     const nextNumber = (lastNumber + 1).toString().padStart(3, '0');
     return `DMS-${currentYear}-${nextNumber}`;
-  } catch (error) {
+  } catch {
     const currentYear = new Date().getFullYear();
     return `DMS-${currentYear}-001`;
   }
 }
 
-export async function createInvoice(input: unknown): Promise<ActionResult<any>> {
+export async function createInvoice(input: unknown): Promise<ActionResult<InvoiceWithRelations>> {
   try {
     const validated = createInvoiceSchema.parse(input);
     const supabase = await createClient();
@@ -135,12 +135,12 @@ export async function createInvoice(input: unknown): Promise<ActionResult<any>> 
   }
 }
 
-export async function updateInvoice(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateInvoice(id: string, input: unknown): Promise<ActionResult<InvoiceWithRelations>> {
   try {
     const validated = updateInvoiceSchema.parse(input);
     const supabase = await createClient();
 
-    let updateData: any = { ...validated };
+    let updateData: Record<string, unknown> = { ...validated };
 
     if (validated.line_items) {
       const subtotal = validated.line_items.reduce(
@@ -179,11 +179,11 @@ export async function updateInvoice(id: string, input: unknown): Promise<ActionR
   }
 }
 
-export async function updateInvoiceStatus(id: string, status: InvoiceStatus): Promise<ActionResult<any>> {
+export async function updateInvoiceStatus(id: string, status: InvoiceStatus): Promise<ActionResult<unknown>> {
   try {
     const supabase = await createClient();
 
-    const updateData: any = { status };
+    const updateData: Record<string, unknown> = { status };
 
     if (status === 'sent' && !updateData.sent_at) {
       updateData.sent_at = new Date().toISOString();
@@ -204,8 +204,8 @@ export async function updateInvoiceStatus(id: string, status: InvoiceStatus): Pr
     revalidatePath('/admin/invoices');
     revalidatePath(`/admin/invoices/${id}`);
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to update invoice status' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to update invoice status' };
   }
 }
 
@@ -221,7 +221,7 @@ export async function deleteInvoice(id: string): Promise<ActionResult<void>> {
 
     revalidatePath('/admin/invoices');
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete invoice' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete invoice' };
   }
 }

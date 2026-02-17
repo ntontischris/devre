@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -23,8 +24,10 @@ const COLORS = {
 };
 
 export function ProjectStatusChart({ data }: ProjectStatusChartProps) {
+  const t = useTranslations('dashboard');
+
   const chartData = Object.entries(data)
-    .filter(([_, count]) => count > 0)
+    .filter(([, count]) => count > 0)
     .map(([status, count]) => ({
       name: PROJECT_STATUS_LABELS[status as ProjectStatus],
       value: count,
@@ -35,12 +38,12 @@ export function ProjectStatusChart({ data }: ProjectStatusChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Projects by Status</CardTitle>
-          <CardDescription>Distribution of active projects</CardDescription>
+          <CardTitle>{t('projectStatusChart')}</CardTitle>
+          <CardDescription>{t('projectDistribution')}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-8">
-            No active projects
+            {t('noActiveProjects')}
           </p>
         </CardContent>
       </Card>
@@ -51,14 +54,14 @@ export function ProjectStatusChart({ data }: ProjectStatusChartProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Projects by Status</CardTitle>
-          <CardDescription>Distribution of active projects</CardDescription>
+          <CardTitle>{t('projectStatusChart')}</CardTitle>
+          <CardDescription>{t('projectDistribution')}</CardDescription>
         </div>
         <Link
           href="/admin/projects"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
         >
-          View All Projects
+          {t('viewAll')}
           <ArrowRight className="h-4 w-4" />
         </Link>
       </CardHeader>

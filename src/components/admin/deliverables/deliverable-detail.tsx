@@ -14,6 +14,7 @@ import { ApprovalActions } from '@/components/admin/deliverables/approval-action
 import { VersionHistory } from '@/components/admin/deliverables/version-history'
 import { getAnnotations, resolveAnnotation, getDeliverablesByProject } from '@/lib/actions/deliverables'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { ArrowLeft, Download, Plus, Loader2 } from 'lucide-react'
 import type { DeliverableStatus } from '@/lib/constants'
@@ -55,6 +56,8 @@ export function DeliverableDetail({
   projectId,
   onBack,
 }: DeliverableDetailProps) {
+  const t = useTranslations('deliverables')
+  const tToast = useTranslations('toast')
   const [annotations, setAnnotations] = useState<VideoAnnotation[]>([])
   const [versionHistory, setVersionHistory] = useState<Deliverable[]>([])
   const [isLoadingAnnotations, setIsLoadingAnnotations] = useState(true)
@@ -68,9 +71,9 @@ export function DeliverableDetail({
     const result = await getAnnotations(deliverable.id)
 
     if (result.error) {
-      toast.error('Failed to load annotations')
+      toast.error(t('failedToLoadAnnotations'))
     } else {
-      setAnnotations((result.data as VideoAnnotation[]) ?? [])
+      setAnnotations(result.data as unknown as VideoAnnotation[] ?? [])
     }
 
     setIsLoadingAnnotations(false)
@@ -81,9 +84,9 @@ export function DeliverableDetail({
     const result = await getDeliverablesByProject(projectId)
 
     if (result.error) {
-      toast.error('Failed to load version history')
+      toast.error(tToast('genericError'))
     } else {
-      const allDeliverables = (result.data as Deliverable[]) ?? []
+      const allDeliverables = result.data as unknown as Deliverable[] ?? []
       setVersionHistory(allDeliverables)
     }
 
@@ -98,9 +101,9 @@ export function DeliverableDetail({
         .getPublicUrl(deliverable.file_path)
 
       setVideoUrl(data.publicUrl)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to get video URL:', error)
-      toast.error('Failed to load video')
+      toast.error(tToast('genericError'))
     }
   }
 
@@ -108,10 +111,11 @@ export function DeliverableDetail({
     fetchAnnotations()
     fetchVersionHistory()
     fetchVideoUrl()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deliverable.id])
 
-  const handleAnnotationClick = (annotation: VideoAnnotation) => {
-    // Video player will handle seeking to timestamp
+  const handleAnnotationClick = () => {
+    // Video player will handle seeking to timestamp (annotation parameter unused intentionally)
   }
 
   const handleTimeClick = (seconds: number) => {
@@ -123,9 +127,9 @@ export function DeliverableDetail({
     const result = await resolveAnnotation(annotationId)
 
     if (result.error) {
-      toast.error('Failed to update annotation')
+      toast.error(t('failedToUpdateAnnotation'))
     } else {
-      toast.success('Annotation updated')
+      toast.success(t('annotationUpdated'))
       fetchAnnotations()
     }
   }
@@ -148,10 +152,10 @@ export function DeliverableDetail({
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
 
-      toast.success('Download started')
-    } catch (error) {
+      toast.success(t('downloadStarted'))
+    } catch (error: unknown) {
       console.error('Download error:', error)
-      toast.error('Failed to download file')
+      toast.error(t('failedToDownload'))
     }
   }
 

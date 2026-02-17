@@ -2,10 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createContractSchema, updateContractSchema, signContractSchema } from '@/lib/schemas/contract';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, Contract, ContractWithRelations, ContractTemplate } from '@/types/index';
 import { revalidatePath } from 'next/cache';
 
-export async function getContractsByProject(projectId: string): Promise<ActionResult<any[]>> {
+export async function getContractsByProject(projectId: string): Promise<ActionResult<Contract[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -16,12 +16,28 @@ export async function getContractsByProject(projectId: string): Promise<ActionRe
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch contracts' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch contracts' };
   }
 }
 
-export async function getContract(id: string): Promise<ActionResult<any>> {
+export async function getContractsByClient(clientId: string): Promise<ActionResult<unknown[]>> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('contracts')
+      .select('*, project:projects(title)')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch contracts' };
+  }
+}
+
+export async function getContract(id: string): Promise<ActionResult<ContractWithRelations>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -32,12 +48,12 @@ export async function getContract(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch contract' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch contract' };
   }
 }
 
-export async function getAllContracts(): Promise<ActionResult<any[]>> {
+export async function getAllContracts(): Promise<ActionResult<unknown[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -47,13 +63,13 @@ export async function getAllContracts(): Promise<ActionResult<any[]>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    console.error('Failed to fetch contracts:', error);
-    return { data: null, error: 'Failed to fetch contracts' };
+  } catch (err: unknown) {
+    console.error('Failed to fetch contracts:', err);
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch contracts' };
   }
 }
 
-export async function createContract(input: unknown): Promise<ActionResult<any>> {
+export async function createContract(input: unknown): Promise<ActionResult<Contract>> {
   try {
     const validated = createContractSchema.parse(input);
     const supabase = await createClient();
@@ -73,7 +89,10 @@ export async function createContract(input: unknown): Promise<ActionResult<any>>
 
     if (error) return { data: null, error: error.message };
 
-    revalidatePath(`/admin/projects/${validated.project_id}`);
+    if (validated.project_id) {
+      revalidatePath(`/admin/projects/${validated.project_id}`);
+    }
+    revalidatePath(`/admin/clients/${validated.client_id}`);
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -83,7 +102,7 @@ export async function createContract(input: unknown): Promise<ActionResult<any>>
   }
 }
 
-export async function updateContract(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateContract(id: string, input: unknown): Promise<ActionResult<Contract>> {
   try {
     const validated = updateContractSchema.parse(input);
     const supabase = await createClient();
@@ -110,7 +129,7 @@ export async function updateContract(id: string, input: unknown): Promise<Action
   }
 }
 
-export async function signContract(id: string, signatureData: unknown): Promise<ActionResult<any>> {
+export async function signContract(id: string, signatureData: unknown): Promise<ActionResult<Contract>> {
   try {
     const validated = signContractSchema.parse(signatureData);
     const supabase = await createClient();
@@ -209,12 +228,12 @@ export async function deleteContract(id: string): Promise<ActionResult<void>> {
       revalidatePath(`/admin/projects/${contract.project_id}`);
     }
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete contract' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete contract' };
   }
 }
 
-export async function getContractTemplates(): Promise<ActionResult<any[]>> {
+export async function getContractTemplates(): Promise<ActionResult<ContractTemplate[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -224,8 +243,8 @@ export async function getContractTemplates(): Promise<ActionResult<any[]>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch contract templates' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch contract templates' };
   }
 }
 
@@ -233,7 +252,7 @@ export async function createContractTemplate(input: {
   title: string;
   content: string;
   placeholders?: Record<string, unknown>;
-}): Promise<ActionResult<any>> {
+}): Promise<ActionResult<ContractTemplate>> {
   try {
     const supabase = await createClient();
 
@@ -255,8 +274,8 @@ export async function createContractTemplate(input: {
 
     revalidatePath('/admin/settings/contract-templates');
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to create contract template' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to create contract template' };
   }
 }
 
@@ -264,7 +283,7 @@ export async function updateContractTemplate(id: string, input: {
   title?: string;
   content?: string;
   placeholders?: Record<string, unknown>;
-}): Promise<ActionResult<any>> {
+}): Promise<ActionResult<ContractTemplate>> {
   try {
     const supabase = await createClient();
 
@@ -284,8 +303,8 @@ export async function updateContractTemplate(id: string, input: {
 
     revalidatePath('/admin/settings/contract-templates');
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to update contract template' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to update contract template' };
   }
 }
 
@@ -301,7 +320,7 @@ export async function deleteContractTemplate(id: string): Promise<ActionResult<v
 
     revalidatePath('/admin/settings/contract-templates');
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete contract template' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete contract template' };
   }
 }

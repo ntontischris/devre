@@ -5,15 +5,17 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Receipt, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { INVOICE_STATUS_LABELS } from '@/lib/constants';
-import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
+import type { InvoiceWithRelations, ProjectWithClient } from '@/types';
 
 interface PendingActionsProps {
-  invoices: any[];
-  projects: any[];
+  invoices: InvoiceWithRelations[];
+  projects: ProjectWithClient[];
 }
 
-export function PendingActions({ invoices, projects }: PendingActionsProps) {
+export function PendingActions({ invoices }: PendingActionsProps) {
   const router = useRouter();
+  const t = useTranslations('client.dashboard');
 
   // Get unsigned contracts count (placeholder - would need contracts query)
   const unsignedContracts: any[] = [];
@@ -22,18 +24,18 @@ export function PendingActions({ invoices, projects }: PendingActionsProps) {
     ...invoices.map(invoice => ({
       type: 'invoice',
       id: invoice.id,
-      title: `Invoice ${invoice.invoice_number}`,
+      title: `${t('invoice')} ${invoice.invoice_number}`,
       description: `${INVOICE_STATUS_LABELS[invoice.status as keyof typeof INVOICE_STATUS_LABELS]} - €${invoice.total?.toFixed(2) || '0.00'}`,
-      action: 'Pay Now',
+      action: t('payNow'),
       icon: Receipt,
       onClick: () => router.push(`/client/invoices/${invoice.id}`),
     })),
-    ...unsignedContracts.map(contract => ({
+    ...unsignedContracts.map((contract: any) => ({
       type: 'contract',
       id: contract.id,
       title: contract.title,
-      description: 'Signature required',
-      action: 'Sign Contract',
+      description: t('signatureRequired'),
+      action: t('signContract'),
       icon: FileText,
       onClick: () => router.push(`/client/contracts/${contract.id}/sign`),
     })),
@@ -43,11 +45,11 @@ export function PendingActions({ invoices, projects }: PendingActionsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Pending Actions</CardTitle>
+          <CardTitle>{t('pendingActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground">
-            No pending actions at the moment. You're all caught up!
+            {t('noPendingActions')}
           </div>
         </CardContent>
       </Card>
@@ -58,7 +60,7 @@ export function PendingActions({ invoices, projects }: PendingActionsProps) {
     <Card>
       <CardHeader className="flex flex-row items-center gap-2">
         <AlertCircle className="h-5 w-5 text-orange-500" />
-        <CardTitle>Pending Actions</CardTitle>
+        <CardTitle>{t('pendingActions')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

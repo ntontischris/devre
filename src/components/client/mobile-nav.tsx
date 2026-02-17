@@ -13,6 +13,7 @@ import {
 import { useAuth } from '@/hooks/use-auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useTranslations } from 'next-intl';
 
 interface NavLink {
   href: string;
@@ -29,6 +30,7 @@ interface MobileNavProps {
 export function MobileNav({ open, onOpenChange, navLinks }: MobileNavProps) {
   const pathname = usePathname();
   const { profile, user } = useAuth();
+  const t = useTranslations('nav');
 
   const getInitials = (name: string | null | undefined) => {
     if (!name) return 'U';
@@ -46,7 +48,7 @@ export function MobileNav({ open, onOpenChange, navLinks }: MobileNavProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-[280px] sm:w-[320px]">
         <SheetHeader>
-          <SheetTitle className="text-left">Navigation</SheetTitle>
+          <SheetTitle className="text-left">{t('navigation')}</SheetTitle>
         </SheetHeader>
 
         <div className="flex flex-col h-full">

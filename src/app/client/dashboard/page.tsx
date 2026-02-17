@@ -7,8 +7,10 @@ import { ActiveProjects } from '@/components/client/dashboard/active-projects';
 import { PendingActions } from '@/components/client/dashboard/pending-actions';
 import { RecentDeliverables } from '@/components/client/dashboard/recent-deliverables';
 import { UpcomingFilmings } from '@/components/client/dashboard/upcoming-filmings';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ClientDashboardPage() {
+  const t = await getTranslations('client.dashboard');
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -21,14 +23,20 @@ export default async function ClientDashboardPage() {
   const projects = projectsResult.data ?? [];
 
   const invoicesResult = await getInvoices({ client_id: user.id });
-  const invoices = invoicesResult.data ?? [];
+  const invoices = (invoicesResult.data ?? []) as import('@/types').InvoiceWithRelations[];
 
   // Get recent deliverables from all projects
-  let allDeliverables: any[] = [];
+  type DeliverableWithProject = {
+    project_id: string;
+    created_at: string;
+    [key: string]: unknown;
+  };
+
+  let allDeliverables: DeliverableWithProject[] = [];
   for (const project of projects.slice(0, 5)) {
     const deliverablesResult = await getDeliverablesByProject(project.id);
     if (deliverablesResult.data) {
-      allDeliverables = [...allDeliverables, ...deliverablesResult.data.map(d => ({ ...d, project }))];
+      allDeliverables = [...allDeliverables, ...deliverablesResult.data.map((d: any) => ({ ...d, project }))];
     }
   }
 
@@ -38,12 +46,12 @@ export default async function ClientDashboardPage() {
     .slice(0, 5);
 
   // Active projects (not archived or delivered)
-  const activeProjects = projects.filter(p =>
+  const activeProjects = projects.filter((p: any) =>
     p.status !== 'archived' && p.status !== 'delivered'
   );
 
   // Pending invoices (not paid)
-  const pendingInvoices = invoices.filter(i =>
+  const pendingInvoices = invoices.filter((i: any) =>
     i.status !== 'paid' && i.status !== 'cancelled'
   );
 
@@ -52,10 +60,10 @@ export default async function ClientDashboardPage() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Dashboard
+          {t('title')}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Manage your projects, invoices, and deliverables
+          {t('description')}
         </p>
       </div>
 
@@ -71,7 +79,7 @@ export default async function ClientDashboardPage() {
       {/* Two Column Grid */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Recent Deliverables */}
-        <RecentDeliverables deliverables={recentDeliverables} />
+        <RecentDeliverables deliverables={recentDeliverables as any} />
 
         {/* Upcoming Filmings */}
         <UpcomingFilmings projects={activeProjects} />

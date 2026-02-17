@@ -6,36 +6,39 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-
-const NOTIFICATION_TYPES = [
-  {
-    id: 'project_updates',
-    label: 'Project Updates',
-    description: 'Get notified about changes to your projects',
-  },
-  {
-    id: 'new_deliverables',
-    label: 'New Deliverables',
-    description: 'Receive alerts when new deliverables are uploaded',
-  },
-  {
-    id: 'invoice_reminders',
-    label: 'Invoice Reminders',
-    description: 'Get reminders about pending invoice payments',
-  },
-  {
-    id: 'messages',
-    label: 'Messages',
-    description: 'Receive notifications for new messages',
-  },
-  {
-    id: 'filming_reminders',
-    label: 'Filming Reminders',
-    description: 'Get reminded about upcoming filming dates',
-  },
-];
+import { useTranslations } from 'next-intl';
 
 export function NotificationPreferences() {
+  const t = useTranslations('client.settings');
+  const tCommon = useTranslations('common');
+
+  const NOTIFICATION_TYPES = [
+    {
+      id: 'project_updates',
+      label: t('projectUpdates'),
+      description: t('projectUpdatesDescription'),
+    },
+    {
+      id: 'new_deliverables',
+      label: t('newDeliverables'),
+      description: t('newDeliverablesDescription'),
+    },
+    {
+      id: 'invoice_reminders',
+      label: t('invoiceReminders'),
+      description: t('invoiceRemindersDescription'),
+    },
+    {
+      id: 'messages',
+      label: t('messages'),
+      description: t('messagesDescription'),
+    },
+    {
+      id: 'filming_reminders',
+      label: t('filmingReminders'),
+      description: t('filmingRemindersDescription'),
+    },
+  ];
   const [loading, setLoading] = useState(false);
   const [preferences, setPreferences] = useState<Record<string, boolean>>({
     project_updates: true,
@@ -58,16 +61,16 @@ export function NotificationPreferences() {
     // Placeholder - in production, save to database
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    toast.success('Notification preferences updated');
+    toast.success(t('notificationsSaved'));
     setLoading(false);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Notification Preferences</CardTitle>
+        <CardTitle>{t('notificationsTitle')}</CardTitle>
         <CardDescription>
-          Choose what notifications you want to receive via email
+          {t('notificationsDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -92,7 +95,7 @@ export function NotificationPreferences() {
 
         <div className="pt-4">
           <Button onClick={handleSave} disabled={loading}>
-            {loading ? 'Saving...' : 'Save Preferences'}
+            {loading ? tCommon('saving') : tCommon('save')}
           </Button>
         </div>
       </CardContent>

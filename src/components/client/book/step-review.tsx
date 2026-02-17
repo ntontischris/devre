@@ -1,8 +1,8 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PROJECT_TYPE_LABELS } from '@/lib/constants';
-import { Check, Video, FileText, Calendar, MapPin, DollarSign } from 'lucide-react';
+import { PROJECT_TYPE_LABELS, SERVICE_CATEGORIES } from '@/lib/constants';
+import { Check, Video, FileText, Calendar, MapPin, DollarSign, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import type { BookingFormData } from './booking-wizard';
 import { Separator } from '@/components/ui/separator';
@@ -11,7 +11,20 @@ interface StepReviewProps {
   formData: BookingFormData;
 }
 
+function getSelectedPackageInfo(formData: BookingFormData) {
+  if (!formData.selected_package || !formData.project_type) return null;
+  const category = SERVICE_CATEGORIES.find(
+    (c) => c.projectType === formData.project_type
+  );
+  if (!category) return null;
+  const pkg = category.packages.find((p) => p.id === formData.selected_package);
+  if (!pkg) return null;
+  return { category, pkg };
+}
+
 export function StepReview({ formData }: StepReviewProps) {
+  const packageInfo = getSelectedPackageInfo(formData);
+
   const BUDGET_RANGE_LABELS: Record<string, string> = {
     under_1000: 'Under €1,000',
     '1000_2500': '€1,000 - €2,500',
@@ -94,6 +107,46 @@ export function StepReview({ formData }: StepReviewProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Selected Package */}
+      {packageInfo && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Επιλεγμένο Πακέτο
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="font-medium">
+                  {packageInfo.category.label} — {packageInfo.pkg.name}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {packageInfo.pkg.deliverables}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="font-semibold">
+                  {packageInfo.pkg.price.toLocaleString('el-GR')}&euro;
+                  <span className="text-xs font-normal text-muted-foreground">
+                    /μήνα
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {packageInfo.pkg.includes}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Παράδοση: {packageInfo.pkg.deliveryTime}
+              {packageInfo.pkg.contractDuration &&
+                ` | ${packageInfo.pkg.contractDuration}`}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {formData.preferred_dates.length > 0 && (
         <Card>

@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, FileText, AlertCircle, Calendar } from 'lucide-react';
+import { TrendingUp, FileText, Calendar } from 'lucide-react';
 
 type KPICardsProps = {
   activeProjects: number;
@@ -17,6 +20,8 @@ export function KPICards({
   pendingInvoicesTotal,
   upcomingDeadlines,
 }: KPICardsProps) {
+  const t = useTranslations('dashboard');
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('el-GR', {
       style: 'currency',
@@ -29,13 +34,13 @@ export function KPICards({
       <Link href="/admin/projects">
         <Card className="hover:bg-accent transition-colors cursor-pointer">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeProjects')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeProjects}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              In progress across all stages
+              {t('activeProjectsDesc')}
             </p>
           </CardContent>
         </Card>
@@ -44,13 +49,13 @@ export function KPICards({
       <Link href="/admin/reports">
         <Card className="hover:bg-accent transition-colors cursor-pointer">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Revenue This Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('monthlyRevenue')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(revenueThisMonth)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Paid invoices this month
+              {t('monthlyRevenueDesc')}
             </p>
           </CardContent>
         </Card>
@@ -59,13 +64,13 @@ export function KPICards({
       <Link href="/admin/invoices">
         <Card className="hover:bg-accent transition-colors cursor-pointer">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Invoices</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('pendingInvoices')}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingInvoicesCount}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              {formatCurrency(pendingInvoicesTotal)} outstanding
+              {t('pendingInvoicesDesc', { amount: formatCurrency(pendingInvoicesTotal) })}
             </p>
           </CardContent>
         </Card>
@@ -74,13 +79,13 @@ export function KPICards({
       <Link href="/admin/calendar">
         <Card className="hover:bg-accent transition-colors cursor-pointer">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Deadlines</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('upcomingDeadlines')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{upcomingDeadlines}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Next 30 days
+              {t('upcomingDeadlinesDesc')}
             </p>
           </CardContent>
         </Card>

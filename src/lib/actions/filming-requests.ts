@@ -2,13 +2,13 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createFilmingRequestSchema, reviewFilmingRequestSchema } from '@/lib/schemas/filming-request';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, FilmingRequest } from '@/types/index';
 import type { FilmingRequestStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
 export async function getFilmingRequests(filters?: {
   status?: FilmingRequestStatus | FilmingRequestStatus[];
-}): Promise<ActionResult<any[]>> {
+}): Promise<ActionResult<FilmingRequest[]>> {
   try {
     const supabase = await createClient();
     let query = supabase
@@ -27,12 +27,12 @@ export async function getFilmingRequests(filters?: {
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch filming requests' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch filming requests' };
   }
 }
 
-export async function getFilmingRequest(id: string): Promise<ActionResult<any>> {
+export async function getFilmingRequest(id: string): Promise<ActionResult<FilmingRequest>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -43,12 +43,12 @@ export async function getFilmingRequest(id: string): Promise<ActionResult<any>> 
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch filming request' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch filming request' };
   }
 }
 
-export async function createFilmingRequest(input: unknown): Promise<ActionResult<any>> {
+export async function createFilmingRequest(input: unknown): Promise<ActionResult<FilmingRequest>> {
   try {
     const validated = createFilmingRequestSchema.parse(input);
     const supabase = await createClient();
@@ -85,7 +85,7 @@ export async function createFilmingRequest(input: unknown): Promise<ActionResult
   }
 }
 
-export async function reviewFilmingRequest(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function reviewFilmingRequest(id: string, input: unknown): Promise<ActionResult<FilmingRequest>> {
   try {
     const validated = reviewFilmingRequestSchema.parse(input);
     const supabase = await createClient();
@@ -118,7 +118,7 @@ export async function reviewFilmingRequest(id: string, input: unknown): Promise<
   }
 }
 
-export async function convertToProject(id: string): Promise<ActionResult<any>> {
+export async function convertToProject(id: string): Promise<ActionResult<unknown>> {
   try {
     const supabase = await createClient();
 
@@ -166,7 +166,7 @@ export async function convertToProject(id: string): Promise<ActionResult<any>> {
     revalidatePath('/admin/filming-requests');
     revalidatePath('/admin/projects');
     return { data: project, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to convert filming request to project' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to convert filming request to project' };
   }
 }

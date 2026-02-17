@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createClientSchema } from '@/lib/schemas/client';
@@ -32,6 +33,8 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ client, onSuccess }: ClientFormProps) {
+  const t = useTranslations('clients');
+  const tc = useTranslations('common');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!client;
@@ -74,8 +77,8 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
       } else {
         toast.success(
           isEditing
-            ? 'Client updated successfully'
-            : 'Client created successfully'
+            ? t('clientUpdated')
+            : t('clientCreated')
         );
         if (onSuccess) {
           onSuccess();
@@ -88,8 +91,6 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
         }
         router.refresh();
       }
-    } catch (error) {
-      toast.error('An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
     }
@@ -99,14 +100,15 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle>{t('contactInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="avatar">Avatar</Label>
+            <Label htmlFor="avatar">{t('contactName')}</Label>
             <div className="flex items-center gap-4">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                 {client?.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={client.avatar_url}
                     alt={client.contact_name}
@@ -125,7 +127,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                   className="cursor-not-allowed"
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Avatar upload coming soon
+                  {t('description')}
                 </p>
               </div>
             </div>
@@ -134,12 +136,12 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="contact_name">
-                Contact Name <span className="text-destructive">*</span>
+                {t('contactName')} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="contact_name"
                 {...register('contact_name')}
-                placeholder="John Doe"
+                placeholder={t('contactName')}
               />
               {errors.contact_name && (
                 <p className="text-sm text-destructive">
@@ -150,13 +152,13 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="email">
-                Email <span className="text-destructive">*</span>
+                {t('emailAddress')} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="email"
                 type="email"
                 {...register('email')}
-                placeholder="john@example.com"
+                placeholder={t('emailAddress')}
               />
               {errors.email && (
                 <p className="text-sm text-destructive">
@@ -168,11 +170,11 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="company_name">Company Name</Label>
+              <Label htmlFor="company_name">{t('companyName')}</Label>
               <Input
                 id="company_name"
                 {...register('company_name')}
-                placeholder="Acme Inc."
+                placeholder={t('companyName')}
               />
               {errors.company_name && (
                 <p className="text-sm text-destructive">
@@ -182,11 +184,11 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t('phoneNumber')}</Label>
               <Input
                 id="phone"
                 {...register('phone')}
-                placeholder="+1 (555) 000-0000"
+                placeholder={t('phoneNumber')}
               />
               {errors.phone && (
                 <p className="text-sm text-destructive">
@@ -198,11 +200,11 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="vat_number">VAT Number</Label>
+              <Label htmlFor="vat_number">{t('taxId')}</Label>
               <Input
                 id="vat_number"
                 {...register('vat_number')}
-                placeholder="VAT123456"
+                placeholder={t('taxId')}
               />
               {errors.vat_number && (
                 <p className="text-sm text-destructive">
@@ -212,7 +214,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t('clientStatus')}</Label>
               <Select
                 value={status}
                 onValueChange={(value) =>
@@ -220,7 +222,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                 }
               >
                 <SelectTrigger id="status">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t('clientStatus')} />
                 </SelectTrigger>
                 <SelectContent>
                   {CLIENT_STATUSES.map((statusOption) => (
@@ -239,11 +241,11 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{t('address')}</Label>
             <Textarea
               id="address"
               {...register('address')}
-              placeholder="123 Main St, City, State, ZIP"
+              placeholder={t('address')}
               rows={3}
             />
             {errors.address && (
@@ -254,11 +256,11 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t('clientNotes')}</Label>
             <Textarea
               id="notes"
               {...register('notes')}
-              placeholder="Additional notes about this client..."
+              placeholder={t('clientNotes')}
               rows={4}
             />
             {errors.notes && (
@@ -275,11 +277,11 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
           onClick={() => router.back()}
           disabled={isSubmitting}
         >
-          Cancel
+          {tc('cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isEditing ? 'Update Client' : 'Create Client'}
+          {isEditing ? t('editClient') : t('addClient')}
         </Button>
       </div>
     </form>

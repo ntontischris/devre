@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +24,7 @@ import { Card, CardContent } from '@/components/ui/card';
 type DateRangePreset = 'this_month' | 'last_month' | 'this_quarter' | 'this_year' | 'custom';
 
 export function DateRangeFilter() {
+  const t = useTranslations('reports');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [preset, setPreset] = useState<DateRangePreset>('this_month');
@@ -91,7 +93,7 @@ export function DateRangeFilter() {
         <div className="flex flex-wrap gap-3 items-center">
           <Select value={preset} onValueChange={handlePresetChange}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select period" />
+              <SelectValue placeholder={t('selectPeriod')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="this_month">This Month</SelectItem>
@@ -108,7 +110,7 @@ export function DateRangeFilter() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-[180px] justify-start">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {fromDate ? format(fromDate, 'MMM dd, yyyy') : 'From date'}
+                    {fromDate ? format(fromDate, 'MMM dd, yyyy') : t('dateRange')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -125,7 +127,7 @@ export function DateRangeFilter() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-[180px] justify-start">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {toDate ? format(toDate, 'MMM dd, yyyy') : 'To date'}
+                    {toDate ? format(toDate, 'MMM dd, yyyy') : t('dateRange')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

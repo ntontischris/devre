@@ -8,8 +8,10 @@ import { NotificationSettingsComponent } from '@/components/admin/settings/notif
 import { getTeamMembers } from '@/lib/actions/team';
 import { getCompanySettings, getNotificationSettings } from '@/lib/actions/settings';
 import { createClient } from '@/lib/supabase/server';
+import { getTranslations } from 'next-intl/server';
 
 export default async function SettingsPage() {
+  const t = await getTranslations('settings');
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,18 +45,18 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Settings"
-        description="Manage your account, team, and system configuration"
+        title={t('title')}
+        description={t('description')}
       />
 
       <Tabs defaultValue="company" className="space-y-6">
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
           <TabsList className="inline-flex w-auto min-w-full sm:min-w-0">
-            <TabsTrigger value="company">Company</TabsTrigger>
-            <TabsTrigger value="team">Team</TabsTrigger>
-            <TabsTrigger value="branding">Branding</TabsTrigger>
-            <TabsTrigger value="integrations">Integrations</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="company">{t('company')}</TabsTrigger>
+            <TabsTrigger value="team">{t('team')}</TabsTrigger>
+            <TabsTrigger value="branding">{t('branding')}</TabsTrigger>
+            <TabsTrigger value="integrations">{t('integrations')}</TabsTrigger>
+            <TabsTrigger value="notifications">{t('notificationPreferences')}</TabsTrigger>
           </TabsList>
         </div>
 

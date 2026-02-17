@@ -1,6 +1,7 @@
 import { getInvoice } from '@/lib/actions/invoices';
 import { InvoiceDetail } from './invoice-detail';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 interface InvoicePageProps {
@@ -8,15 +9,16 @@ interface InvoicePageProps {
 }
 
 export async function generateMetadata({ params }: InvoicePageProps): Promise<Metadata> {
+  const t = await getTranslations('invoices');
   const { invoiceId } = await params;
   const result = await getInvoice(invoiceId);
 
   if (result.error || !result.data) {
-    return { title: 'Invoice Not Found' };
+    return { title: t('invoiceDetails') };
   }
 
   return {
-    title: `Invoice ${result.data.invoice_number}`,
+    title: `${t('title')} ${result.data.invoice_number}`,
   };
 }
 
@@ -28,5 +30,5 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     notFound();
   }
 
-  return <InvoiceDetail invoice={result.data} />;
+  return <InvoiceDetail invoice={result.data as any} />;
 }

@@ -10,6 +10,7 @@ import { MessageSquare } from 'lucide-react';
 import { getMessagesByProject, markMessagesAsRead } from '@/lib/actions/messages';
 import { useRealtimeMessages } from '@/hooks/use-realtime-messages';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface MessageThreadProps {
   projectId: string;
@@ -22,7 +23,7 @@ interface Message {
   project_id: string;
   sender_id: string;
   content: string;
-  attachments: any[];
+  attachments: { file_path: string; file_name: string; file_type: string; file_size: number }[];
   read_at: string | null;
   created_at: string;
   updated_at: string;
@@ -34,6 +35,7 @@ interface Message {
 }
 
 export function MessageThread({ projectId, currentUserId, className }: MessageThreadProps) {
+  const t = useTranslations('messages');
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export function MessageThread({ projectId, currentUserId, className }: MessageTh
       if (result.error) {
         setError(result.error);
       } else {
-        setInitialMessages(result.data ?? []);
+        setInitialMessages(result.data as Message[] ?? []);
       }
 
       setIsLoading(false);
@@ -101,7 +103,7 @@ export function MessageThread({ projectId, currentUserId, className }: MessageTh
     return (
       <Card className={cn('flex items-center justify-center min-h-[500px]', className)}>
         <div className="text-center">
-          <p className="text-destructive font-medium">Failed to load messages</p>
+          <p className="text-destructive font-medium">{t('failedToLoad')}</p>
           <p className="text-sm text-muted-foreground mt-1">{error}</p>
         </div>
       </Card>
@@ -114,14 +116,14 @@ export function MessageThread({ projectId, currentUserId, className }: MessageTh
       <div className="border-b p-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-muted-foreground" />
-          <h3 className="font-semibold">Project Messages</h3>
+          <h3 className="font-semibold">{t('title')}</h3>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{messages.length} {messages.length === 1 ? 'message' : 'messages'}</span>
+          <span>{messages.length === 1 ? t('messageCount', { count: messages.length }) : t('messagesCount', { count: messages.length })}</span>
           {isConnected && (
             <div className="flex items-center gap-1">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              <span>Live</span>
+              <span>{t('live')}</span>
             </div>
           )}
         </div>
@@ -136,8 +138,8 @@ export function MessageThread({ projectId, currentUserId, className }: MessageTh
           <div className="flex items-center justify-center h-full">
             <EmptyState
               icon={MessageSquare}
-              title="No messages yet"
-              description="Start the conversation by sending a message below"
+              title={t('noMessages')}
+              description={t('noMessagesDescription')}
             />
           </div>
         ) : (

@@ -29,8 +29,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Build CSV
+    type InvoiceRow = {
+      invoice_number: string;
+      client?: { company_name?: string; contact_name?: string } | null;
+      project?: { title?: string } | null;
+      issue_date: string;
+      due_date: string;
+      status: string;
+      subtotal?: number | null;
+      tax_amount?: number | null;
+      total?: number | null;
+      currency?: string | null;
+    };
+
     const headers = ['Invoice Number', 'Client', 'Project', 'Issue Date', 'Due Date', 'Status', 'Subtotal', 'Tax', 'Total', 'Currency'];
-    const rows = (invoices || []).map((inv: any) => [
+    const rows = (invoices || []).map((inv: InvoiceRow) => [
       inv.invoice_number,
       inv.client?.company_name || inv.client?.contact_name || '',
       inv.project?.title || '',

@@ -15,10 +15,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/use-auth';
 import { signOut } from '@/lib/actions/auth';
+import { useTranslations } from 'next-intl';
 
 export function UserNav() {
   const { profile, user } = useAuth();
   const router = useRouter();
+  const t = useTranslations('common');
 
   const getInitials = (name: string | null | undefined) => {
     if (!name) return 'U';
@@ -60,19 +62,19 @@ export function UserNav() {
         <DropdownMenuItem asChild>
           <Link href="/client/profile" className="cursor-pointer">
             <User className="mr-2 h-4 w-4" />
-            <span>My Profile</span>
+            <span>{t('profile')}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/client/settings" className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>{t('settings')}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t('logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

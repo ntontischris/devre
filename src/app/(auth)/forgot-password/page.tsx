@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { createClient } from '@/lib/supabase/client';
 import { forgotPasswordSchema } from '@/lib/schemas/auth';
@@ -17,6 +18,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations('auth');
+  const tc = useTranslations('common');
+  const tToast = useTranslations('toast');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -42,9 +46,9 @@ export default function ForgotPasswordPage() {
       }
 
       setIsSuccess(true);
-      toast.success('Password reset email sent! Check your inbox.');
+      toast.success(t('resetLinkSent'));
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error(tToast('genericError'));
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -54,11 +58,11 @@ export default function ForgotPasswordPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Forgot password?</CardTitle>
+        <CardTitle>{t('forgotPassword')}</CardTitle>
         <CardDescription>
           {isSuccess
-            ? 'Check your email for a password reset link'
-            : 'Enter your email address and we\u2019ll send you a reset link'}
+            ? t('resetLinkSent')
+            : t('resetPasswordDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -66,22 +70,18 @@ export default function ForgotPasswordPage() {
           <div className="space-y-4">
             <div className="rounded-md bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 p-4">
               <p className="text-sm text-green-800 dark:text-green-200">
-                We&apos;ve sent a password reset link to your email address. Please check your inbox and
-                follow the instructions to reset your password.
+                {t('resetLinkSent')}
               </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Didn&apos;t receive the email? Check your spam folder or try again.
-            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{tc('email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('enterEmail')}
                 autoComplete="email"
                 {...register('email')}
               />
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Sending...' : 'Send reset link'}
+              {isLoading ? t('sending') : t('resetPassword')}
             </Button>
           </form>
         )}
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
           href="/login"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          Back to login
+          {t('backToLogin')}
         </Link>
       </CardFooter>
     </Card>

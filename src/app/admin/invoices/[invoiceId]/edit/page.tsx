@@ -3,6 +3,7 @@ import { getClients } from '@/lib/actions/clients';
 import { getProjects } from '@/lib/actions/projects';
 import { InvoiceForm } from '@/components/admin/invoices/invoice-form';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 interface EditInvoicePageProps {
@@ -10,19 +11,22 @@ interface EditInvoicePageProps {
 }
 
 export async function generateMetadata({ params }: EditInvoicePageProps): Promise<Metadata> {
+  const t = await getTranslations('invoices');
   const { invoiceId } = await params;
   const result = await getInvoice(invoiceId);
 
   if (result.error || !result.data) {
-    return { title: 'Invoice Not Found' };
+    return { title: t('invoiceDetails') };
   }
 
   return {
-    title: `Edit Invoice ${result.data.invoice_number}`,
+    title: `${t('editInvoice')} ${result.data.invoice_number}`,
   };
 }
 
 export default async function EditInvoicePage({ params }: EditInvoicePageProps) {
+  const t = await getTranslations('invoices');
+  const tc = await getTranslations('common');
   const { invoiceId } = await params;
   const [invoiceResult, clientsResult, projectsResult] = await Promise.all([
     getInvoice(invoiceId),
@@ -37,7 +41,7 @@ export default async function EditInvoicePage({ params }: EditInvoicePageProps) 
   if (clientsResult.error) {
     return (
       <div className="p-8">
-        <p className="text-destructive">Error loading clients: {clientsResult.error}</p>
+        <p className="text-destructive">{tc('errorLoading')} {tc('clients').toLowerCase()}: {clientsResult.error}</p>
       </div>
     );
   }
@@ -45,7 +49,7 @@ export default async function EditInvoicePage({ params }: EditInvoicePageProps) 
   if (projectsResult.error) {
     return (
       <div className="p-8">
-        <p className="text-destructive">Error loading projects: {projectsResult.error}</p>
+        <p className="text-destructive">{tc('errorLoading')} {tc('projects').toLowerCase()}: {projectsResult.error}</p>
       </div>
     );
   }
@@ -54,14 +58,14 @@ export default async function EditInvoicePage({ params }: EditInvoicePageProps) 
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Edit Invoice {invoiceResult.data.invoice_number}
+          {t('editInvoice')} {invoiceResult.data.invoice_number}
         </h1>
-        <p className="text-muted-foreground mt-2">Update invoice details</p>
+        <p className="text-muted-foreground mt-2">{t('description')}</p>
       </div>
       <InvoiceForm
-        invoice={invoiceResult.data}
-        clients={clientsResult.data ?? []}
-        projects={projectsResult.data ?? []}
+        invoice={invoiceResult.data as any}
+        clients={clientsResult.data as any[] ?? []}
+        projects={projectsResult.data as any[] ?? []}
         nextInvoiceNumber={invoiceResult.data.invoice_number}
       />
     </div>

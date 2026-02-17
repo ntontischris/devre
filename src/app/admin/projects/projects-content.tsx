@@ -9,12 +9,14 @@ import { ProjectList } from '@/components/admin/projects/project-list';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface ProjectsContentProps {
   projects: ProjectWithClient[];
 }
 
 export function ProjectsContent({ projects }: ProjectsContentProps) {
+  const t = useTranslations('projects');
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
 
   useEffect(() => {
@@ -33,15 +35,15 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Projects"
-        description="Manage all your video production projects"
+        title={t('title')}
+        description={t('description')}
       >
         <div className="flex items-center gap-3">
           <ViewToggle view={view} onViewChange={handleViewChange} />
           <Button asChild>
             <Link href="/admin/projects/new">
               <Plus className="h-4 w-4 mr-2" />
-              New Project
+              {t('addProject')}
             </Link>
           </Button>
         </div>

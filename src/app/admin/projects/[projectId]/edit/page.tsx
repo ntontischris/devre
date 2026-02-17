@@ -5,6 +5,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { ProjectForm } from '@/components/admin/projects/project-form';
 import { Card, CardContent } from '@/components/ui/card';
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 interface EditProjectPageProps {
   params: Promise<{ projectId: string }>;
@@ -13,17 +14,19 @@ interface EditProjectPageProps {
 export async function generateMetadata({ params }: EditProjectPageProps) {
   const { projectId } = await params;
   const result = await getProject(projectId);
+  const t = await getTranslations('projects');
 
   if (result.error) {
-    return { title: 'Edit Project' };
+    return { title: t('editProject') };
   }
 
   const project = result.data as ProjectWithClient;
-  return { title: `Edit ${project.title}` };
+  return { title: `${t('editProject')}: ${project.title}` };
 }
 
 export default async function EditProjectPage({ params }: EditProjectPageProps) {
   const { projectId } = await params;
+  const t = await getTranslations('projects');
 
   const [projectResult, clientsResult] = await Promise.all([
     getProject(projectId),
@@ -44,8 +47,8 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Edit ${project.title}`}
-        description="Update project information"
+        title={`${t('editProject')}: ${project.title}`}
+        description={t('description')}
       />
 
       <Card>

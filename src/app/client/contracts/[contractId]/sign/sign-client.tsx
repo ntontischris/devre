@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { CheckCircle } from 'lucide-react';
 import { ContractView } from '@/components/shared/contract-view';
 import { SignaturePad } from '@/components/shared/signature-pad';
@@ -10,13 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signContract } from '@/lib/actions/contracts';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
+import type { ContractWithRelations } from '@/types';
 
 interface SignContractClientProps {
-  contract: any;
+  contract: ContractWithRelations;
 }
 
 export function SignContractClient({ contract }: SignContractClientProps) {
   const router = useRouter();
+  const t = useTranslations('contracts');
   const [isSigning, setIsSigning] = useState(false);
   const [signed, setSigned] = useState(false);
 
@@ -33,7 +36,7 @@ export function SignContractClient({ contract }: SignContractClientProps) {
       return;
     }
 
-    toast.success('Contract signed successfully');
+    toast.success(t('contractSignedSuccess'));
     setSigned(true);
 
     // Redirect to contract view after 2 seconds

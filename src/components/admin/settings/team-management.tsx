@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { inviteTeamMember, updateTeamMemberRole, deactivateTeamMember } from '@/lib/actions/team';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import type { UserProfile } from '@/types';
 import type { UserRole } from '@/lib/constants';
@@ -50,6 +51,9 @@ type TeamManagementProps = {
 
 export function TeamManagement({ members }: TeamManagementProps) {
   const router = useRouter();
+  const tToast = useTranslations('toast');
+  const t = useTranslations('settings');
+  const tc = useTranslations('common');
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<UserRole>('admin');
@@ -57,7 +61,7 @@ export function TeamManagement({ members }: TeamManagementProps) {
 
   const handleInvite = async () => {
     if (!inviteEmail) {
-      toast.error('Please enter an email address');
+      toast.error(tToast('validationError'));
       return;
     }
 
@@ -67,7 +71,7 @@ export function TeamManagement({ members }: TeamManagementProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Team member invited successfully');
+      toast.success(tToast('sendSuccess'));
       setInviteEmail('');
       setInviteRole('admin');
       setIsInviteDialogOpen(false);
@@ -83,13 +87,13 @@ export function TeamManagement({ members }: TeamManagementProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Role updated successfully');
+      toast.success(tToast('updateSuccess'));
       router.refresh();
     }
   };
 
   const handleDeactivate = async (userId: string) => {
-    if (!confirm('Are you sure you want to deactivate this team member?')) {
+    if (!confirm(t('deactivateConfirm'))) {
       return;
     }
 
@@ -98,7 +102,7 @@ export function TeamManagement({ members }: TeamManagementProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Team member deactivated');
+      toast.success(tToast('deleteSuccess'));
       router.refresh();
     }
   };
@@ -108,26 +112,26 @@ export function TeamManagement({ members }: TeamManagementProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Team Members</CardTitle>
-            <CardDescription>Manage admin users and their roles</CardDescription>
+            <CardTitle>{t('teamMembers')}</CardTitle>
+            <CardDescription>{t('teamDescription')}</CardDescription>
           </div>
           <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Invite Member
+                {t('inviteMember')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Invite Team Member</DialogTitle>
+                <DialogTitle>{t('inviteTeamMember')}</DialogTitle>
                 <DialogDescription>
-                  Send an invitation to join your team
+                  {t('inviteDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">{t('emailAddress')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -137,7 +141,7 @@ export function TeamManagement({ members }: TeamManagementProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="role">{t('role')}</Label>
                   <Select
                     value={inviteRole}
                     onValueChange={(value) => setInviteRole(value as UserRole)}
@@ -146,8 +150,10 @@ export function TeamManagement({ members }: TeamManagementProps) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="super_admin">Super Admin</SelectItem>
+                      <SelectItem value="admin">{t('adminRole')}</SelectItem>
+                      <SelectItem value="super_admin">{t('superAdminRole')}</SelectItem>
+                      <SelectItem value="employee">{t('employeeRole')}</SelectItem>
+                      <SelectItem value="salesman">{t('salesmanRole')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -157,10 +163,10 @@ export function TeamManagement({ members }: TeamManagementProps) {
                   variant="outline"
                   onClick={() => setIsInviteDialogOpen(false)}
                 >
-                  Cancel
+                  {tc('cancel')}
                 </Button>
                 <Button onClick={handleInvite} disabled={isSubmitting}>
-                  {isSubmitting ? 'Sending...' : 'Send Invitation'}
+                  {isSubmitting ? t('sending') : t('sendInvitation')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -171,9 +177,9 @@ export function TeamManagement({ members }: TeamManagementProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead>{tc('name')}</TableHead>
+              <TableHead>{t('role')}</TableHead>
+              <TableHead>{t('joined')}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -181,7 +187,7 @@ export function TeamManagement({ members }: TeamManagementProps) {
             {members.map((member) => (
               <TableRow key={member.id}>
                 <TableCell className="font-medium">
-                  {member.display_name || 'Unnamed User'}
+                  {member.display_name || t('unnamedUser')}
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary">{USER_ROLE_LABELS[member.role]}</Badge>
@@ -200,18 +206,28 @@ export function TeamManagement({ members }: TeamManagementProps) {
                       <DropdownMenuItem
                         onClick={() => handleChangeRole(member.id, 'admin')}
                       >
-                        Change to Admin
+                        {t('changeToAdmin')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleChangeRole(member.id, 'super_admin')}
                       >
-                        Change to Super Admin
+                        {t('changeToSuperAdmin')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleChangeRole(member.id, 'employee')}
+                      >
+                        {t('changeToEmployee')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleChangeRole(member.id, 'salesman')}
+                      >
+                        {t('changeToSalesman')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive"
                         onClick={() => handleDeactivate(member.id)}
                       >
-                        Deactivate
+                        {t('deactivate')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, X, Calendar } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { BookingFormData } from './booking-wizard';
 
 interface StepDatesProps {
@@ -12,6 +13,8 @@ interface StepDatesProps {
 }
 
 export function StepDates({ formData, updateFormData }: StepDatesProps) {
+  const t = useTranslations('booking');
+
   const addPreferredDate = () => {
     updateFormData({
       preferred_dates: [...formData.preferred_dates, { date: '', time_slot: '' }],
@@ -35,9 +38,9 @@ export function StepDates({ formData, updateFormData }: StepDatesProps) {
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="h-5 w-5 text-muted-foreground" />
           <div>
-            <Label>Preferred Filming Dates (Optional)</Label>
+            <Label>{t('preferredFilmingDates')}</Label>
             <p className="text-xs text-muted-foreground mt-1">
-              Let us know when you'd like to schedule the filming. We'll confirm availability.
+              {t('preferredDatesHelp')}
             </p>
           </div>
         </div>
@@ -45,7 +48,7 @@ export function StepDates({ formData, updateFormData }: StepDatesProps) {
         <div className="space-y-3">
           {formData.preferred_dates.length === 0 && (
             <div className="text-sm text-muted-foreground text-center py-8 border-2 border-dashed rounded-lg">
-              No dates added yet. Add your preferred dates below.
+              {t('noDatesAdded')}
             </div>
           )}
 
@@ -56,13 +59,13 @@ export function StepDates({ formData, updateFormData }: StepDatesProps) {
                   type="date"
                   value={dateInfo.date}
                   onChange={(e) => updatePreferredDate(index, 'date', e.target.value)}
-                  placeholder="Select date"
+                  placeholder={t('selectDate')}
                 />
                 <Input
                   type="text"
                   value={dateInfo.time_slot}
                   onChange={(e) => updatePreferredDate(index, 'time_slot', e.target.value)}
-                  placeholder="e.g., Morning, 2-5 PM"
+                  placeholder={t('timeSlotPlaceholder')}
                 />
               </div>
               <Button
@@ -83,7 +86,7 @@ export function StepDates({ formData, updateFormData }: StepDatesProps) {
             className="w-full gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add Preferred Date
+            {t('addPreferredDate')}
           </Button>
         </div>
       </div>

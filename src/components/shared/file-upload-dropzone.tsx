@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Upload, File, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface FileUploadDropzoneProps {
   accept?: Record<string, string[]>;
@@ -19,6 +20,7 @@ export function FileUploadDropzone({
   disabled = false,
   className,
 }: FileUploadDropzoneProps) {
+  const t = useTranslations('fileUpload');
   const [isDragOver, setIsDragOver] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -43,7 +45,7 @@ export function FileUploadDropzone({
     if (oversizedFiles.length > 0) {
       return {
         valid: [],
-        error: `File size exceeds ${Math.round(maxSize / 1024 / 1024)}MB limit`,
+        error: t('fileSizeExceeded', { size: Math.round(maxSize / 1024 / 1024) }),
       };
     }
 
@@ -62,7 +64,7 @@ export function FileUploadDropzone({
       if (invalidFiles.length > 0) {
         return {
           valid: [],
-          error: 'Invalid file type',
+          error: t('invalidFileType'),
         };
       }
     }
@@ -147,17 +149,17 @@ export function FileUploadDropzone({
           {isDragOver ? (
             <>
               <File className="h-10 w-10 text-primary" />
-              <p className="text-sm font-medium text-primary">Drop files here</p>
+              <p className="text-sm font-medium text-primary">{t('dragAndDrop')}</p>
             </>
           ) : (
             <>
               <Upload className="h-10 w-10 text-muted-foreground" />
               <div className="space-y-1">
                 <p className="text-sm font-medium">
-                  Click to upload or drag and drop
+                  {t('dragAndDrop')} {t('or')} {t('browse')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Max file size: {Math.round(maxSize / 1024 / 1024)}MB
+                  {t('maxSize', { size: `${Math.round(maxSize / 1024 / 1024)}MB` })}
                 </p>
               </div>
             </>

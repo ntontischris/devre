@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/shared/page-header';
 import { ContractView } from '@/components/shared/contract-view';
@@ -18,6 +19,7 @@ interface ContractViewPageProps {
 
 export function ContractViewPage({ contract }: ContractViewPageProps) {
   const router = useRouter();
+  const t = useTranslations('contracts');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -31,7 +33,7 @@ export function ContractViewPage({ contract }: ContractViewPageProps) {
       return;
     }
 
-    toast.success('Contract deleted successfully');
+    toast.success(t('contractDeletedSuccess'));
     router.push(`/admin/projects/${contract.project_id}`);
   };
 
@@ -52,9 +54,9 @@ export function ContractViewPage({ contract }: ContractViewPageProps) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast.success('PDF downloaded successfully');
-    } catch (error) {
-      toast.error('Failed to download PDF');
+      toast.success(t('pdfDownloaded'));
+    } catch {
+      toast.error(t('pdfDownloadFailed'));
     }
   };
 
@@ -68,10 +70,10 @@ export function ContractViewPage({ contract }: ContractViewPageProps) {
         toast.error(result.error);
         return;
       }
-      toast.success('Contract sent to client');
+      toast.success(t('contractSentToClient'));
       router.refresh();
     } catch {
-      toast.error('Failed to send contract');
+      toast.error(t('failedToSendContract'));
     } finally {
       setIsSending(false);
     }

@@ -33,8 +33,8 @@ export function SidebarNav({
       className={cn(
         'w-full justify-start gap-3 transition-colors',
         isActive
-          ? 'bg-accent text-accent-foreground'
-          : 'hover:bg-accent/50 text-muted-foreground hover:text-foreground',
+          ? 'bg-amber-500/10 text-amber-400 border-l-2 border-amber-400'
+          : 'hover:bg-white/5 text-zinc-400 hover:text-zinc-200 border-l-2 border-transparent',
         isCollapsed ? 'px-2 justify-center' : 'px-4'
       )}
     >

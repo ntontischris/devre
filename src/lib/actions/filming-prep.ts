@@ -7,14 +7,14 @@ import {
   createConceptNoteSchema,
   updateConceptNoteSchema,
 } from '@/lib/schemas/filming-prep';
-import type { ActionResult } from '@/types/index';
+import type { ActionResult, EquipmentList, ShotList, ConceptNote } from '@/types/index';
 import { revalidatePath } from 'next/cache';
 
-export async function getEquipmentList(projectId: string): Promise<ActionResult<any>> {
+export async function getEquipmentList(projectId: string): Promise<ActionResult<EquipmentList>> {
   try {
     const supabase = await createClient();
 
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('equipment_lists')
       .select('*')
       .eq('project_id', projectId)
@@ -31,18 +31,18 @@ export async function getEquipmentList(projectId: string): Promise<ActionResult<
         .single();
 
       if (createError) return { data: null, error: createError.message };
-      data = newList;
+      return { data: newList, error: null };
     } else if (error) {
       return { data: null, error: error.message };
     }
 
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch equipment list' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch equipment list' };
   }
 }
 
-export async function updateEquipmentList(projectId: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateEquipmentList(projectId: string, input: unknown): Promise<ActionResult<EquipmentList>> {
   try {
     const validated = updateEquipmentListSchema.parse(input);
     const supabase = await createClient();
@@ -66,7 +66,7 @@ export async function updateEquipmentList(projectId: string, input: unknown): Pr
   }
 }
 
-export async function getShotLists(projectId: string): Promise<ActionResult<any[]>> {
+export async function getShotLists(projectId: string): Promise<ActionResult<ShotList[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -77,12 +77,12 @@ export async function getShotLists(projectId: string): Promise<ActionResult<any[
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch shot lists' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch shot lists' };
   }
 }
 
-export async function createShotList(projectId: string): Promise<ActionResult<any>> {
+export async function createShotList(projectId: string): Promise<ActionResult<ShotList>> {
   try {
     const supabase = await createClient();
 
@@ -99,12 +99,12 @@ export async function createShotList(projectId: string): Promise<ActionResult<an
 
     revalidatePath(`/admin/projects/${projectId}/prep`);
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to create shot list' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to create shot list' };
   }
 }
 
-export async function updateShotList(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateShotList(id: string, input: unknown): Promise<ActionResult<ShotList>> {
   try {
     const validated = updateShotListSchema.parse(input);
     const supabase = await createClient();
@@ -130,7 +130,7 @@ export async function updateShotList(id: string, input: unknown): Promise<Action
   }
 }
 
-export async function getConceptNotes(projectId: string): Promise<ActionResult<any[]>> {
+export async function getConceptNotes(projectId: string): Promise<ActionResult<ConceptNote[]>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -141,12 +141,12 @@ export async function getConceptNotes(projectId: string): Promise<ActionResult<a
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch concept notes' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch concept notes' };
   }
 }
 
-export async function getConceptNote(id: string): Promise<ActionResult<any>> {
+export async function getConceptNote(id: string): Promise<ActionResult<ConceptNote>> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -157,12 +157,12 @@ export async function getConceptNote(id: string): Promise<ActionResult<any>> {
 
     if (error) return { data: null, error: error.message };
     return { data, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to fetch concept note' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch concept note' };
   }
 }
 
-export async function createConceptNote(input: unknown): Promise<ActionResult<any>> {
+export async function createConceptNote(input: unknown): Promise<ActionResult<ConceptNote>> {
   try {
     const validated = createConceptNoteSchema.parse(input);
     const supabase = await createClient();
@@ -185,7 +185,7 @@ export async function createConceptNote(input: unknown): Promise<ActionResult<an
   }
 }
 
-export async function updateConceptNote(id: string, input: unknown): Promise<ActionResult<any>> {
+export async function updateConceptNote(id: string, input: unknown): Promise<ActionResult<ConceptNote>> {
   try {
     const validated = updateConceptNoteSchema.parse(input);
     const supabase = await createClient();
@@ -232,7 +232,7 @@ export async function deleteConceptNote(id: string): Promise<ActionResult<void>>
       revalidatePath(`/admin/projects/${note.project_id}/prep`);
     }
     return { data: undefined, error: null };
-  } catch (error) {
-    return { data: null, error: 'Failed to delete concept note' };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to delete concept note' };
   }
 }

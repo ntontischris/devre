@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -28,6 +29,8 @@ const EXPENSE_COLORS = [
 ];
 
 export function ExpenseReport({ expensesByCategory, profitData }: ExpenseReportProps) {
+  const t = useTranslations('reports');
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('el-GR', {
       style: 'currency',
@@ -45,7 +48,7 @@ export function ExpenseReport({ expensesByCategory, profitData }: ExpenseReportP
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Expenses by Category</CardTitle>
+          <CardTitle>{t('expensesByCategory')}</CardTitle>
           <CardDescription>Breakdown of expenses</CardDescription>
         </CardHeader>
         <CardContent>
@@ -93,15 +96,15 @@ export function ExpenseReport({ expensesByCategory, profitData }: ExpenseReportP
         <CardContent>
           <div className="space-y-6">
             <div>
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
+              <p className="text-sm text-muted-foreground">{t('totalRevenue')}</p>
               <p className="text-2xl font-bold">{formatCurrency(profitData.revenue)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Expenses</p>
+              <p className="text-sm text-muted-foreground">{t('totalExpenses')}</p>
               <p className="text-2xl font-bold">{formatCurrency(profitData.expenses)}</p>
             </div>
             <div className="pt-4 border-t">
-              <p className="text-sm text-muted-foreground">Net Profit</p>
+              <p className="text-sm text-muted-foreground">{t('netProfit')}</p>
               <div className="flex items-center gap-2 mt-1">
                 <p
                   className={`text-2xl font-bold ${

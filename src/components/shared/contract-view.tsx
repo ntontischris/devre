@@ -6,13 +6,26 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { FileText } from 'lucide-react';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { useTranslations } from 'next-intl';
+
+interface Contract {
+  id: string;
+  title: string;
+  content: string;
+  status: string;
+  created_at: string;
+  expires_at?: string | null;
+  signature_image?: string | null;
+  signed_at?: string | null;
+}
 
 interface ContractViewProps {
-  contract: any;
+  contract: Contract;
   showSignature?: boolean;
 }
 
 export function ContractView({ contract, showSignature = false }: ContractViewProps) {
+  const t = useTranslations('contracts');
   return (
     <div className="space-y-6">
       <Card>
@@ -27,7 +40,7 @@ export function ContractView({ contract, showSignature = false }: ContractViewPr
                 <div className="flex items-center gap-3 mt-2">
                   <StatusBadge status={contract.status} />
                   <span className="text-sm text-muted-foreground">
-                    Created {format(new Date(contract.created_at), 'MMMM d, yyyy')}
+                    {t('created')} {format(new Date(contract.created_at), 'MMMM d, yyyy')}
                   </span>
                 </div>
               </div>
@@ -37,7 +50,7 @@ export function ContractView({ contract, showSignature = false }: ContractViewPr
           {contract.expires_at && (
             <div className="flex items-center gap-2">
               <Badge variant="outline">
-                Expires {format(new Date(contract.expires_at), 'MMMM d, yyyy')}
+                {t('expires')} {format(new Date(contract.expires_at), 'MMMM d, yyyy')}
               </Badge>
             </div>
           )}
@@ -54,19 +67,19 @@ export function ContractView({ contract, showSignature = false }: ContractViewPr
       {showSignature && contract.status === 'signed' && contract.signature_image && (
         <Card>
           <CardHeader>
-            <h2 className="text-lg font-semibold">Signature</h2>
+            <h2 className="text-lg font-semibold">{t('signatureLabel')}</h2>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="border rounded-lg p-4 bg-muted/10 inline-block">
                 <img
                   src={contract.signature_image}
-                  alt="Contract signature"
+                  alt={t('contractSignature')}
                   className="h-24"
                 />
               </div>
               <p className="text-sm text-muted-foreground">
-                Signed on {format(new Date(contract.signed_at), 'MMMM d, yyyy \'at\' h:mm a')}
+                {t('signedOn', { date: format(new Date(contract.signed_at!), 'MMMM d, yyyy'), time: format(new Date(contract.signed_at!), 'h:mm a') })}
               </p>
             </div>
           </CardContent>

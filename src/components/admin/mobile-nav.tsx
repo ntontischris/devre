@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +14,9 @@ import {
   BarChart3,
   MessageSquare,
   Settings,
+  UserPlus,
+  GraduationCap,
+  FolderOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,59 +26,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-
-const NAV_ITEMS = [
-  {
-    href: '/admin/dashboard',
-    icon: LayoutDashboard,
-    label: 'Dashboard',
-  },
-  {
-    href: '/admin/clients',
-    icon: Users,
-    label: 'Clients',
-  },
-  {
-    href: '/admin/projects',
-    icon: FolderKanban,
-    label: 'Projects',
-  },
-  {
-    href: '/admin/invoices',
-    icon: Receipt,
-    label: 'Invoices',
-  },
-  {
-    href: '/admin/calendar',
-    icon: CalendarDays,
-    label: 'Calendar',
-  },
-  {
-    href: '/admin/filming-prep',
-    icon: Film,
-    label: 'Filming Prep',
-  },
-  {
-    href: '/admin/contracts',
-    icon: FileText,
-    label: 'Contracts',
-  },
-  {
-    href: '/admin/reports',
-    icon: BarChart3,
-    label: 'Reports',
-  },
-  {
-    href: '/admin/messages',
-    icon: MessageSquare,
-    label: 'Messages',
-  },
-  {
-    href: '/admin/settings',
-    icon: Settings,
-    label: 'Settings',
-  },
-];
+import { useTranslations } from 'next-intl';
 
 interface MobileNavProps {
   open: boolean;
@@ -84,6 +35,75 @@ interface MobileNavProps {
 
 export function MobileNav({ open, onOpenChange }: MobileNavProps) {
   const pathname = usePathname();
+  const t = useTranslations('nav');
+
+  const NAV_ITEMS = [
+    {
+      href: '/admin/dashboard',
+      icon: LayoutDashboard,
+      label: t('dashboard'),
+    },
+    {
+      href: '/admin/clients',
+      icon: Users,
+      label: t('clients'),
+    },
+    {
+      href: '/admin/projects',
+      icon: FolderKanban,
+      label: t('projects'),
+    },
+    {
+      href: '/admin/invoices',
+      icon: Receipt,
+      label: t('invoices'),
+    },
+    {
+      href: '/admin/calendar',
+      icon: CalendarDays,
+      label: t('calendar'),
+    },
+    {
+      href: '/admin/filming-prep',
+      icon: Film,
+      label: t('filmingPrep'),
+    },
+    {
+      href: '/admin/contracts',
+      icon: FileText,
+      label: t('contracts'),
+    },
+    {
+      href: '/admin/reports',
+      icon: BarChart3,
+      label: t('reports'),
+    },
+    {
+      href: '/admin/leads',
+      icon: UserPlus,
+      label: t('leads'),
+    },
+    {
+      href: '/admin/university',
+      icon: GraduationCap,
+      label: t('university'),
+    },
+    {
+      href: '/admin/sales-resources',
+      icon: FolderOpen,
+      label: t('salesResources'),
+    },
+    {
+      href: '/admin/messages',
+      icon: MessageSquare,
+      label: t('messages'),
+    },
+    {
+      href: '/admin/settings',
+      icon: Settings,
+      label: t('settings'),
+    },
+  ];
 
   const handleNavClick = () => {
     onOpenChange(false);
@@ -91,10 +111,17 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-64 p-0">
-        <SheetHeader className="h-16 flex items-center justify-center border-b px-4">
-          <SheetTitle className="font-bold text-xl tracking-tight">
-            DMS
+      <SheetContent side="left" className="w-64 p-0 bg-zinc-900 border-zinc-800 text-zinc-300">
+        <SheetHeader className="h-16 flex items-center justify-center border-b border-zinc-800 px-4">
+          <SheetTitle>
+            <Image
+              src="/images/Logo_Horizontal_Transparent.png"
+              alt="Devre Media"
+              width={112}
+              height={28}
+              className="h-6 w-auto"
+              priority
+            />
           </SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-1 p-4">
@@ -109,10 +136,10 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
                 asChild
                 variant="ghost"
                 className={cn(
-                  'w-full justify-start gap-3',
+                  'w-full justify-start gap-3 border-l-2 border-transparent',
                   isActive
-                    ? 'bg-accent text-accent-foreground'
-                    : 'hover:bg-accent/50 text-muted-foreground hover:text-foreground'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-400'
+                    : 'hover:bg-white/5 text-zinc-400 hover:text-zinc-200'
                 )}
                 onClick={handleNavClick}
               >

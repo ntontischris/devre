@@ -7,24 +7,25 @@ import { format } from 'date-fns';
 import { FolderKanban, Calendar, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { EmptyState } from '@/components/shared/empty-state';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import type { Project } from '@/types';
 
 interface ProjectsListProps {
-  projects: any[];
+  projects: Project[];
 }
 
 export function ProjectsList({ projects }: ProjectsListProps) {
   const router = useRouter();
+  const t = useTranslations('client.projects');
 
   if (projects.length === 0) {
     return (
       <EmptyState
         icon={FolderKanban}
-        title="No projects yet"
-        description="You don't have any projects at the moment"
+        title={t('noProjects')}
+        description={t('noProjectsDescription')}
         action={{
-          label: 'Book a filming',
+          label: t('bookFilming'),
           onClick: () => router.push('/client/book'),
         }}
       />
@@ -68,7 +69,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
   );
 }
 
-function ProjectCard({ project }: { project: any }) {
+function ProjectCard({ project }: { project: Project }) {
   const router = useRouter();
 
   return (
@@ -97,10 +98,10 @@ function ProjectCard({ project }: { project: any }) {
           </p>
         )}
 
-        {project.filming_date && (
+        {(project as any).filming_date && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            {format(new Date(project.filming_date), 'MMM d, yyyy')}
+            {format(new Date((project as any).filming_date), 'MMM d, yyyy')}
           </div>
         )}
 

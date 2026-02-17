@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -16,6 +17,8 @@ type ClientReportProps = {
 };
 
 export function ClientReport({ topClients }: ClientReportProps) {
+  const t = useTranslations('reports');
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('el-GR', {
       style: 'currency',
@@ -26,7 +29,7 @@ export function ClientReport({ topClients }: ClientReportProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top Clients by Revenue</CardTitle>
+        <CardTitle>{t('topClients')}</CardTitle>
         <CardDescription>Clients generating the most revenue</CardDescription>
       </CardHeader>
       <CardContent>
@@ -41,7 +44,7 @@ export function ClientReport({ topClients }: ClientReportProps) {
                 <TableHead>Rank</TableHead>
                 <TableHead>Client</TableHead>
                 <TableHead className="text-right">Projects</TableHead>
-                <TableHead className="text-right">Total Revenue</TableHead>
+                <TableHead className="text-right">{t('totalRevenue')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

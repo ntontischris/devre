@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { getEquipmentList, updateEquipmentList } from '@/lib/actions/filming-prep';
 import type { EquipmentItem } from '@/lib/schemas/filming-prep';
 import { Button } from '@/components/ui/button';
@@ -10,10 +11,28 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { EmptyState } from '@/components/shared/empty-state';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
-import { Plus, GripVertical, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Edit2, Check, X, Package } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  EQUIPMENT_CATALOG,
+  EQUIPMENT_CATEGORIES,
+  EQUIPMENT_CATEGORY_LABELS,
+  type CatalogEquipmentItem,
+  type EquipmentCategory,
+} from '@/lib/constants';
 import {
   DndContext,
   closestCenter,
@@ -41,11 +60,15 @@ interface EquipmentChecklistProps {
 }
 
 export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
+  const t = useTranslations('filmingPrep');
+  const tc = useTranslations('common');
   const [items, setItems] = useState<EquipmentItemWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [newItemName, setNewItemName] = useState('');
-  const [newItemQuantity, setNewItemQuantity] = useState('1');
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [selectedCatalogItems, setSelectedCatalogItems] = useState<Set<string>>(new Set());
+  const [customItemName, setCustomItemName] = useState('');
+  const [customItemQuantity, setCustomItemQuantity] = useState('1');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -54,56 +77,132 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
     })
   );
 
-  useEffect(() => {
-    loadEquipmentList();
-  }, [projectId]);
-
-  const loadEquipmentList = async () => {
+  const loadEquipmentList = useCallback(async () => {
     setLoading(true);
     const result = await getEquipmentList(projectId);
     if (result.error) {
-      toast.error('Failed to load equipment list');
+      toast.error(t('failedToLoadEquipment'));
       setLoading(false);
       return;
     }
 
-    const itemsWithIds: EquipmentItemWithId[] = (result.data?.items || []).map((item: EquipmentItem, index: number) => ({
+    const itemsWithIds: EquipmentItemWithId[] = (result.data?.items || []).map((item: any, index: number) => ({
       ...item,
       id: `item-${index}-${Date.now()}`,
     }));
     setItems(itemsWithIds);
     setLoading(false);
-  };
+  }, [projectId]);
+
+  useEffect(() => {
+    loadEquipmentList();
+  }, [loadEquipmentList]);
 
   const saveEquipmentList = async (updatedItems: EquipmentItemWithId[]) => {
     setSaving(true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const itemsWithoutIds = updatedItems.map(({ id, ...item }) => item);
     const result = await updateEquipmentList(projectId, { items: itemsWithoutIds });
     setSaving(false);
 
     if (result.error) {
-      toast.error('Failed to save equipment list');
+      toast.error(t('failedToSaveEquipment'));
       return false;
     }
 
     return true;
   };
 
-  const addItem = async () => {
-    if (!newItemName.trim()) {
-      toast.error('Please enter an item name');
+  // Open catalog dialog and pre-select items already in the list
+  const openCatalog = () => {
+    const existingNames = new Set(items.map(i => i.name));
+    const preSelected = new Set<string>();
+    EQUIPMENT_CATALOG.forEach(catItem => {
+      if (existingNames.has(catItem.name)) {
+        preSelected.add(catItem.name);
+      }
+    });
+    setSelectedCatalogItems(preSelected);
+    setCatalogOpen(true);
+  };
+
+  const toggleCatalogItem = (name: string) => {
+    setSelectedCatalogItems(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
+
+  const addFromCatalog = async () => {
+    const existingNames = new Set(items.map(i => i.name));
+    const toAdd: EquipmentItemWithId[] = [];
+    const toRemove = new Set<string>();
+
+    // Items that were in the catalog and are currently in the list but are now deselected → remove
+    EQUIPMENT_CATALOG.forEach(catItem => {
+      if (existingNames.has(catItem.name) && !selectedCatalogItems.has(catItem.name)) {
+        toRemove.add(catItem.name);
+      }
+    });
+
+    // Items that are selected but not yet in the list → add
+    selectedCatalogItems.forEach(name => {
+      if (!existingNames.has(name)) {
+        const catItem = EQUIPMENT_CATALOG.find(c => c.name === name);
+        if (catItem) {
+          toAdd.push({
+            id: `item-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            name: catItem.name,
+            quantity: 1,
+            checked: false,
+            notes: catItem.description,
+          });
+        }
+      }
+    });
+
+    const updatedItems = [
+      ...items.filter(i => !toRemove.has(i.name)),
+      ...toAdd,
+    ];
+
+    setItems(updatedItems);
+    setCatalogOpen(false);
+
+    const success = await saveEquipmentList(updatedItems);
+    if (success) {
+      const added = toAdd.length;
+      const removed = toRemove.size;
+      if (added > 0 && removed > 0) {
+        toast.success(t('itemsAddedAndRemoved', { added, removed }));
+      } else if (added > 0) {
+        toast.success(t('itemsAdded', { count: added }));
+      } else if (removed > 0) {
+        toast.success(t('itemsRemoved', { count: removed }));
+      }
+    }
+  };
+
+  const addCustomItem = async () => {
+    if (!customItemName.trim()) {
+      toast.error(t('enterItemName'));
       return;
     }
 
-    const quantity = parseInt(newItemQuantity);
+    const quantity = parseInt(customItemQuantity);
     if (isNaN(quantity) || quantity < 1) {
-      toast.error('Quantity must be at least 1');
+      toast.error(t('quantityAtLeastOne'));
       return;
     }
 
     const newItem: EquipmentItemWithId = {
       id: `item-${Date.now()}`,
-      name: newItemName.trim(),
+      name: customItemName.trim(),
       quantity,
       checked: false,
       notes: '',
@@ -111,12 +210,12 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
 
     const updatedItems = [...items, newItem];
     setItems(updatedItems);
-    setNewItemName('');
-    setNewItemQuantity('1');
+    setCustomItemName('');
+    setCustomItemQuantity('1');
 
     const success = await saveEquipmentList(updatedItems);
     if (success) {
-      toast.success('Item added');
+      toast.success(t('itemAdded'));
     }
   };
 
@@ -126,7 +225,7 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
 
     const success = await saveEquipmentList(updatedItems);
     if (success) {
-      toast.success('Item removed');
+      toast.success(t('itemRemoved'));
     }
   };
 
@@ -152,7 +251,7 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
 
     const success = await saveEquipmentList(updatedItems);
     if (success) {
-      toast.success('All items checked');
+      toast.success(t('allItemsChecked'));
     }
   };
 
@@ -162,7 +261,7 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
 
     const success = await saveEquipmentList(updatedItems);
     if (success) {
-      toast.success('All items unchecked');
+      toast.success(t('allItemsUnchecked'));
     }
   };
 
@@ -182,6 +281,12 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
   const checkedCount = items.filter(item => item.checked).length;
   const totalCount = items.length;
 
+  // Group catalog by category
+  const catalogByCategory = EQUIPMENT_CATEGORIES.reduce((acc, category) => {
+    acc[category] = EQUIPMENT_CATALOG.filter(item => item.category === category);
+    return acc;
+  }, {} as Record<EquipmentCategory, CatalogEquipmentItem[]>);
+
   if (loading) {
     return (
       <Card>
@@ -197,73 +302,137 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Equipment Checklist</CardTitle>
+            <CardTitle>{t('equipment')}</CardTitle>
             <CardDescription>
               {totalCount > 0 ? (
                 <span className="font-medium">
-                  {checkedCount}/{totalCount} items checked
+                  {t('itemsChecked', { checked: checkedCount, total: totalCount })}
                 </span>
               ) : (
-                'Add equipment items for filming'
+                t('addEquipmentForFilming')
               )}
             </CardDescription>
           </div>
-          {items.length > 0 && (
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={checkAll} disabled={saving}>
-                Check All
-              </Button>
-              <Button variant="outline" size="sm" onClick={uncheckAll} disabled={saving}>
-                Uncheck All
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            {items.length > 0 && (
+              <>
+                <Button variant="outline" size="sm" onClick={checkAll} disabled={saving}>
+                  {t('checkAllItems')}
+                </Button>
+                <Button variant="outline" size="sm" onClick={uncheckAll} disabled={saving}>
+                  {t('uncheckAllItems')}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Catalog picker button */}
+        <Dialog open={catalogOpen} onOpenChange={setCatalogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-full" onClick={openCatalog}>
+              <Package className="h-4 w-4 mr-2" />
+              {t('selectFromEquipmentCatalog')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>{t('equipmentCatalogTitle')}</DialogTitle>
+              <DialogDescription>
+                {t('selectEquipmentForShoot')}
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className="max-h-[60vh] pr-4">
+              <div className="space-y-4">
+                {EQUIPMENT_CATEGORIES.map(category => {
+                  const categoryItems = catalogByCategory[category];
+                  if (categoryItems.length === 0) return null;
+                  return (
+                    <div key={category}>
+                      <h4 className="font-semibold text-sm mb-2">
+                        {EQUIPMENT_CATEGORY_LABELS[category]}
+                      </h4>
+                      <div className="space-y-2">
+                        {categoryItems.map(catItem => (
+                          <label
+                            key={catItem.name}
+                            className="flex items-center gap-3 p-2 rounded-md hover:bg-accent cursor-pointer"
+                          >
+                            <Checkbox
+                              checked={selectedCatalogItems.has(catItem.name)}
+                              onCheckedChange={() => toggleCatalogItem(catItem.name)}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <span className="font-medium text-sm">{catItem.name}</span>
+                              <span className="text-xs text-muted-foreground ml-2">
+                                {catItem.description}
+                              </span>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      <Separator className="mt-3" />
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCatalogOpen(false)}>
+                {tc('cancel')}
+              </Button>
+              <Button onClick={addFromCatalog}>
+                {t('applySelection')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Custom item input (fallback) */}
         <div className="flex gap-2">
           <div className="flex-1 space-y-2">
-            <Label htmlFor="item-name">Item Name</Label>
+            <Label htmlFor="item-name">{t('customItem')}</Label>
             <Input
               id="item-name"
-              placeholder="e.g., Camera body"
-              value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
+              placeholder={t('addCustomItem')}
+              value={customItemName}
+              onChange={(e) => setCustomItemName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  addItem();
+                  addCustomItem();
                 }
               }}
             />
           </div>
           <div className="w-24 space-y-2">
-            <Label htmlFor="item-quantity">Qty</Label>
+            <Label htmlFor="item-quantity">{t('qtyPlaceholder')}</Label>
             <Input
               id="item-quantity"
               type="number"
               min="1"
-              value={newItemQuantity}
-              onChange={(e) => setNewItemQuantity(e.target.value)}
+              value={customItemQuantity}
+              onChange={(e) => setCustomItemQuantity(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  addItem();
+                  addCustomItem();
                 }
               }}
             />
           </div>
           <div className="flex items-end">
-            <Button onClick={addItem} disabled={saving}>
+            <Button onClick={addCustomItem} disabled={saving} variant="outline">
               <Plus className="h-4 w-4 mr-2" />
-              Add
+              {tc('add')}
             </Button>
           </div>
         </div>
 
         {items.length === 0 ? (
           <EmptyState
-            icon={Plus}
-            title="No equipment items"
-            description="Add your first equipment item to get started"
+            icon={Package}
+            title={t('noEquipmentSelected')}
+            description={t('selectEquipmentOrAddCustom')}
           />
         ) : (
           <DndContext
@@ -301,6 +470,8 @@ interface EquipmentItemRowProps {
 }
 
 function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: EquipmentItemRowProps) {
+  const t = useTranslations('filmingPrep');
+  const tc = useTranslations('common');
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(item.name);
   const [editQuantity, setEditQuantity] = useState(item.quantity.toString());
@@ -323,13 +494,13 @@ function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: Equi
 
   const handleSave = () => {
     if (!editName.trim()) {
-      toast.error('Item name cannot be empty');
+      toast.error(t('itemNameRequired'));
       return;
     }
 
     const quantity = parseInt(editQuantity);
     if (isNaN(quantity) || quantity < 1) {
-      toast.error('Quantity must be at least 1');
+      toast.error(t('quantityAtLeastOne'));
       return;
     }
 
@@ -339,7 +510,7 @@ function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: Equi
       notes: editNotes.trim(),
     });
     setIsEditing(false);
-    toast.success('Item updated');
+    toast.success(t('itemUpdated'));
   };
 
   const handleCancel = () => {
@@ -349,6 +520,9 @@ function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: Equi
     setIsEditing(false);
   };
 
+  // Check if this item is from the catalog
+  const catalogItem = EQUIPMENT_CATALOG.find(c => c.name === item.name);
+
   if (isEditing) {
     return (
       <div ref={setNodeRef} style={style} className="border rounded-lg p-4 space-y-3">
@@ -357,7 +531,7 @@ function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: Equi
             <Input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              placeholder="Item name"
+              placeholder={t('itemNamePlaceholder')}
             />
           </div>
           <div className="w-24">
@@ -366,24 +540,24 @@ function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: Equi
               min="1"
               value={editQuantity}
               onChange={(e) => setEditQuantity(e.target.value)}
-              placeholder="Qty"
+              placeholder={t('qtyPlaceholder')}
             />
           </div>
         </div>
         <Textarea
           value={editNotes}
           onChange={(e) => setEditNotes(e.target.value)}
-          placeholder="Notes (optional)"
+          placeholder={t('notesOptional')}
           rows={2}
         />
         <div className="flex gap-2">
           <Button size="sm" onClick={handleSave}>
             <Check className="h-4 w-4 mr-2" />
-            Save
+            {tc('save')}
           </Button>
           <Button size="sm" variant="outline" onClick={handleCancel}>
             <X className="h-4 w-4 mr-2" />
-            Cancel
+            {tc('cancel')}
           </Button>
         </div>
       </div>
@@ -417,6 +591,11 @@ function EquipmentItemRow({ item, onToggle, onDelete, onUpdate, disabled }: Equi
             {item.name}
           </span>
           <Badge variant="secondary">{item.quantity}x</Badge>
+          {catalogItem && (
+            <Badge variant="outline" className="text-xs">
+              {EQUIPMENT_CATEGORY_LABELS[catalogItem.category]}
+            </Badge>
+          )}
         </div>
         {item.notes && (
           <p className="text-sm text-muted-foreground mt-1">{item.notes}</p>

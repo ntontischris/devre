@@ -21,15 +21,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import type { FilmingRequest } from '@/types';
+import { useTranslations } from 'next-intl';
 
 interface FilmingRequestDetailProps {
-  request: any;
+  request: FilmingRequest & {
+    preferred_dates?: Array<{ date?: string; time_slot?: string }>;
+    reference_links?: string[];
+  };
 }
 
 export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
+  const t = useTranslations('filmingRequests');
+  const tc = useTranslations('common');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [adminNotes, setAdminNotes] = useState(request.admin_notes || '');
+  const [adminNotes, setAdminNotes] = useState((request as any).admin_notes || '');
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<'accepted' | 'declined'>('accepted');
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
@@ -45,7 +52,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success(`Request ${status}`);
+      toast.success(t('requestStatusUpdate', { status }));
       setReviewDialogOpen(false);
       router.refresh();
     }
@@ -61,9 +68,9 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Successfully converted to project');
+      toast.success(t('convertedToProject'));
       setConvertDialogOpen(false);
-      router.push(`/admin/projects/${result.data.id}`);
+      router.push(`/admin/projects/${(result.data as any).id}`);
     }
 
     setLoading(false);
@@ -75,12 +82,12 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
   };
 
   const BUDGET_RANGE_LABELS: Record<string, string> = {
-    under_1000: 'Under €1,000',
-    '1000_2500': '€1,000 - €2,500',
-    '2500_5000': '€2,500 - €5,000',
-    '5000_10000': '€5,000 - €10,000',
-    '10000_plus': '€10,000+',
-    flexible: 'Flexible / To Be Discussed',
+    under_1000: t('budgetUnder1000'),
+    '1000_2500': t('budget1000_2500'),
+    '2500_5000': t('budget2500_5000'),
+    '5000_10000': t('budget5000_10000'),
+    '10000_plus': t('budget10000Plus'),
+    flexible: t('budgetFlexible'),
   };
 
   return (
@@ -97,12 +104,12 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
           </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold tracking-tight">
-              {request.title}
+              {(request as any).title}
             </h1>
             <div className="flex items-center gap-2 mt-2">
               <StatusBadge status={request.status} />
               <span className="text-sm text-muted-foreground">
-                Submitted {format(new Date(request.created_at), 'MMM d, yyyy')}
+                {t('submitted')} {format(new Date(request.created_at), 'MMM d, yyyy')}
               </span>
             </div>
           </div>
@@ -115,7 +122,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
                 className="gap-2"
               >
                 <X className="h-4 w-4" />
-                Decline
+                {t('decline')}
               </Button>
               <Button
                 onClick={() => openReviewDialog('accepted')}
@@ -123,7 +130,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
                 className="gap-2"
               >
                 <Check className="h-4 w-4" />
-                Accept
+                {t('accept')}
               </Button>
             </div>
           )}
@@ -134,7 +141,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
               className="gap-2"
             >
               <FolderKanban className="h-4 w-4" />
-              Convert to Project
+              {t('convertToProject')}
             </Button>
           )}
         </div>
@@ -142,15 +149,15 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
         {/* Request Details */}
         <Card>
           <CardHeader>
-            <CardTitle>Request Details</CardTitle>
+            <CardTitle>{t('requestDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-sm font-medium text-muted-foreground">Project Type</div>
+              <div className="text-sm font-medium text-muted-foreground">{t('projectType')}</div>
               <div className="text-base">
                 {request.project_type
                   ? PROJECT_TYPE_LABELS[request.project_type as keyof typeof PROJECT_TYPE_LABELS]
-                  : 'Not specified'}
+                  : t('notSpecified')}
               </div>
             </div>
 
@@ -158,7 +165,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
               <>
                 <Separator />
                 <div>
-                  <div className="text-sm font-medium text-muted-foreground">Description</div>
+                  <div className="text-sm font-medium text-muted-foreground">{tc('description')}</div>
                   <div className="text-sm whitespace-pre-wrap mt-1">
                     {request.description}
                   </div>
@@ -171,7 +178,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
                 <Separator />
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-2">
-                    Reference Links
+                    {t('referenceLinks')}
                   </div>
                   <div className="space-y-1">
                     {request.reference_links.map((link: string, index: number) => (
@@ -199,18 +206,18 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Preferred Dates
+                {t('preferredDates')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {request.preferred_dates.map((dateInfo: any, index: number) => (
+                {request.preferred_dates.map((dateInfo, index: number) => (
                   <div key={index} className="flex items-center gap-2 text-sm p-2 border rounded">
                     <Check className="h-4 w-4 text-muted-foreground" />
                     <span>
                       {dateInfo.date
                         ? format(new Date(dateInfo.date), 'MMMM d, yyyy')
-                        : 'Date not specified'}
+                        : t('dateNotSpecified')}
                       {dateInfo.time_slot && ` - ${dateInfo.time_slot}`}
                     </span>
                   </div>
@@ -221,18 +228,18 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
         )}
 
         {/* Additional Details */}
-        {(request.location || request.budget_range) && (
+        {((request as any).location || request.budget_range) && (
           <Card>
             <CardHeader>
-              <CardTitle>Additional Details</CardTitle>
+              <CardTitle>{t('additionalDetails')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {request.location && (
+              {(request as any).location && (
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground">Location</div>
-                    <div className="text-sm">{request.location}</div>
+                    <div className="text-sm font-medium text-muted-foreground">{t('location')}</div>
+                    <div className="text-sm">{(request as any).location}</div>
                   </div>
                 </div>
               )}
@@ -241,7 +248,7 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
                 <div className="flex items-start gap-2">
                   <DollarSign className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground">Budget Range</div>
+                    <div className="text-sm font-medium text-muted-foreground">{t('budgetRange')}</div>
                     <div className="text-sm">
                       {BUDGET_RANGE_LABELS[request.budget_range] || request.budget_range}
                     </div>
@@ -255,15 +262,15 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
         {/* Admin Notes */}
         <Card>
           <CardHeader>
-            <CardTitle>Admin Notes</CardTitle>
+            <CardTitle>{t('adminNotes')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Label htmlFor="admin-notes">Internal notes (not visible to client)</Label>
+            <Label htmlFor="admin-notes">{t('internalNotesInfo')}</Label>
             <Textarea
               id="admin-notes"
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              placeholder="Add notes about this request..."
+              placeholder={t('addNotesPlaceholder')}
               rows={4}
               disabled={request.status !== 'pending'}
             />
@@ -276,22 +283,22 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {reviewStatus === 'accepted' ? 'Accept Request' : 'Decline Request'}
+              {reviewStatus === 'accepted' ? t('acceptRequest') : t('declineRequest')}
             </DialogTitle>
             <DialogDescription>
               {reviewStatus === 'accepted'
-                ? 'Accept this filming request and notify the client.'
-                : 'Decline this filming request. The client will be notified.'}
+                ? t('acceptDescription')
+                : t('declineDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="review-notes">Admin Notes (Optional)</Label>
+            <Label htmlFor="review-notes">{t('adminNotesOptional')}</Label>
             <Textarea
               id="review-notes"
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              placeholder="Add internal notes..."
+              placeholder={t('addInternalNotes')}
               rows={3}
             />
           </div>
@@ -302,14 +309,14 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
               onClick={() => setReviewDialogOpen(false)}
               disabled={loading}
             >
-              Cancel
+              {tc('cancel')}
             </Button>
             <Button
               onClick={() => handleReview(reviewStatus)}
               disabled={loading}
               variant={reviewStatus === 'declined' ? 'destructive' : 'default'}
             >
-              {loading ? 'Processing...' : reviewStatus === 'accepted' ? 'Accept' : 'Decline'}
+              {loading ? t('processing') : reviewStatus === 'accepted' ? t('accept') : t('decline')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -319,9 +326,9 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
       <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Convert to Project</DialogTitle>
+            <DialogTitle>{t('convertToProject')}</DialogTitle>
             <DialogDescription>
-              This will create a new project from this filming request and mark the request as converted.
+              {t('convertDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -331,13 +338,13 @@ export function FilmingRequestDetail({ request }: FilmingRequestDetailProps) {
               onClick={() => setConvertDialogOpen(false)}
               disabled={loading}
             >
-              Cancel
+              {tc('cancel')}
             </Button>
             <Button
               onClick={handleConvertToProject}
               disabled={loading}
             >
-              {loading ? 'Converting...' : 'Convert to Project'}
+              {loading ? t('converting') : t('convertToProject')}
             </Button>
           </DialogFooter>
         </DialogContent>

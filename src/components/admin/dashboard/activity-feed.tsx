@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
@@ -26,6 +29,8 @@ function getActivityLink(activity: ActivityLogWithUser): string | null {
 }
 
 export function ActivityFeed({ activities }: ActivityFeedProps) {
+  const t = useTranslations('dashboard');
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -44,12 +49,12 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Latest actions and changes in the system</CardDescription>
+          <CardTitle>{t('recentActivity')}</CardTitle>
+          <CardDescription>{t('latestActionsDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-8">
-            No recent activity
+            {t('noActivity')}
           </p>
         </CardContent>
       </Card>
@@ -59,7 +64,7 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle>{t('recentActivity')}</CardTitle>
         <CardDescription>Latest actions and changes in the system</CardDescription>
       </CardHeader>
       <CardContent>
@@ -71,7 +76,7 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={activity.user.avatar_url || undefined} />
                   <AvatarFallback>
-                    {getInitials(activity.user.display_name || 'User')}
+                    {getInitials(activity.user.display_name || t('user'))}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">

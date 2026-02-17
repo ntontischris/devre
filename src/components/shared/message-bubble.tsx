@@ -6,6 +6,7 @@ import { ReadReceiptIndicator } from '@/components/shared/read-receipt-indicator
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import type { Attachment } from '@/lib/schemas/message';
+import { useTranslations } from 'next-intl';
 
 interface MessageBubbleProps {
   id: string;
@@ -29,20 +30,21 @@ export function MessageBubble({
   sender,
   attachments,
 }: MessageBubbleProps) {
+  const t = useTranslations('messages');
   return (
     <div
       className={cn('flex gap-3 items-start', isOwn ? 'flex-row-reverse' : 'flex-row')}
     >
       <UserAvatar
         src={sender.avatar_url}
-        name={sender.display_name || 'Unknown User'}
+        name={sender.display_name || t('unknownUser')}
         size="sm"
         className="flex-shrink-0"
       />
 
       <div className={cn('flex flex-col gap-1 max-w-[70%]', isOwn ? 'items-end' : 'items-start')}>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {!isOwn && <span className="font-medium">{sender.display_name || 'Unknown User'}</span>}
+          {!isOwn && <span className="font-medium">{sender.display_name || t('unknownUser')}</span>}
           <span>{format(new Date(createdAt), 'MMM d, h:mm a')}</span>
         </div>
 

@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import dynamic from 'next/dynamic';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +25,7 @@ const TiptapEditor = dynamic(
 );
 import { createContractTemplate, updateContractTemplate } from '@/lib/actions/contracts';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
+import type { ContractTemplate } from '@/types';
 
 const templateSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
@@ -34,12 +35,13 @@ const templateSchema = z.object({
 type TemplateFormData = z.infer<typeof templateSchema>;
 
 interface TemplateFormProps {
-  template?: any | null;
-  onSuccess: (template: any) => void;
+  template?: ContractTemplate | null;
+  onSuccess: (template: ContractTemplate) => void;
   onCancel: () => void;
 }
 
 export function TemplateForm({ template, onSuccess, onCancel }: TemplateFormProps) {
+  const t = useTranslations('contracts');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [content, setContent] = useState(template?.content || '');
   const [placeholders, setPlaceholders] = useState<string[]>([]);
@@ -92,7 +94,7 @@ export function TemplateForm({ template, onSuccess, onCancel }: TemplateFormProp
       toast.success(
         template ? 'Template updated successfully' : 'Template created successfully'
       );
-      onSuccess(result.data);
+      onSuccess(result.data!);
     } finally {
       setIsSubmitting(false);
     }
@@ -119,7 +121,7 @@ export function TemplateForm({ template, onSuccess, onCancel }: TemplateFormProp
           <TiptapEditor
             content={content}
             onChange={setContent}
-            placeholder="Write your contract template here. Use {placeholder_name} for dynamic values like {client_name}, {project_title}, {date}, {amount}, etc."
+            placeholder={t('templatePlaceholder')}
           />
         </div>
         {errors.content && (

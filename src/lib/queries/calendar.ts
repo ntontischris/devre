@@ -65,7 +65,7 @@ export async function getCalendarEvents(): Promise<CalendarEvent[]> {
     }
 
     if (!tasksResult.error && tasksResult.data) {
-      tasksResult.data.forEach((task: any) => {
+      tasksResult.data.forEach((task) => {
         if (task.due_date) {
           events.push({
             id: `task-${task.id}`,
@@ -81,7 +81,7 @@ export async function getCalendarEvents(): Promise<CalendarEvent[]> {
     }
 
     if (!invoicesResult.error && invoicesResult.data) {
-      invoicesResult.data.forEach((invoice: any) => {
+      invoicesResult.data.forEach((invoice) => {
         if (invoice.due_date) {
           events.push({
             id: `invoice-${invoice.id}`,
@@ -97,8 +97,7 @@ export async function getCalendarEvents(): Promise<CalendarEvent[]> {
     }
 
     return events;
-  } catch (error) {
-    console.error('Error fetching calendar events:', error);
+  } catch {
     return [];
   }
 }

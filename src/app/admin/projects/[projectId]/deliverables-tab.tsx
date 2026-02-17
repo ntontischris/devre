@@ -7,6 +7,7 @@ import { DeliverableDetail } from '@/components/admin/deliverables/deliverable-d
 import { getDeliverablesByProject } from '@/lib/actions/deliverables'
 import { Loader2 } from 'lucide-react'
 import type { DeliverableStatus } from '@/lib/constants'
+import { useTranslations } from 'next-intl'
 
 type Deliverable = {
   id: string
@@ -29,6 +30,7 @@ type DeliverablesTabProps = {
 }
 
 export function DeliverablesTab({ projectId }: DeliverablesTabProps) {
+  const t = useTranslations('deliverables')
   const [deliverables, setDeliverables] = useState<Deliverable[]>([])
   const [selectedDeliverable, setSelectedDeliverable] = useState<Deliverable | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -45,7 +47,7 @@ export function DeliverablesTab({ projectId }: DeliverablesTabProps) {
       if (result.error) {
         setError(result.error)
       } else {
-        setDeliverables((result.data as Deliverable[]) ?? [])
+        setDeliverables((result.data as unknown as Deliverable[]) ?? [])
       }
 
       setIsLoading(false)
@@ -79,7 +81,7 @@ export function DeliverablesTab({ projectId }: DeliverablesTabProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-destructive">Failed to load deliverables</p>
+          <p className="text-sm font-medium text-destructive">{t('loadError')}</p>
           <p className="text-sm text-muted-foreground">{error}</p>
         </div>
       </div>

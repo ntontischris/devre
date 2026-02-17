@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTranslations } from 'next-intl';
 import { Plus, Trash2 } from 'lucide-react';
 import type { LineItem } from '@/lib/schemas/invoice';
 
@@ -17,6 +18,9 @@ const formatCurrency = (amount: number) => {
 };
 
 export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
+  const t = useTranslations('invoices');
+  const tc = useTranslations('common');
+
   const handleAddItem = () => {
     onChange([...items, { description: '', quantity: 1, unit_price: 0 }]);
   };
@@ -38,10 +42,10 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%]">Description</TableHead>
-              <TableHead className="w-[15%]">Quantity</TableHead>
-              <TableHead className="w-[20%]">Unit Price</TableHead>
-              <TableHead className="w-[20%] text-right">Total</TableHead>
+              <TableHead className="w-[40%]">{t('itemDescription')}</TableHead>
+              <TableHead className="w-[15%]">{t('quantity')}</TableHead>
+              <TableHead className="w-[20%]">{t('unitPrice')}</TableHead>
+              <TableHead className="w-[20%] text-right">{t('lineTotal')}</TableHead>
               <TableHead className="w-[5%]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -54,7 +58,7 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
                     <Input
                       value={item.description}
                       onChange={(e) => handleUpdateItem(index, 'description', e.target.value)}
-                      placeholder="Item description"
+                      placeholder={t('itemDescriptionPlaceholder')}
                     />
                   </TableCell>
                   <TableCell>
@@ -97,7 +101,7 @@ export function LineItemsEditor({ items, onChange }: LineItemsEditorProps) {
       </div>
       <Button type="button" variant="outline" onClick={handleAddItem}>
         <Plus className="mr-2 h-4 w-4" />
-        Add Line Item
+        {t('addLineItem')}
       </Button>
     </div>
   );

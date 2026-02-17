@@ -82,7 +82,7 @@ export function ProjectColumn({ status, projects, isOver, isDragging }: ProjectC
                 }
               `}
             >
-              {isOver ? 'Drop here' : 'Empty'}
+              {isOver ? '⬇' : '-'}
             </div>
           )}
           {projects.map((project) => (

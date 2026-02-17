@@ -11,6 +11,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Home } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 function formatSegment(segment: string): string {
   return segment
@@ -21,6 +22,7 @@ function formatSegment(segment: string): string {
 
 export function Breadcrumbs() {
   const pathname = usePathname();
+  const t = useTranslations('nav');
 
   const segments = pathname.split('/').filter((segment) => segment !== '');
 
@@ -30,6 +32,24 @@ export function Breadcrumbs() {
     segments.splice(adminIndex, 1);
   }
 
+  // Segment-to-translation-key mapping
+  const segmentLabels: Record<string, string> = {
+    'dashboard': t('dashboard'),
+    'clients': t('clients'),
+    'projects': t('projects'),
+    'invoices': t('invoices'),
+    'calendar': t('calendar'),
+    'filming-prep': t('filmingPrep'),
+    'filming-requests': t('filmingRequests'),
+    'contracts': t('contracts'),
+    'reports': t('reports'),
+    'settings': t('settings'),
+    'leads': t('leads'),
+    'university': t('university'),
+    'sales-resources': t('salesResources'),
+    'messages': t('messages'),
+  };
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -37,7 +57,7 @@ export function Breadcrumbs() {
           <BreadcrumbLink asChild>
             <Link href="/admin/dashboard" className="flex items-center gap-1">
               <Home className="h-4 w-4" />
-              <span className="sr-only">Dashboard</span>
+              <span className="sr-only">{t('dashboard')}</span>
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -45,7 +65,7 @@ export function Breadcrumbs() {
         {segments.map((segment, index) => {
           const isLast = index === segments.length - 1;
           const href = `/admin/${segments.slice(0, index + 1).join('/')}`;
-          const label = formatSegment(segment);
+          const label = segmentLabels[segment] || formatSegment(segment);
 
           return (
             <div key={href} className="flex items-center gap-1.5">

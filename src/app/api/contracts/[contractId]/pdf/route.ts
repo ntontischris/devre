@@ -34,8 +34,8 @@ export async function GET(
     const pdfBuffer = await renderToBuffer(
       ContractPDFTemplate({
         contract,
-        clientName: contract.client?.contact_name || contract.client?.company_name,
-        projectTitle: contract.project?.title,
+        clientName: contract.client?.contact_name || contract.client?.company_name || undefined,
+        projectTitle: contract.project?.title || undefined,
       })
     );
 

@@ -2,15 +2,19 @@
 
 import { Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ContractView } from '@/components/shared/contract-view';
 import { PageHeader } from '@/components/shared/page-header';
+import type { ContractWithRelations } from '@/types';
 
 interface ContractViewClientProps {
-  contract: any;
+  contract: ContractWithRelations;
 }
 
 export function ContractViewClient({ contract }: ContractViewClientProps) {
+  const t = useTranslations('contracts');
+
   const handleDownloadPDF = async () => {
     try {
       const response = await fetch(`/api/contracts/${contract.id}/pdf`);
@@ -28,9 +32,9 @@ export function ContractViewClient({ contract }: ContractViewClientProps) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast.success('PDF downloaded successfully');
-    } catch (error) {
-      toast.error('Failed to download PDF');
+      toast.success(t('pdfDownloaded'));
+    } catch {
+      toast.error(t('pdfDownloadFailed'));
     }
   };
 

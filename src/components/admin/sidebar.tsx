@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   Users,
@@ -15,67 +17,87 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  UserPlus,
+  GraduationCap,
+  FolderOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { SidebarNav } from './sidebar-nav';
-
-const NAV_ITEMS = [
-  {
-    href: '/admin/dashboard',
-    icon: LayoutDashboard,
-    label: 'Dashboard',
-  },
-  {
-    href: '/admin/clients',
-    icon: Users,
-    label: 'Clients',
-  },
-  {
-    href: '/admin/projects',
-    icon: FolderKanban,
-    label: 'Projects',
-  },
-  {
-    href: '/admin/invoices',
-    icon: Receipt,
-    label: 'Invoices',
-  },
-  {
-    href: '/admin/calendar',
-    icon: CalendarDays,
-    label: 'Calendar',
-  },
-  {
-    href: '/admin/filming-prep',
-    icon: Film,
-    label: 'Filming Prep',
-  },
-  {
-    href: '/admin/filming-requests',
-    icon: Video,
-    label: 'Filming Requests',
-  },
-  {
-    href: '/admin/contracts',
-    icon: FileText,
-    label: 'Contracts',
-  },
-  {
-    href: '/admin/reports',
-    icon: BarChart3,
-    label: 'Reports',
-  },
-  {
-    href: '/admin/settings',
-    icon: Settings,
-    label: 'Settings',
-  },
-];
+import { useTranslations } from 'next-intl';
 
 export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const t = useTranslations('nav');
+
+  const NAV_ITEMS = [
+    {
+      href: '/admin/dashboard',
+      icon: LayoutDashboard,
+      label: t('dashboard'),
+    },
+    {
+      href: '/admin/clients',
+      icon: Users,
+      label: t('clients'),
+    },
+    {
+      href: '/admin/projects',
+      icon: FolderKanban,
+      label: t('projects'),
+    },
+    {
+      href: '/admin/invoices',
+      icon: Receipt,
+      label: t('invoices'),
+    },
+    {
+      href: '/admin/calendar',
+      icon: CalendarDays,
+      label: t('calendar'),
+    },
+    {
+      href: '/admin/filming-prep',
+      icon: Film,
+      label: t('filmingPrep'),
+    },
+    {
+      href: '/admin/filming-requests',
+      icon: Video,
+      label: t('filmingRequests'),
+    },
+    {
+      href: '/admin/contracts',
+      icon: FileText,
+      label: t('contracts'),
+    },
+    {
+      href: '/admin/reports',
+      icon: BarChart3,
+      label: t('reports'),
+    },
+    {
+      href: '/admin/leads',
+      icon: UserPlus,
+      label: t('leads'),
+    },
+    {
+      href: '/admin/university',
+      icon: GraduationCap,
+      label: t('university'),
+    },
+    {
+      href: '/admin/sales-resources',
+      icon: FolderOpen,
+      label: t('salesResources'),
+    },
+    {
+      href: '/admin/settings',
+      icon: Settings,
+      label: t('settings'),
+    },
+  ];
 
   // Load collapsed state from localStorage
   useEffect(() => {
@@ -97,16 +119,30 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'hidden md:flex flex-col border-r bg-background transition-all duration-300',
+        'hidden md:flex flex-col border-r border-zinc-800 bg-zinc-900 transition-all duration-300',
         isCollapsed ? 'w-16' : 'w-64'
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-center border-b px-4">
-        <div className="font-bold text-xl tracking-tight">
-          {isCollapsed ? 'D' : 'DMS'}
-        </div>
-      </div>
+      <Link
+        href="/admin/dashboard"
+        className="h-16 flex items-center justify-center border-b border-zinc-800 px-4 hover:bg-white/5 transition-colors"
+      >
+        {isCollapsed ? (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-zinc-950 font-bold text-sm">
+            D
+          </div>
+        ) : (
+          <Image
+            src="/images/Logo_Horizontal_Transparent.png"
+            alt="Devre Media"
+            width={120}
+            height={32}
+            className="h-7 w-auto"
+            priority
+          />
+        )}
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-1">
@@ -123,13 +159,13 @@ export function Sidebar() {
       </nav>
 
       {/* Toggle Button */}
-      <div className="p-2 border-t">
+      <div className="p-2 border-t border-zinc-800">
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleCollapse}
-          className="w-full"
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="w-full text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+          aria-label={isCollapsed ? t('expandSidebar') : t('collapseSidebar')}
         >
           {isCollapsed ? (
             <ChevronRight className="h-5 w-5" />

@@ -18,6 +18,7 @@ import { TaskCard } from './task-card'
 import { TaskDetailSheet } from './task-detail-sheet'
 import { updateTaskStatus } from '@/lib/actions/tasks'
 import { TASK_STATUSES } from '@/lib/constants'
+import { useTranslations } from 'next-intl'
 
 type Task = {
   id: string
@@ -41,6 +42,7 @@ type TaskBoardProps = {
 }
 
 export function TaskBoard({ projectId, tasks }: TaskBoardProps) {
+  const t = useTranslations('tasks')
   const router = useRouter()
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -81,11 +83,9 @@ export function TaskBoard({ projectId, tasks }: TaskBoardProps) {
     const result = await updateTaskStatus(taskId, newStatus, newSortOrder)
 
     if (result.error) {
-      toast.error('Failed to update task status', {
-        description: result.error,
-      })
+      toast.error(result.error)
     } else {
-      toast.success('Task moved successfully')
+      toast.success(t('statusUpdated'))
       router.refresh()
     }
   }
@@ -137,7 +137,6 @@ export function TaskBoard({ projectId, tasks }: TaskBoardProps) {
         task={selectedTask}
         open={isSheetOpen}
         onOpenChange={handleSheetClose}
-        projectId={projectId}
       />
     </>
   )

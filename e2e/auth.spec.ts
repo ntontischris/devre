@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, loginAsClient, TEST_USERS, logout } from './helpers/auth';
+import { loginAsAdmin, loginAsClient, logout } from './helpers/auth';
 
 /**
  * Authentication E2E Tests

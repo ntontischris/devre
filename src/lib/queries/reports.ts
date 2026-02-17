@@ -68,8 +68,7 @@ export async function getMonthlyRevenue(dateRange?: DateRange): Promise<MonthlyR
       month,
       revenue,
     }));
-  } catch (error) {
-    console.error('Error fetching monthly revenue:', error);
+  } catch {
     return [];
   }
 }
@@ -84,7 +83,7 @@ export async function getPendingInvoiceTotal(): Promise<number> {
 
     if (error || !data) return 0;
     return data.reduce((sum, invoice) => sum + (invoice.total || 0), 0);
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -105,7 +104,7 @@ export async function getRevenueThisMonth(): Promise<number> {
 
     if (error || !data) return 0;
     return data.reduce((sum, invoice) => sum + (invoice.total || 0), 0);
-  } catch (error) {
+  } catch {
     return 0;
   }
 }
@@ -129,7 +128,8 @@ export async function getPaymentMethodBreakdown(dateRange?: DateRange): Promise<
     // Group by payment method (from metadata)
     const methodData: Record<string, { amount: number; count: number }> = {};
     data.forEach((invoice) => {
-      const method = (invoice.metadata as any)?.payment_method || 'Other';
+      const metadata = invoice.metadata as Record<string, unknown> | undefined;
+      const method = (metadata?.payment_method as string) || 'Other';
       if (!methodData[method]) {
         methodData[method] = { amount: 0, count: 0 };
       }
@@ -142,8 +142,7 @@ export async function getPaymentMethodBreakdown(dateRange?: DateRange): Promise<
       amount: data.amount,
       count: data.count,
     }));
-  } catch (error) {
-    console.error('Error fetching payment method breakdown:', error);
+  } catch {
     return [];
   }
 }
@@ -174,8 +173,7 @@ export async function getProjectTypeBreakdown(dateRange?: DateRange): Promise<Pr
       type: type as ProjectType,
       count,
     }));
-  } catch (error) {
-    console.error('Error fetching project type breakdown:', error);
+  } catch {
     return [];
   }
 }
@@ -198,10 +196,11 @@ export async function getTopClientsByRevenue(limit: number = 10, dateRange?: Dat
 
     // Group by client
     const clientData: Record<string, { name: string; revenue: number; count: number }> = {};
-    data.forEach((invoice: any) => {
+    data.forEach((invoice) => {
       const clientId = invoice.client_id;
+      const client = invoice.client as { company_name?: string; contact_name?: string } | undefined;
       if (!clientData[clientId]) {
-        const clientName = invoice.client?.company_name || invoice.client?.contact_name || 'Unknown';
+        const clientName = client?.company_name || client?.contact_name || 'Unknown';
         clientData[clientId] = { name: clientName, revenue: 0, count: 0 };
       }
       clientData[clientId].revenue += invoice.total || 0;
@@ -217,8 +216,7 @@ export async function getTopClientsByRevenue(limit: number = 10, dateRange?: Dat
       }))
       .sort((a, b) => b.total_revenue - a.total_revenue)
       .slice(0, limit);
-  } catch (error) {
-    console.error('Error fetching top clients:', error);
+  } catch {
     return [];
   }
 }
@@ -254,8 +252,7 @@ export async function getExpensesByCategory(dateRange?: DateRange): Promise<Expe
       amount: data.amount,
       count: data.count,
     }));
-  } catch (error) {
-    console.error('Error fetching expenses by category:', error);
+  } catch {
     return [];
   }
 }
@@ -293,8 +290,7 @@ export async function getProfitMargin(dateRange?: DateRange): Promise<{ revenue:
     const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
     return { revenue, expenses, profit, margin };
-  } catch (error) {
-    console.error('Error calculating profit margin:', error);
+  } catch {
     return { revenue: 0, expenses: 0, profit: 0, margin: 0 };
   }
 }
@@ -318,8 +314,7 @@ export async function getAverageProjectDuration(): Promise<number> {
     });
 
     return Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length);
-  } catch (error) {
-    console.error('Error calculating average project duration:', error);
+  } catch {
     return 0;
   }
 }

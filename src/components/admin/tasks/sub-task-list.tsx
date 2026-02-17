@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Plus, X, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -22,6 +23,9 @@ type SubTaskListProps = {
 
 export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
   const router = useRouter()
+  const t = useTranslations('tasks')
+  const tc = useTranslations('common')
+  const tToast = useTranslations('toast')
   const [subTasks, setSubTasks] = useState<SubTask[]>(initialSubTasks)
   const [isAdding, setIsAdding] = useState(false)
   const [newSubTaskTitle, setNewSubTaskTitle] = useState('')
@@ -37,7 +41,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
     setIsLoading(false)
 
     if (result.error) {
-      toast.error('Failed to update sub-tasks', {
+      toast.error(tToast('updateError'), {
         description: result.error,
       })
       return false
@@ -50,7 +54,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
 
   const handleAddSubTask = async () => {
     if (!newSubTaskTitle.trim()) {
-      toast.error('Sub-task title is required')
+      toast.error(tToast('validationError'))
       return
     }
 
@@ -66,7 +70,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
     if (success) {
       setNewSubTaskTitle('')
       setIsAdding(false)
-      toast.success('Sub-task added')
+      toast.success(t('taskCreated'))
     }
   }
 
@@ -83,7 +87,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
     const success = await updateSubTasks(updatedSubTasks)
 
     if (success) {
-      toast.success('Sub-task deleted')
+      toast.success(t('taskDeleted'))
     }
   }
 
@@ -94,7 +98,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">
-          Sub-tasks {totalCount > 0 && `(${completedCount}/${totalCount})`}
+          {t('subtasksHeading')} {totalCount > 0 && `(${completedCount}/${totalCount})`}
         </h3>
         {!isAdding && (
           <Button
@@ -104,7 +108,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
             disabled={isLoading}
           >
             <Plus className="h-4 w-4 mr-1" />
-            Add
+            {tc('add')}
           </Button>
         )}
       </div>
@@ -148,7 +152,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
       {isAdding && (
         <div className="space-y-2">
           <Input
-            placeholder="Sub-task title..."
+            placeholder={t('subtaskTitlePlaceholder')}
             value={newSubTaskTitle}
             onChange={(e) => setNewSubTaskTitle(e.target.value)}
             disabled={isLoading}
@@ -170,7 +174,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
               className="flex-1"
             >
               <Check className="h-4 w-4 mr-1" />
-              Add
+              {tc('add')}
             </Button>
             <Button
               variant="ghost"
@@ -189,7 +193,7 @@ export function SubTaskList({ taskId, initialSubTasks }: SubTaskListProps) {
 
       {!isAdding && totalCount === 0 && (
         <p className="text-sm text-muted-foreground text-center py-4">
-          No sub-tasks yet. Click Add to create one.
+          {t('noSubtasksYet')}
         </p>
       )}
     </div>

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { createClient } from '@/lib/supabase/client';
 import { loginSchema, forgotPasswordSchema } from '@/lib/schemas/auth';
@@ -28,6 +29,9 @@ type LoginInput = z.infer<typeof loginSchema>;
 type MagicLinkInput = z.infer<typeof forgotPasswordSchema>;
 
 function LoginForm() {
+  const t = useTranslations('auth');
+  const tc = useTranslations('common');
+  const tToast = useTranslations('toast');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -53,8 +57,8 @@ function LoginForm() {
   if (urlError) {
     toast.error(
       urlError === 'auth_callback_error'
-        ? 'Authentication failed. Please try again.'
-        : 'An error occurred',
+        ? t('authFailed')
+        : tc('error'),
     );
   }
 
@@ -72,11 +76,11 @@ function LoginForm() {
         return;
       }
 
-      toast.success('Successfully logged in!');
+      toast.success(t('signingIn'));
       router.refresh();
       router.push('/');
     } catch {
-      toast.error('An unexpected error occurred');
+      toast.error(tToast('genericError'));
     } finally {
       setIsLoading(false);
     }
@@ -98,9 +102,9 @@ function LoginForm() {
         return;
       }
 
-      toast.success('Magic link sent! Check your email to continue.');
+      toast.success(t('magicLinkSent'));
     } catch {
-      toast.error('An unexpected error occurred');
+      toast.error(tToast('genericError'));
     } finally {
       setIsMagicLinkLoading(false);
     }
@@ -109,24 +113,24 @@ function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
-        <CardDescription>Sign in to your account to continue</CardDescription>
+        <CardTitle>{t('welcomeBack')}</CardTitle>
+        <CardDescription>{t('signInDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="password" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="password">Password</TabsTrigger>
-            <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
+            <TabsTrigger value="password">{t('password')}</TabsTrigger>
+            <TabsTrigger value="magic-link">{t('magicLink')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="password">
             <form onSubmit={handleSubmit(onSubmitPassword)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{tc('email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t('enterEmail')}
                   autoComplete="email"
                   {...register('email')}
                 />
@@ -137,18 +141,18 @@ function LoginForm() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{tc('password')}</Label>
                   <Link
                     href="/forgot-password"
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Forgot password?
+                    {t('forgotPassword')}
                   </Link>
                 </div>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t('enterPassword')}
                   autoComplete="current-password"
                   {...register('password')}
                 />
@@ -158,7 +162,7 @@ function LoginForm() {
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? t('signingIn') : t('login')}
               </Button>
             </form>
           </TabsContent>
@@ -166,11 +170,11 @@ function LoginForm() {
           <TabsContent value="magic-link">
             <form onSubmit={handleSubmitMagicLink(onSubmitMagicLink)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="magic-email">Email</Label>
+                <Label htmlFor="magic-email">{tc('email')}</Label>
                 <Input
                   id="magic-email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t('enterEmail')}
                   autoComplete="email"
                   {...registerMagicLink('email')}
                 />
@@ -180,11 +184,11 @@ function LoginForm() {
               </div>
 
               <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
-                {"We'll send you a magic link to sign in without a password."}
+                {t('magicLinkDescription')}
               </div>
 
               <Button type="submit" className="w-full" disabled={isMagicLinkLoading}>
-                {isMagicLinkLoading ? 'Sending...' : 'Send Magic Link'}
+                {isMagicLinkLoading ? t('sending') : t('sendMagicLink')}
               </Button>
             </form>
           </TabsContent>
@@ -192,9 +196,9 @@ function LoginForm() {
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          {"Don't have an account? "}
+          {t('noAccount')}{' '}
           <Link href="/signup" className="font-medium text-foreground hover:underline">
-            Sign up
+            {t('signup')}
           </Link>
         </p>
       </CardFooter>

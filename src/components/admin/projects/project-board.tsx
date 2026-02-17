@@ -21,12 +21,14 @@ import { ProjectCard } from './project-card';
 import { updateProjectStatus } from '@/lib/actions/projects';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface ProjectBoardProps {
   projects: ProjectWithClient[];
 }
 
 export function ProjectBoard({ projects }: ProjectBoardProps) {
+  const t = useTranslations('projects');
   const router = useRouter();
   const [localProjects, setLocalProjects] = useState(projects);
   const [activeProject, setActiveProject] = useState<ProjectWithClient | null>(null);
@@ -90,12 +92,12 @@ export function ProjectBoard({ projects }: ProjectBoardProps) {
           p.id === draggedProject.id ? { ...p, status: draggedProject.status } : p
         )
       );
-      toast.error('Failed to update project status');
+      toast.error(result.error);
     } else {
-      toast.success('Project moved to ' + newStatus.replace('_', ' '));
+      toast.success(t('projectUpdated'));
       router.refresh();
     }
-  }, [activeProject, router]);
+  }, [activeProject, router, t]);
 
   const handleDragCancel = useCallback(() => {
     setActiveProject(null);

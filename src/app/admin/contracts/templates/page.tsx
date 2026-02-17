@@ -1,10 +1,15 @@
 import { getContractTemplates } from '@/lib/actions/contracts';
 import { TemplatesContent } from './templates-content';
+import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Contract Templates | Devre Media',
-  description: 'Manage contract templates',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('contracts');
+  return {
+    title: `${t('templates')} | Devre Media`,
+    description: t('description'),
+  };
+}
 
 export default async function ContractTemplatesPage() {
   const result = await getContractTemplates();

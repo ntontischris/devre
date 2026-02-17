@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { updateCompanySettings, getCompanySettings } from '@/lib/actions/settings';
+import { updateCompanySettings } from '@/lib/actions/settings';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import type { CompanySettings } from '@/lib/actions/settings';
 
@@ -16,6 +17,9 @@ type BrandingSettingsProps = {
 
 export function BrandingSettings({ settings }: BrandingSettingsProps) {
   const router = useRouter();
+  const tToast = useTranslations('toast');
+  const t = useTranslations('settings');
+  const tc = useTranslations('common');
   const [primaryColor, setPrimaryColor] = useState(settings.primary_color || '#000000');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,7 +35,7 @@ export function BrandingSettings({ settings }: BrandingSettingsProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Branding settings updated');
+      toast.success(tToast('saveSuccess'));
       router.refresh();
     }
 
@@ -41,15 +45,15 @@ export function BrandingSettings({ settings }: BrandingSettingsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Branding</CardTitle>
+        <CardTitle>{t('branding')}</CardTitle>
         <CardDescription>
-          Customize the appearance of your client portal and documents
+          {t('brandingDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="primary_color">Primary Color</Label>
+            <Label htmlFor="primary_color">{t('primaryColor')}</Label>
             <div className="flex gap-3 items-center">
               <Input
                 id="primary_color"
@@ -67,24 +71,24 @@ export function BrandingSettings({ settings }: BrandingSettingsProps) {
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              This color will be used for buttons, links, and accents
+              {t('primaryColorDescription')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label>Logo Upload</Label>
+            <Label>{t('logoUploadLabel')}</Label>
             <div className="border-2 border-dashed rounded-lg p-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Logo upload functionality will be available soon
+                {t('logoUploadSoon')}
               </p>
               <p className="text-xs text-muted-foreground mt-2">
-                For now, use the Logo URL field in Company Profile
+                {t('logoUploadNote')}
               </p>
             </div>
           </div>
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? tc('saving') : t('saveChanges')}
           </Button>
         </form>
       </CardContent>

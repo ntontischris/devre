@@ -8,15 +8,13 @@ import { setupAuthSession, ADMIN_STORAGE_STATE, CLIENT_STORAGE_STATE, TEST_USERS
  *
  * To use this, uncomment the globalSetup line in playwright.config.ts
  */
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   // Skip authentication setup if test users aren't ready
   if (!process.env.E2E_TEST_USERS_READY) {
     console.log('⚠️  E2E test users not configured. Skipping authentication setup.');
     console.log('   Set E2E_TEST_USERS_READY=1 when test users are created in database.');
     return;
   }
-
-  const { baseURL } = config.projects[0].use;
 
   console.log('🔐 Setting up authenticated sessions...');
 

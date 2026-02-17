@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
 import { createDeliverable } from '@/lib/actions/deliverables'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Upload, X, FileVideo } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -17,6 +18,8 @@ type VideoUploadProps = {
 }
 
 export function VideoUpload({ projectId, onUploadComplete }: VideoUploadProps) {
+  const t = useTranslations('deliverables')
+  const tToast = useTranslations('toast')
   const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState('')
   const [isUploading, setIsUploading] = useState(false)
@@ -25,7 +28,7 @@ export function VideoUpload({ projectId, onUploadComplete }: VideoUploadProps) {
 
   const handleFileSelect = (selectedFile: File) => {
     if (!selectedFile.type.startsWith('video/')) {
-      toast.error('Please select a valid video file')
+      toast.error(tToast('validationError'))
       return
     }
 
@@ -70,7 +73,7 @@ export function VideoUpload({ projectId, onUploadComplete }: VideoUploadProps) {
 
   const handleUpload = async () => {
     if (!file || !title.trim()) {
-      toast.error('Please select a file and provide a title')
+      toast.error(tToast('validationError'))
       return
     }
 
@@ -100,7 +103,7 @@ export function VideoUpload({ projectId, onUploadComplete }: VideoUploadProps) {
         throw new Error(result.error)
       }
 
-      toast.success('Video uploaded successfully')
+      toast.success(tToast('uploadSuccess'))
       handleRemoveFile()
       onUploadComplete()
     } catch (error) {
@@ -184,7 +187,7 @@ export function VideoUpload({ projectId, onUploadComplete }: VideoUploadProps) {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter video title"
+              placeholder={t('enterVideoTitle')}
               disabled={isUploading}
             />
           </div>

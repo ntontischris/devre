@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, Circle, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 type VideoAnnotation = {
   id: string
@@ -32,6 +33,7 @@ export function AnnotationList({
   onAnnotationClick,
   onResolve,
 }: AnnotationListProps) {
+  const t = useTranslations('deliverables');
   const sortedAnnotations = [...annotations].sort(
     (a, b) => a.timestamp_seconds - b.timestamp_seconds
   )
@@ -42,9 +44,9 @@ export function AnnotationList({
         <div className="flex flex-col items-center justify-center text-center space-y-2">
           <Circle className="h-8 w-8 text-muted-foreground" />
           <div className="space-y-1">
-            <p className="text-sm font-medium">No annotations yet</p>
+            <p className="text-sm font-medium">{t('annotations')}</p>
             <p className="text-xs text-muted-foreground">
-              Click on the timeline while playing to add annotations
+              {t('clickTimelineToAdd')}
             </p>
           </div>
         </div>
@@ -88,7 +90,7 @@ export function AnnotationList({
                   </Badge>
                   {annotation.resolved && (
                     <Badge variant="outline" className="text-xs bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20">
-                      Resolved
+                      {t('resolved')}
                     </Badge>
                   )}
                 </div>

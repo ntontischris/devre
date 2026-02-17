@@ -95,13 +95,13 @@ export async function getNotificationSettings(userId: string): Promise<ActionRes
       return { data: null, error: error.message };
     }
 
-    const preferences = data?.preferences as any || {};
+    const preferences = (data?.preferences as Record<string, unknown>) || {};
     const settings: NotificationSettings = {
-      email_new_project: preferences.email_new_project ?? true,
-      email_project_deadline: preferences.email_project_deadline ?? true,
-      email_invoice_paid: preferences.email_invoice_paid ?? true,
-      email_new_message: preferences.email_new_message ?? true,
-      email_deliverable_feedback: preferences.email_deliverable_feedback ?? true,
+      email_new_project: preferences.email_new_project !== undefined ? Boolean(preferences.email_new_project) : true,
+      email_project_deadline: preferences.email_project_deadline !== undefined ? Boolean(preferences.email_project_deadline) : true,
+      email_invoice_paid: preferences.email_invoice_paid !== undefined ? Boolean(preferences.email_invoice_paid) : true,
+      email_new_message: preferences.email_new_message !== undefined ? Boolean(preferences.email_new_message) : true,
+      email_deliverable_feedback: preferences.email_deliverable_feedback !== undefined ? Boolean(preferences.email_deliverable_feedback) : true,
     };
 
     return { data: settings, error: null };
@@ -127,7 +127,7 @@ export async function updateNotificationSettings(
       .eq('id', userId)
       .single();
 
-    const currentPreferences = (currentData?.preferences as any) || {};
+    const currentPreferences = (currentData?.preferences as Record<string, unknown>) || {};
     const updatedPreferences = {
       ...currentPreferences,
       ...settings,

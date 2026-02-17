@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
 });
 
 const geistMono = Geist_Mono({
@@ -22,18 +24,23 @@ export const metadata: Metadata = {
   description: 'Videography client management, project tracking, financials, and video delivery.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
-        <Providers>
-          {children}
-          <Toaster richColors position="top-right" />
-        </Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            {children}
+            <Toaster richColors position="top-right" />
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

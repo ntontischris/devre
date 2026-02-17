@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -10,6 +11,8 @@ type RevenueChartProps = {
 };
 
 export function RevenueChart({ data }: RevenueChartProps) {
+  const t = useTranslations('dashboard');
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('el-GR', {
       style: 'currency',
@@ -33,14 +36,14 @@ export function RevenueChart({ data }: RevenueChartProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Revenue Overview</CardTitle>
-          <CardDescription>Monthly revenue for the last 6 months</CardDescription>
+          <CardTitle>{t('revenueChart')}</CardTitle>
+          <CardDescription>{t('revenueChartDesc')}</CardDescription>
         </div>
         <Link
           href="/admin/reports"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
         >
-          View Reports
+          {t('viewAll')}
           <ArrowRight className="h-4 w-4" />
         </Link>
       </CardHeader>
