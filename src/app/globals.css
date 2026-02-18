@@ -400,20 +400,20 @@
   opacity: 0;
 }
 
-/* Hero fade up with delay */
-.hero-fade-1 {
-  animation: clip-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
+/* Hero unified content reveal */
+.hero-content-reveal {
+  animation: clip-reveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
   opacity: 0;
 }
 
-.hero-fade-2 {
-  animation: clip-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.9s forwards;
-  opacity: 0;
+/* Gold accent top line for cards */
+.gold-accent-top {
+  border-top: 2px solid rgba(201, 160, 51, 0.3);
 }
 
-.hero-fade-3 {
-  animation: clip-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2.2s forwards;
-  opacity: 0;
+/* Gold accent left line for cards */
+.gold-accent-left {
+  border-left: 2px solid rgba(201, 160, 51, 0.3);
 }
 
 /* Ambient orb pulse */
@@ -515,10 +515,8 @@
 
   .hero-ken-burns,
   .hero-clip-reveal,
+  .hero-content-reveal,
   .hero-line-expand,
-  .hero-fade-1,
-  .hero-fade-2,
-  .hero-fade-3,
   .hero-text-glow-pulse,
   .hero-orb,
   .animate-scroll-bounce,
@@ -533,10 +531,8 @@
 
   /* Force hero elements to their visible final state */
   .hero-clip-reveal,
-  .hero-line-expand,
-  .hero-fade-1,
-  .hero-fade-2,
-  .hero-fade-3 {
+  .hero-content-reveal,
+  .hero-line-expand {
     opacity: 1;
     clip-path: none;
     transform: none;
@@ -558,10 +554,8 @@
    ═══════════════════════════════════════════════════════════════ */
 @media (scripting: none) {
   .hero-clip-reveal,
-  .hero-line-expand,
-  .hero-fade-1,
-  .hero-fade-2,
-  .hero-fade-3 {
+  .hero-content-reveal,
+  .hero-line-expand {
     opacity: 1;
     clip-path: none;
     transform: none;

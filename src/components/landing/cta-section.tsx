@@ -1,5 +1,4 @@
 import { getTranslations } from 'next-intl/server';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,23 +9,16 @@ export async function CtaSection() {
 
   return (
     <section
-      className="relative py-20 sm:py-32 md:py-40 overflow-hidden"
+      className="relative py-24 sm:py-32 md:py-40 overflow-hidden"
       aria-labelledby="cta-heading"
     >
-      <Image
-        src="/images/hero/home2.jpg"
-        alt=""
-        fill
-        sizes="100vw"
-        className="object-cover opacity-[0.06]"
-        aria-hidden="true"
-      />
+      {/* Pure radial gold gradient — no background image */}
       <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgba(201,160,51,0.08),transparent)]"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(201,160,51,0.08),transparent)]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 text-center">
+      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
         <ScrollReveal>
           <h2
             id="cta-heading"

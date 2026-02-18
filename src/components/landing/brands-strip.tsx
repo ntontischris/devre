@@ -7,10 +7,15 @@ export async function BrandsStrip() {
 
   return (
     <div
-      className="relative border-y border-white/[0.04] py-8 sm:py-10"
+      className="relative py-10 sm:py-14"
       role="region"
       aria-label={t('hero.trustedBy')}
     >
+      {/* Top gold gradient line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/20 to-transparent" aria-hidden="true" />
+      {/* Bottom gold gradient line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/20 to-transparent" aria-hidden="true" />
+
       <p className="text-center text-zinc-400 text-xs tracking-[0.3em] uppercase mb-6 sm:mb-8">
         {t('hero.trustedBy')}
       </p>

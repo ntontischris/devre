@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" disabled={isPending} className="text-zinc-400 hover:text-white hover:bg-white/10">
+        <Button variant="ghost" size="icon" disabled={isPending} className="text-zinc-400 hover:text-white hover:bg-white/10 h-12 w-12">
           <Globe className="h-4 w-4" aria-hidden="true" />
           <span className="sr-only">Switch language</span>
         </Button>

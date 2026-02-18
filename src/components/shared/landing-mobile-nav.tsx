@@ -89,7 +89,7 @@ export function LandingMobileNav() {
       <button
         ref={hamburgerRef}
         onClick={() => setOpen(!open)}
-        className="lg:hidden relative z-[60] flex flex-col items-center justify-center w-10 h-10 gap-1.5"
+        className="lg:hidden relative z-[60] flex flex-col items-center justify-center w-12 h-12 gap-1.5"
         aria-expanded={open}
         aria-controls="mobile-menu-overlay"
         aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
@@ -125,7 +125,7 @@ export function LandingMobileNav() {
         {/* Decorative gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_30%,rgba(201,160,51,0.08),transparent)]" aria-hidden="true" />
 
-        <div className="relative h-full flex flex-col items-center justify-center px-8">
+        <div className="relative h-full flex flex-col items-center justify-center px-6 sm:px-8">
           {/* Navigation links */}
           <nav aria-label={t('nav.mobileNavigation')}>
             <ul className="flex flex-col items-center gap-2 mb-12">
@@ -159,7 +159,7 @@ export function LandingMobileNav() {
             }`}
             style={prefersReducedMotion ? undefined : { transitionDelay: open ? '550ms' : '0ms' }}
           >
-            <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-lg">
+            <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-lg h-12">
               <Link href="/login" onClick={close}>
                 {t('nav.clientPortal')}
               </Link>

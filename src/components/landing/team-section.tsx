@@ -8,23 +8,14 @@ export async function TeamSection() {
   const t = await getTranslations('landing');
 
   return (
-    <section id="team" className="relative py-20 sm:py-32 md:py-40" aria-labelledby="team-heading">
+    <section id="team" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="team-heading">
       <div
         className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,rgba(201,160,51,0.04),transparent)]"
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-5xl sm:text-7xl font-black text-gold-500/10 leading-none" aria-hidden="true">
-              04
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" aria-hidden="true" />
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal delay={100}>
           <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
             {t('team.label')}
           </span>
@@ -59,17 +50,18 @@ export async function TeamSection() {
                   <h3 className="text-2xl sm:text-3xl font-black text-white">{t('team.harisName')}</h3>
                 </div>
               </div>
+              {/* Gold accent line */}
+              <div className="h-px bg-gradient-to-r from-gold-500/30 via-gold-500/10 to-transparent" aria-hidden="true" />
               <div className="p-6 sm:p-8">
-                <p className="text-zinc-400 leading-relaxed text-sm mb-3 sm:mb-4">{t('team.harisBio')}</p>
+                <p className="text-zinc-400 leading-relaxed text-sm mb-4 sm:mb-5">{t('team.harisBio')}</p>
                 <a
                   href="https://www.instagram.com/haris_devre_/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-zinc-400 hover:text-gold-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                  className="w-12 h-12 rounded-full glass-card inline-flex items-center justify-center text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
                   aria-label="Haris Devrentlis on Instagram"
                 >
-                  <Instagram className="h-4 w-4" aria-hidden="true" />
-                  @haris_devre_
+                  <Instagram className="h-5 w-5" aria-hidden="true" />
                 </a>
               </div>
             </article>
@@ -94,24 +86,25 @@ export async function TeamSection() {
                   <h3 className="text-2xl sm:text-3xl font-black text-white">{t('team.angelosName')}</h3>
                 </div>
               </div>
+              {/* Gold accent line */}
+              <div className="h-px bg-gradient-to-r from-gold-500/30 via-gold-500/10 to-transparent" aria-hidden="true" />
               <div className="p-6 sm:p-8">
-                <p className="text-zinc-400 leading-relaxed text-sm mb-3 sm:mb-4">{t('team.angelosBio')}</p>
-                <div className="flex items-center gap-3 sm:gap-4">
+                <p className="text-zinc-400 leading-relaxed text-sm mb-4 sm:mb-5">{t('team.angelosBio')}</p>
+                <div className="flex items-center gap-2">
                   <a
                     href="https://www.instagram.com/a.devre/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-zinc-400 hover:text-gold-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                    className="w-12 h-12 rounded-full glass-card inline-flex items-center justify-center text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
                     aria-label="Angelos Devrentlis on Instagram"
                   >
-                    <Instagram className="h-4 w-4" aria-hidden="true" />
-                    @a.devre
+                    <Instagram className="h-5 w-5" aria-hidden="true" />
                   </a>
                   <a
                     href="https://www.tiktok.com/@a.devre"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                    className="w-12 h-12 rounded-full glass-card inline-flex items-center justify-center text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
                     aria-label="Angelos Devrentlis on TikTok"
                   >
                     <TikTokIcon />
@@ -120,10 +113,10 @@ export async function TeamSection() {
                     href="https://www.linkedin.com/in/angelos-devrentlis-28387894"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                    className="w-12 h-12 rounded-full glass-card inline-flex items-center justify-center text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
                     aria-label="Angelos Devrentlis on LinkedIn"
                   >
-                    <Linkedin className="h-4 w-4" aria-hidden="true" />
+                    <Linkedin className="h-5 w-5" aria-hidden="true" />
                   </a>
                 </div>
               </div>

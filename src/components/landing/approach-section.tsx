@@ -14,10 +14,15 @@ export async function ApproachSection() {
   return (
     <section
       id="approach"
-      className="relative py-20 sm:py-32 md:py-40 bg-zinc-900/40"
+      className="relative py-24 sm:py-32 md:py-40"
       aria-labelledby="approach-heading"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(201,160,51,0.04),transparent)]"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="max-w-3xl mb-12 sm:mb-16">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
@@ -38,8 +43,10 @@ export async function ApproachSection() {
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 mb-12 sm:mb-16">
           {cards.map((card, i) => (
             <ScrollReveal key={i} delay={i * 150}>
-              <div className="bento-card p-6 sm:p-8 h-full">
-                <card.Icon className="h-7 w-7 sm:h-8 sm:w-8 text-gold-500 mb-4 sm:mb-6" aria-hidden="true" />
+              <div className="bento-card gold-accent-top p-6 sm:p-8 h-full">
+                <div className="bg-gold-500/10 rounded-xl p-3 w-fit mb-4 sm:mb-6">
+                  <card.Icon className="h-6 w-6 sm:h-7 sm:w-7 text-gold-500" aria-hidden="true" />
+                </div>
                 <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">{card.title}</h3>
                 <p className="text-zinc-400 leading-relaxed text-sm">{card.desc}</p>
               </div>
@@ -48,9 +55,9 @@ export async function ApproachSection() {
         </div>
 
         <ScrollReveal animation="scale-up">
-          <blockquote className="relative bg-white/[0.02] border border-white/[0.06] rounded-2xl p-5 sm:p-8 md:p-12 lg:p-16 overflow-hidden">
+          <blockquote className="relative glass-card rounded-2xl p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden">
             <div
-              className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold-500 to-transparent"
+              className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-gold-500 to-transparent"
               aria-hidden="true"
             />
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white leading-relaxed italic pl-4 sm:pl-6">

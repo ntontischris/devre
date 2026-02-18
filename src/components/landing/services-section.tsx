@@ -22,23 +22,14 @@ export async function ServicesSection() {
   ];
 
   return (
-    <section id="services" className="relative py-20 sm:py-32 md:py-40" aria-labelledby="services-heading">
+    <section id="services" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="services-heading">
       <div
         className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_0%,rgba(201,160,51,0.04),transparent)]"
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-5xl sm:text-7xl font-black text-gold-500/10 leading-none" aria-hidden="true">
-              02
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" aria-hidden="true" />
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal delay={100}>
           <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
             {t('services.label')}
           </span>
@@ -53,7 +44,7 @@ export async function ServicesSection() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {services.map((service, i) => (
             <ScrollReveal key={i} delay={i * 80}>
-              <div className="bento-card p-6 sm:p-8 h-full relative overflow-hidden group">
+              <div className="bento-card gold-accent-top p-6 sm:p-8 h-full relative overflow-hidden group">
                 <div
                   className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,rgba(201,160,51,0.05),transparent_70%)] group-hover:scale-150 transition-transform duration-700"
                   aria-hidden="true"
@@ -62,7 +53,9 @@ export async function ServicesSection() {
                   <div className="inline-block px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold tracking-wider uppercase mb-4 sm:mb-5">
                     {service.tag}
                   </div>
-                  <service.Icon className="h-7 w-7 sm:h-8 sm:w-8 text-gold-500 mb-4 sm:mb-5" aria-hidden="true" />
+                  <div className="bg-gold-500/10 rounded-xl p-3 w-fit mb-4 sm:mb-5">
+                    <service.Icon className="h-6 w-6 sm:h-7 sm:w-7 text-gold-500" aria-hidden="true" />
+                  </div>
                   <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">{service.title}</h3>
                   <p className="text-zinc-400 leading-relaxed text-sm">{service.desc}</p>
                 </div>
@@ -79,9 +72,9 @@ export async function ServicesSection() {
             {features.map((feat, i) => (
               <li
                 key={i}
-                className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/[0.03] border border-white/[0.06]"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.06] min-h-[48px]"
               >
-                <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gold-500 flex-shrink-0" aria-hidden="true" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-gold-500 flex-shrink-0" aria-hidden="true" />
                 <span className="text-zinc-400 text-xs sm:text-sm">{feat}</span>
               </li>
             ))}

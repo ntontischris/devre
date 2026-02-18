@@ -8,19 +8,15 @@ export async function PortfolioSection() {
   const t = await getTranslations('landing');
 
   return (
-    <section id="portfolio" className="relative py-20 sm:py-32 md:py-40 bg-zinc-900/40" aria-labelledby="portfolio-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <ScrollReveal>
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-5xl sm:text-7xl font-black text-gold-500/10 leading-none" aria-hidden="true">
-              03
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" aria-hidden="true" />
-          </div>
-        </ScrollReveal>
+    <section id="portfolio" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="portfolio-heading">
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(201,160,51,0.03),transparent)]"
+        aria-hidden="true"
+      />
 
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-12 sm:mb-16">
-          <ScrollReveal delay={100}>
+          <ScrollReveal>
             <div>
               <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
                 {t('portfolio.label')}
@@ -39,7 +35,7 @@ export async function PortfolioSection() {
               href="https://www.youtube.com/@devremedia"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-semibold text-sm group flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+              className="hidden md:inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-semibold text-sm group flex-shrink-0 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
               aria-label={`${t('portfolio.watchOnYoutube')} - YouTube`}
             >
               <Youtube className="h-5 w-5" aria-hidden="true" />
@@ -49,6 +45,7 @@ export async function PortfolioSection() {
           </ScrollReveal>
         </div>
 
+        {/* 3x2 video grid — titles always visible */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {PORTFOLIO_VIDEOS.map((video, i) => (
             <ScrollReveal key={video.id} delay={i * 100}>
@@ -56,7 +53,7 @@ export async function PortfolioSection() {
                 href={`https://www.youtube.com/watch?v=${video.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="video-card block group aspect-video focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 rounded-2xl"
+                className="video-card block group aspect-video rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
                 aria-label={`${t(`portfolio.${video.key}`)} - YouTube`}
               >
                 <Image
@@ -81,12 +78,13 @@ export async function PortfolioSection() {
           ))}
         </div>
 
+        {/* Mobile YouTube link */}
         <div className="mt-6 sm:mt-8 text-center md:hidden">
           <a
             href="https://www.youtube.com/@devremedia"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-semibold text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+            className="inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-semibold text-sm min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
             aria-label={`${t('portfolio.watchOnYoutube')} - YouTube`}
           >
             <Youtube className="h-5 w-5" aria-hidden="true" />

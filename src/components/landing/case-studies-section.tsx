@@ -28,8 +28,13 @@ export async function CaseStudiesSection() {
   ];
 
   return (
-    <section id="work" className="relative py-20 sm:py-32 md:py-40 bg-zinc-900/40" aria-labelledby="work-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="work" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="work-heading">
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(201,160,51,0.03),transparent)]"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12 sm:mb-16">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
@@ -47,7 +52,7 @@ export async function CaseStudiesSection() {
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 mb-12 sm:mb-16">
           {studies.map((study, i) => (
             <ScrollReveal key={i} delay={i * 150}>
-              <div className="glass-card rounded-2xl p-6 sm:p-8 h-full">
+              <div className="glass-card gold-accent-left rounded-2xl p-6 sm:p-8 h-full">
                 <div
                   className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mb-3 sm:mb-4 ${study.accent}`}
                 >
@@ -63,7 +68,7 @@ export async function CaseStudiesSection() {
         <ScrollReveal>
           <div className="text-center">
             <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('work.alsoWorking')}</p>
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 min-h-[48px]">
               {CLIENT_LOGOS.slice(0, 8).map((brand) => (
                 <Image
                   key={brand.name}

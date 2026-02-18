@@ -8,13 +8,13 @@ import { SOCIAL_LINKS } from './constants';
 function getSocialIcon(platform: string) {
   switch (platform) {
     case 'instagram':
-      return <Instagram className="h-4 w-4" aria-hidden="true" />;
+      return <Instagram className="h-5 w-5" aria-hidden="true" />;
     case 'tiktok':
       return <TikTokIcon />;
     case 'linkedin':
-      return <Linkedin className="h-4 w-4" aria-hidden="true" />;
+      return <Linkedin className="h-5 w-5" aria-hidden="true" />;
     case 'youtube':
-      return <Youtube className="h-4 w-4" aria-hidden="true" />;
+      return <Youtube className="h-5 w-5" aria-hidden="true" />;
     default:
       return null;
   }
@@ -29,20 +29,11 @@ export async function ContactSection() {
   ];
 
   return (
-    <section id="contact" className="relative py-20 sm:py-32 md:py-40" aria-labelledby="contact-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <ScrollReveal>
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-5xl sm:text-7xl font-black text-gold-500/10 leading-none" aria-hidden="true">
-              05
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" aria-hidden="true" />
-          </div>
-        </ScrollReveal>
-
+    <section id="contact" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="contact-heading">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-24">
           <div>
-            <ScrollReveal delay={100}>
+            <ScrollReveal>
               <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
                 {t('contact.label')}
               </span>
@@ -60,7 +51,7 @@ export async function ContactSection() {
             </ScrollReveal>
           </div>
 
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-4 sm:space-y-5">
             {/* Offices */}
             {offices.map((office, i) => (
               <ScrollReveal key={i} delay={300 + i * 100}>
@@ -76,7 +67,7 @@ export async function ContactSection() {
 
             {/* Phone */}
             <ScrollReveal delay={500}>
-              <div>
+              <div className="glass-card rounded-xl p-5 sm:p-6">
                 <h3 className="text-sm sm:text-base font-bold text-white mb-2 sm:mb-3 flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gold-500 flex-shrink-0" aria-hidden="true" />
                   {t('contact.callUs')}
@@ -85,7 +76,7 @@ export async function ContactSection() {
                   <p>
                     <a
                       href="tel:+436706502131"
-                      className="hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                      className="min-h-[48px] inline-flex items-center hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                     >
                       +43 670 650 2131
                     </a>
@@ -93,7 +84,7 @@ export async function ContactSection() {
                   <p>
                     <a
                       href="tel:+306984592968"
-                      className="hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                      className="min-h-[48px] inline-flex items-center hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                     >
                       +30 6984 592 968
                     </a>
@@ -104,14 +95,14 @@ export async function ContactSection() {
 
             {/* Email */}
             <ScrollReveal delay={600}>
-              <div>
+              <div className="glass-card rounded-xl p-5 sm:p-6">
                 <h3 className="text-sm sm:text-base font-bold text-white mb-2 sm:mb-3 flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gold-500 flex-shrink-0" aria-hidden="true" />
                   {t('contact.emailUs')}
                 </h3>
                 <a
                   href="mailto:devremedia@gmail.com"
-                  className="text-gold-500 hover:text-gold-400 text-sm pl-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                  className="text-gold-500 hover:text-gold-400 text-sm pl-6 min-h-[48px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                 >
                   devremedia@gmail.com
                 </a>
@@ -131,7 +122,7 @@ export async function ContactSection() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-gold-500 hover:border-gold-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
+                      className="w-12 h-12 rounded-full glass-card flex items-center justify-center text-zinc-400 hover:text-gold-500 hover:border-gold-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
                       aria-label={`${t('contact.followUs')} - ${social.label}`}
                     >
                       {getSocialIcon(social.platform)}

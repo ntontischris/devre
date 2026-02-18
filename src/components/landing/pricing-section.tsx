@@ -8,8 +8,8 @@ export async function PricingSection() {
   const t = await getTranslations('landing');
 
   return (
-    <section id="pricing" className="relative py-20 sm:py-32 md:py-40" aria-labelledby="pricing-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="pricing" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="pricing-heading">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12 sm:mb-16">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
@@ -37,13 +37,13 @@ export async function PricingSection() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl mx-auto mb-10 sm:mb-12">
           {/* Starter */}
           <ScrollReveal delay={0}>
-            <div className="glass-card rounded-2xl p-6 sm:p-8 h-full">
+            <div className="glass-card rounded-2xl p-8 sm:p-10 h-full">
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.starter')}</h4>
-              <div className="mb-4 sm:mb-6">
+              <div className="mb-6 sm:mb-8">
                 <span className="text-4xl sm:text-5xl font-black text-white">4</span>
                 <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videosMonth')}</span>
               </div>
-              <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
+              <ul className="space-y-3 sm:space-y-4 mb-8 sm:mb-10">
                 {[
                   t('pricing.feature1filming'),
                   t('pricing.featureEditing'),
@@ -56,7 +56,7 @@ export async function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 sm:h-11">
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-12">
                 <Link href="#contact">
                   {t('pricing.getQuote')}
                 </Link>
@@ -64,18 +64,15 @@ export async function PricingSection() {
             </div>
           </ScrollReveal>
 
-          {/* Growth (Featured) */}
+          {/* Growth (Featured) — gold gradient border + subtle gold bg tint */}
           <ScrollReveal delay={150}>
-            <div className="relative glass-card rounded-2xl p-6 sm:p-8 h-full border-gold-500/30 pricing-popular overflow-x-hidden">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gold-500 text-black text-xs font-bold tracking-wider uppercase whitespace-nowrap">
-                {t('pricing.mostPopular')}
-              </div>
+            <div className="relative glass-card rounded-2xl p-8 sm:p-10 h-full gold-accent-top bg-gold-500/[0.02] overflow-hidden">
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.growth')}</h4>
-              <div className="mb-4 sm:mb-6">
+              <div className="mb-6 sm:mb-8">
                 <span className="text-4xl sm:text-5xl font-black text-gold-500">8</span>
                 <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videosMonth')}</span>
               </div>
-              <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
+              <ul className="space-y-3 sm:space-y-4 mb-8 sm:mb-10">
                 {[
                   t('pricing.feature2filming'),
                   t('pricing.featureEditing'),
@@ -89,7 +86,7 @@ export async function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="w-full bg-gold-500 hover:bg-gold-400 text-black font-bold h-10 sm:h-11">
+              <Button asChild className="w-full bg-gold-500 hover:bg-gold-400 text-black font-bold h-12">
                 <Link href="#contact">
                   {t('pricing.getQuote')}
                 </Link>
@@ -99,13 +96,13 @@ export async function PricingSection() {
 
           {/* Scale */}
           <ScrollReveal delay={300}>
-            <div className="glass-card rounded-2xl p-6 sm:p-8 h-full">
+            <div className="glass-card rounded-2xl p-8 sm:p-10 h-full">
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.scale')}</h4>
-              <div className="mb-4 sm:mb-6">
+              <div className="mb-6 sm:mb-8">
                 <span className="text-4xl sm:text-5xl font-black text-white">12</span>
                 <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videosMonth')}</span>
               </div>
-              <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
+              <ul className="space-y-3 sm:space-y-4 mb-8 sm:mb-10">
                 {[
                   t('pricing.feature2filming'),
                   t('pricing.featureEditing'),
@@ -120,7 +117,7 @@ export async function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 sm:h-11">
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-12">
                 <Link href="#contact">
                   {t('pricing.getQuote')}
                 </Link>
@@ -132,14 +129,14 @@ export async function PricingSection() {
         {/* Podcast + Events */}
         <div className="grid sm:grid-cols-2 gap-4 sm:gap-5 max-w-4xl mx-auto">
           <ScrollReveal delay={0}>
-            <div className="glass-card rounded-2xl p-6 sm:p-8">
+            <div className="glass-card rounded-2xl p-8 sm:p-10">
               <h4 className="text-lg sm:text-xl font-bold text-white mb-2">{t('pricing.podcastLabel')}</h4>
-              <div className="mb-3 sm:mb-4">
+              <div className="mb-4 sm:mb-5">
                 <span className="text-2xl sm:text-3xl font-black text-white">4-8</span>
                 <span className="text-zinc-400 ml-1 text-sm">{t('pricing.epMonth')}</span>
               </div>
-              <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('pricing.podcastDesc')}</p>
-              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10">
+              <p className="text-zinc-400 text-sm mb-6 sm:mb-8">{t('pricing.podcastDesc')}</p>
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-12">
                 <Link href="#contact">
                   {t('pricing.getQuote')}
                 </Link>
@@ -147,14 +144,14 @@ export async function PricingSection() {
             </div>
           </ScrollReveal>
           <ScrollReveal delay={150}>
-            <div className="glass-card rounded-2xl p-6 sm:p-8">
+            <div className="glass-card rounded-2xl p-8 sm:p-10">
               <h4 className="text-lg sm:text-xl font-bold text-white mb-2">{t('pricing.eventLabel')}</h4>
-              <div className="mb-3 sm:mb-4">
+              <div className="mb-4 sm:mb-5">
                 <span className="text-2xl sm:text-3xl font-black text-white">3-6</span>
                 <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videos')}</span>
               </div>
-              <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('pricing.eventDesc')}</p>
-              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10">
+              <p className="text-zinc-400 text-sm mb-6 sm:mb-8">{t('pricing.eventDesc')}</p>
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-12">
                 <Link href="#contact">
                   {t('pricing.getQuote')}
                 </Link>

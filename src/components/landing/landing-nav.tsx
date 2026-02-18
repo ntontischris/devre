@@ -12,10 +12,10 @@ export async function LandingNav() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/60 backdrop-blur-2xl border-b border-white/[0.04]"
+      className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gold-500/20 after:to-transparent"
       aria-label={t('nav.mainNavigation')}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           <Link
             href="/"
@@ -39,7 +39,7 @@ export async function LandingNav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[13px] text-zinc-400 hover:text-white transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 rounded-sm"
+                className="text-[13px] text-zinc-400 hover:text-white transition-colors font-medium min-h-[48px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 rounded-sm"
               >
                 {t(link.labelKey)}
               </Link>
@@ -48,12 +48,12 @@ export async function LandingNav() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
-            <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex text-zinc-400 hover:text-white hover:bg-white/5 text-[13px]">
+            <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex text-zinc-400 hover:text-white hover:bg-white/5 text-[13px] h-12">
               <Link href="/login">
                 {t('nav.clientPortal')}
               </Link>
             </Button>
-            <Button asChild size="sm" className="hidden lg:inline-flex bg-gold-500 hover:bg-gold-400 text-black font-semibold text-[13px]">
+            <Button asChild size="sm" className="hidden lg:inline-flex bg-gold-500 hover:bg-gold-400 text-black font-semibold text-[13px] h-12">
               <Link href="#contact">
                 {t('nav.bookCall')}
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />

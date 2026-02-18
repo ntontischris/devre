@@ -7,8 +7,8 @@ export async function ProcessSection() {
   const steps = [1, 2, 3, 4] as const;
 
   return (
-    <section id="process" className="relative py-20 sm:py-32 md:py-40" aria-labelledby="process-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="process" className="relative py-24 sm:py-32 md:py-40" aria-labelledby="process-heading">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-14 sm:mb-20">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.2em] uppercase">
@@ -26,29 +26,26 @@ export async function ProcessSection() {
           </div>
         </ScrollReveal>
 
-        <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-4">
+        <ol className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 lg:gap-4">
+          {/* Connecting gold line (desktop only) */}
+          <div
+            className="hidden lg:block absolute top-5 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-gold-500/20 via-gold-500/30 to-gold-500/20"
+            aria-hidden="true"
+          />
+
           {steps.map((step, i) => (
             <ScrollReveal key={step} delay={i * 150}>
-              <li className="relative text-center lg:text-left">
-                <div
-                  className="text-[2.5rem] sm:text-[4rem] lg:text-[6rem] font-black leading-none text-transparent mb-3 sm:mb-4"
-                  style={{ WebkitTextStroke: '1.5px rgba(201, 160, 51, 0.25)' }}
-                  aria-hidden="true"
-                >
-                  0{step}
+              <li className="relative text-center">
+                {/* Step circle */}
+                <div className="relative z-10 mx-auto w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center mb-4 sm:mb-5">
+                  <span className="text-gold-500 font-bold text-sm">0{step}</span>
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
                   {t(`process.step${step}Title`)}
                 </h3>
-                <p className="text-zinc-400 leading-relaxed text-sm">
+                <p className="text-zinc-400 leading-relaxed text-sm max-w-xs mx-auto">
                   {t(`process.step${step}Desc`)}
                 </p>
-                {step < 4 && (
-                  <div
-                    className="hidden lg:block absolute top-12 right-0 w-full h-px translate-x-1/2 bg-gradient-to-r from-gold-500/20 to-transparent"
-                    aria-hidden="true"
-                  />
-                )}
               </li>
             </ScrollReveal>
           ))}
