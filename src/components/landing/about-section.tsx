@@ -80,7 +80,7 @@ export async function AboutSection() {
               </div>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {highlights.map((item, i) => (
                 <ScrollReveal key={i} delay={500 + i * 100}>
                   <div className="glass-card rounded-xl p-3 sm:p-4 text-center group">

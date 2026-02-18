@@ -116,7 +116,7 @@ export async function HeroSection() {
                 {t('stats.projects')}
               </span>
             </div>
-            <div className="h-6 sm:h-8 w-px bg-white/10" aria-hidden="true" />
+            <div className="hidden sm:block h-6 sm:h-8 w-px bg-white/10" aria-hidden="true" />
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="text-xl sm:text-2xl font-black text-white">50+</span>
               <span className="text-xs text-zinc-400 uppercase tracking-wider leading-tight">

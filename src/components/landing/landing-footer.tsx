@@ -141,7 +141,7 @@ export async function LandingFooter() {
             {t('footer.copyright')} {new Date().getFullYear()} Devre Media. {t('footer.city')}.
           </p>
           <nav aria-label={t('footer.legalNav')}>
-            <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2 sm:gap-x-6">
               <span className="text-zinc-400 text-xs">
                 {t('footer.impressum')}
               </span>
