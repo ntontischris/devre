@@ -53,13 +53,13 @@ export async function AboutSection() {
             </ScrollReveal>
 
             <ScrollReveal delay={400}>
-              <p className="mt-3 sm:mt-4 text-sm sm:text-base text-zinc-500 leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
                 {t('about.text1')}
               </p>
             </ScrollReveal>
 
             <ScrollReveal delay={500}>
-              <p className="mt-3 sm:mt-4 text-sm sm:text-base text-zinc-500 leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
                 {t('about.text2')}
               </p>
             </ScrollReveal>
@@ -80,7 +80,7 @@ export async function AboutSection() {
               </div>
             </ScrollReveal>
 
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
               {highlights.map((item, i) => (
                 <ScrollReveal key={i} delay={500 + i * 100}>
                   <div className="glass-card rounded-xl p-3 sm:p-4 text-center group">
@@ -91,7 +91,7 @@ export async function AboutSection() {
                     <h4 className="text-xs font-bold text-white mb-0.5 sm:mb-1">
                       {item.title}
                     </h4>
-                    <p className="text-[11px] sm:text-xs text-zinc-500 leading-snug">
+                    <p className="text-[11px] sm:text-xs text-zinc-400 leading-snug">
                       {item.desc}
                     </p>
                   </div>

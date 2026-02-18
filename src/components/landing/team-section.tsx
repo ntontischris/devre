@@ -65,7 +65,7 @@ export async function TeamSection() {
                   href="https://www.instagram.com/haris_devre_/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-zinc-500 hover:text-gold-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                  className="inline-flex items-center gap-2 text-zinc-400 hover:text-gold-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                   aria-label="Haris Devrentlis on Instagram"
                 >
                   <Instagram className="h-4 w-4" aria-hidden="true" />
@@ -101,7 +101,7 @@ export async function TeamSection() {
                     href="https://www.instagram.com/a.devre/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-zinc-500 hover:text-gold-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                    className="inline-flex items-center gap-2 text-zinc-400 hover:text-gold-400 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                     aria-label="Angelos Devrentlis on Instagram"
                   >
                     <Instagram className="h-4 w-4" aria-hidden="true" />
@@ -111,7 +111,7 @@ export async function TeamSection() {
                     href="https://www.tiktok.com/@a.devre"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-500 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                    className="text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                     aria-label="Angelos Devrentlis on TikTok"
                   >
                     <TikTokIcon />
@@ -120,7 +120,7 @@ export async function TeamSection() {
                     href="https://www.linkedin.com/in/angelos-devrentlis-28387894"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-500 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                    className="text-zinc-400 hover:text-gold-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                     aria-label="Angelos Devrentlis on LinkedIn"
                   >
                     <Linkedin className="h-4 w-4" aria-hidden="true" />

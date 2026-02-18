@@ -43,13 +43,11 @@ const animationStyles: Record<Animation, { hidden: string; visible: string }> = 
 };
 
 function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  });
+  const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduced(mq.matches);
     const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -99,19 +97,15 @@ export function ScrollReveal({
 
   const styles = animationStyles[animation];
 
-  if (prefersReducedMotion) {
-    return (
-      <Tag ref={ref as any} className={`${styles.visible} ${className}`}>
-        {children}
-      </Tag>
-    );
-  }
-
   return (
     <Tag
       ref={ref as any}
-      className={`transition-all ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${isVisible ? styles.visible : styles.hidden} ${className}`}
-      style={{
+      className={`${
+        prefersReducedMotion
+          ? styles.visible
+          : `transition-all ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${isVisible ? styles.visible : styles.hidden}`
+      } ${className}`}
+      style={prefersReducedMotion ? undefined : {
         transitionDuration: `${duration}ms`,
         transitionDelay: `${delay}ms`,
       }}

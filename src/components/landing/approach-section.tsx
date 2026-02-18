@@ -48,7 +48,7 @@ export async function ApproachSection() {
         </div>
 
         <ScrollReveal animation="scale-up">
-          <blockquote className="relative bg-white/[0.02] border border-white/[0.06] rounded-2xl p-8 sm:p-12 md:p-16 overflow-hidden">
+          <blockquote className="relative bg-white/[0.02] border border-white/[0.06] rounded-2xl p-5 sm:p-8 md:p-12 lg:p-16 overflow-hidden">
             <div
               className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold-500 to-transparent"
               aria-hidden="true"

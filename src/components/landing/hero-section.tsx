@@ -142,10 +142,10 @@ export async function HeroSection() {
         className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 animate-scroll-bounce z-10"
         aria-hidden="true"
       >
-        <span className="text-zinc-600 text-[10px] tracking-[0.3em] uppercase">
+        <span className="text-zinc-400 text-[10px] tracking-[0.3em] uppercase">
           {t('hero.scrollDown')}
         </span>
-        <ChevronDown className="h-4 w-4 text-zinc-600" />
+        <ChevronDown className="h-4 w-4 text-zinc-400" />
       </div>
 
       {/* Bottom gradient fade */}

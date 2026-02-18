@@ -57,7 +57,7 @@ export async function CtaSection() {
         </ScrollReveal>
 
         <ScrollReveal delay={500}>
-          <p className="text-zinc-500 mt-6 sm:mt-8 text-xs sm:text-sm">{t('cta.location')}</p>
+          <p className="text-zinc-400 mt-6 sm:mt-8 text-xs sm:text-sm">{t('cta.location')}</p>
         </ScrollReveal>
       </div>
     </section>

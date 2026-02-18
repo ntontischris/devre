@@ -13,8 +13,15 @@ export function LandingMobileNav() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  const prefersReducedMotion = typeof window !== 'undefined'
-    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -127,7 +134,7 @@ export function LandingMobileNav() {
                   <Link
                     href={link.href}
                     onClick={close}
-                    className={`text-3xl sm:text-4xl font-bold text-white/80 hover:text-gold-400 transition-all py-2 block ${
+                    className={`text-2xl sm:text-3xl font-bold text-white/80 hover:text-gold-400 transition-all py-2 block ${
                       prefersReducedMotion
                         ? 'opacity-100'
                         : `duration-500 ${open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`

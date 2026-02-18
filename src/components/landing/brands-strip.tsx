@@ -11,7 +11,7 @@ export async function BrandsStrip() {
       role="region"
       aria-label={t('hero.trustedBy')}
     >
-      <p className="text-center text-zinc-500 text-xs tracking-[0.3em] uppercase mb-6 sm:mb-8">
+      <p className="text-center text-zinc-400 text-xs tracking-[0.3em] uppercase mb-6 sm:mb-8">
         {t('hero.trustedBy')}
       </p>
       <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">

@@ -29,7 +29,7 @@ export async function StatsSection() {
               <div className="text-4xl sm:text-5xl md:text-7xl font-black text-gold-500 mb-1 sm:mb-2">
                 <CountUp end={stat.end} suffix={stat.suffix} />
               </div>
-              <div className="text-zinc-500 font-medium text-xs sm:text-sm">{stat.label}</div>
+              <div className="text-zinc-400 font-medium text-xs sm:text-sm">{stat.label}</div>
             </ScrollReveal>
           ))}
         </div>

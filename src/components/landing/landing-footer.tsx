@@ -39,7 +39,7 @@ export async function LandingFooter() {
               />
               <span className="text-white font-bold text-lg tracking-tight">DEVRE MEDIA</span>
             </Link>
-            <p className="text-zinc-500 text-sm mb-4 sm:mb-6 max-w-xs leading-relaxed">
+            <p className="text-zinc-400 text-sm mb-4 sm:mb-6 max-w-xs leading-relaxed">
               {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-3">
@@ -49,7 +49,7 @@ export async function LandingFooter() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-600 hover:text-gold-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                  className="text-zinc-400 hover:text-gold-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                   aria-label={`Devre Media on ${social.label}`}
                 >
                   {getFooterSocialIcon(social.platform)}
@@ -65,22 +65,22 @@ export async function LandingFooter() {
             </h3>
             <ul className="space-y-2 sm:space-y-2.5">
               <li>
-                <Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#services" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('services.socialTitle')}
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#services" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('services.podcastTitle')}
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#services" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('services.eventTitle')}
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#services" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('services.corporateTitle')}
                 </Link>
               </li>
@@ -94,22 +94,22 @@ export async function LandingFooter() {
             </h3>
             <ul className="space-y-2 sm:space-y-2.5">
               <li>
-                <Link href="#about" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#about" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('footer.aboutUs')}
                 </Link>
               </li>
               <li>
-                <Link href="#team" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#team" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('footer.ourTeam')}
                 </Link>
               </li>
               <li>
-                <Link href="#portfolio" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#portfolio" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('footer.portfolio')}
                 </Link>
               </li>
               <li>
-                <Link href="#work" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="#work" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('footer.caseStudies')}
                 </Link>
               </li>
@@ -123,12 +123,12 @@ export async function LandingFooter() {
             </h3>
             <ul className="space-y-2 sm:space-y-2.5">
               <li>
-                <Link href="/login" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="/login" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('nav.login')}
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="text-zinc-500 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
+                <Link href="/login" className="text-zinc-400 hover:text-gold-500 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm">
                   {t('footer.createAccount')}
                 </Link>
               </li>
@@ -137,20 +137,20 @@ export async function LandingFooter() {
         </div>
 
         <div className="pt-6 sm:pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-          <p className="text-zinc-500 text-xs">
+          <p className="text-zinc-400 text-xs">
             {t('footer.copyright')} {new Date().getFullYear()} Devre Media. {t('footer.city')}.
           </p>
           <nav aria-label={t('footer.legalNav')}>
             <div className="flex items-center gap-4 sm:gap-6">
-              <span className="text-zinc-500 text-xs">
+              <span className="text-zinc-400 text-xs">
                 {t('footer.impressum')}
               </span>
-              <span className="text-zinc-500 text-xs">
+              <span className="text-zinc-400 text-xs">
                 {t('footer.privacy')}
               </span>
               <a
                 href="mailto:devremedia@gmail.com"
-                className="text-zinc-600 hover:text-gold-500 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                className="text-zinc-400 hover:text-gold-500 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
               >
                 {t('footer.emailAddress')}
               </a>

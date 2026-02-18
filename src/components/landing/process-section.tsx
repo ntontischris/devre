@@ -31,7 +31,7 @@ export async function ProcessSection() {
             <ScrollReveal key={step} delay={i * 150}>
               <li className="relative text-center lg:text-left">
                 <div
-                  className="text-[4rem] sm:text-[5rem] lg:text-[6rem] font-black leading-none text-transparent mb-3 sm:mb-4"
+                  className="text-[2.5rem] sm:text-[4rem] lg:text-[6rem] font-black leading-none text-transparent mb-3 sm:mb-4"
                   style={{ WebkitTextStroke: '1.5px rgba(201, 160, 51, 0.25)' }}
                   aria-hidden="true"
                 >

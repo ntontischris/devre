@@ -18,10 +18,17 @@ export function CountUp({
   className = '',
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const prefersReducedMotion = typeof window !== 'undefined'
-    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const [count, setCount] = useState(prefersReducedMotion ? end : 0);
-  const [hasStarted, setHasStarted] = useState(prefersReducedMotion);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPrefersReducedMotion(true);
+      setCount(end);
+      setHasStarted(true);
+    }
+  }, [end]);
 
   useEffect(() => {
     if (prefersReducedMotion) return;

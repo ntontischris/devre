@@ -62,7 +62,7 @@ export async function CaseStudiesSection() {
 
         <ScrollReveal>
           <div className="text-center">
-            <p className="text-zinc-500 text-sm mb-4 sm:mb-6">{t('work.alsoWorking')}</p>
+            <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('work.alsoWorking')}</p>
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
               {CLIENT_LOGOS.slice(0, 8).map((brand) => (
                 <Image

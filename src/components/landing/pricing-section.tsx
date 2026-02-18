@@ -41,7 +41,7 @@ export async function PricingSection() {
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.starter')}</h4>
               <div className="mb-4 sm:mb-6">
                 <span className="text-4xl sm:text-5xl font-black text-white">4</span>
-                <span className="text-zinc-500 ml-1 text-sm">{t('pricing.videosMonth')}</span>
+                <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videosMonth')}</span>
               </div>
               <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
                 {[
@@ -73,7 +73,7 @@ export async function PricingSection() {
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.growth')}</h4>
               <div className="mb-4 sm:mb-6">
                 <span className="text-4xl sm:text-5xl font-black text-gold-500">8</span>
-                <span className="text-zinc-500 ml-1 text-sm">{t('pricing.videosMonth')}</span>
+                <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videosMonth')}</span>
               </div>
               <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
                 {[
@@ -103,7 +103,7 @@ export async function PricingSection() {
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.scale')}</h4>
               <div className="mb-4 sm:mb-6">
                 <span className="text-4xl sm:text-5xl font-black text-white">12</span>
-                <span className="text-zinc-500 ml-1 text-sm">{t('pricing.videosMonth')}</span>
+                <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videosMonth')}</span>
               </div>
               <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
                 {[
@@ -136,7 +136,7 @@ export async function PricingSection() {
               <h4 className="text-lg sm:text-xl font-bold text-white mb-2">{t('pricing.podcastLabel')}</h4>
               <div className="mb-3 sm:mb-4">
                 <span className="text-2xl sm:text-3xl font-black text-white">4-8</span>
-                <span className="text-zinc-500 ml-1 text-sm">{t('pricing.epMonth')}</span>
+                <span className="text-zinc-400 ml-1 text-sm">{t('pricing.epMonth')}</span>
               </div>
               <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('pricing.podcastDesc')}</p>
               <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10">
@@ -151,7 +151,7 @@ export async function PricingSection() {
               <h4 className="text-lg sm:text-xl font-bold text-white mb-2">{t('pricing.eventLabel')}</h4>
               <div className="mb-3 sm:mb-4">
                 <span className="text-2xl sm:text-3xl font-black text-white">3-6</span>
-                <span className="text-zinc-500 ml-1 text-sm">{t('pricing.videos')}</span>
+                <span className="text-zinc-400 ml-1 text-sm">{t('pricing.videos')}</span>
               </div>
               <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('pricing.eventDesc')}</p>
               <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10">
@@ -164,7 +164,7 @@ export async function PricingSection() {
         </div>
 
         <ScrollReveal>
-          <p className="text-center text-zinc-600 mt-6 sm:mt-8 text-xs sm:text-sm max-w-2xl mx-auto">
+          <p className="text-center text-zinc-400 mt-6 sm:mt-8 text-xs sm:text-sm max-w-2xl mx-auto">
             {t('pricing.customNote')}
           </p>
         </ScrollReveal>
