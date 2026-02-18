@@ -49,7 +49,7 @@ export async function LandingFooter() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-400 hover:text-gold-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+                  className="w-10 h-10 inline-flex items-center justify-center text-zinc-400 hover:text-gold-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
                   aria-label={`Devre Media on ${social.label}`}
                 >
                   {getFooterSocialIcon(social.platform)}

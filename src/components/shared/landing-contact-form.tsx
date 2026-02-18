@@ -89,7 +89,7 @@ export function LandingContactForm() {
             name="name"
             required
             placeholder={t('namePlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-400 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
         <div className="space-y-2">
@@ -102,7 +102,7 @@ export function LandingContactForm() {
             type="email"
             required
             placeholder={t('emailPlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-400 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
       </div>
@@ -116,7 +116,7 @@ export function LandingContactForm() {
             id="contact-phone"
             name="phone"
             placeholder={t('phonePlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-400 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
         <div className="space-y-2">
@@ -127,7 +127,7 @@ export function LandingContactForm() {
             id="contact-subject"
             name="subject"
             placeholder={t('subjectPlaceholder')}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
+            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-400 focus:border-gold-500/50 focus:ring-gold-500/20 h-11"
           />
         </div>
       </div>
@@ -142,7 +142,7 @@ export function LandingContactForm() {
           required
           rows={5}
           placeholder={t('messagePlaceholder')}
-          className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-gold-500/50 focus:ring-gold-500/20 resize-none"
+          className="bg-white/5 border-white/10 text-white placeholder:text-zinc-400 focus:border-gold-500/50 focus:ring-gold-500/20 resize-none"
         />
       </div>
 
@@ -164,7 +164,7 @@ export function LandingContactForm() {
         ) : (
           <>
             {t('send')}
-            <Send className="ml-2 h-4 w-4" />
+            <Send className="ml-2 h-4 w-4" aria-hidden="true" />
           </>
         )}
       </Button>
