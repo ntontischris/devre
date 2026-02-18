@@ -13,16 +13,6 @@ export function LandingMobileNav() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
@@ -78,15 +68,6 @@ export function LandingMobileNav() {
     { href: '#contact', label: t('nav.contact') },
   ];
 
-  const itemAnim = prefersReducedMotion
-    ? 'opacity-100'
-    : `transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        open ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
-      }`;
-
-  const itemStyle = (delay: number) =>
-    prefersReducedMotion ? undefined : { transitionDelay: open ? `${delay}ms` : '0ms' };
-
   return (
     <>
       {/* Hamburger */}
@@ -115,34 +96,29 @@ export function LandingMobileNav() {
         />
       </button>
 
-      {/* Full-screen overlay — z-[55] sits above nav bar (z-50), bg is always opaque */}
+      {/* Full-screen overlay — solid opaque bg, instant show, content fades in together */}
       <div
         ref={overlayRef}
         id="mobile-menu-overlay"
         role="dialog"
         aria-modal="true"
         aria-label={t('nav.mobileMenu')}
-        className={`fixed inset-0 z-[55] transition-[visibility] ${
-          open ? 'visible' : 'invisible delay-500'
+        className={`fixed inset-0 z-[55] bg-[#09090b] ${
+          open ? 'visible' : 'invisible'
         }`}
       >
-        {/* Solid opaque background — no opacity fade, uses transform to reveal */}
+        {/* Subtle gold glow */}
         <div
-          className={`absolute inset-0 bg-[#09090b] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${
-            open ? 'scale-y-100' : 'scale-y-0'
-          }`}
-        />
-
-        {/* Ambient gold glow (on top of solid bg) */}
-        <div
-          className={`absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_30%,rgba(201,160,51,0.1),transparent)] transition-opacity duration-700 delay-200 ${
-            open ? 'opacity-100' : 'opacity-0'
-          }`}
+          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_30%,rgba(201,160,51,0.08),transparent)]"
           aria-hidden="true"
         />
 
-        {/* Content */}
-        <div className="relative h-full flex flex-col justify-between px-8 sm:px-12 pt-24 pb-8">
+        {/* All content — fades in together, no staggered delays */}
+        <div
+          className={`relative h-full flex flex-col justify-between px-6 sm:px-10 pt-24 pb-8 transition-opacity duration-300 ease-out ${
+            open ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
           {/* Navigation links */}
           <nav aria-label={t('nav.mobileNavigation')} className="flex-1 flex flex-col justify-center">
             <ul className="flex flex-col">
@@ -151,8 +127,7 @@ export function LandingMobileNav() {
                   <Link
                     href={link.href}
                     onClick={close}
-                    className={`group flex items-center gap-3 py-2.5 ${itemAnim}`}
-                    style={itemStyle(200 + i * 50)}
+                    className="group flex items-center gap-3 py-2.5"
                   >
                     <span className="text-gold-500/40 text-[10px] font-mono tabular-nums group-hover:text-gold-500 transition-colors">
                       0{i + 1}
@@ -166,22 +141,22 @@ export function LandingMobileNav() {
             </ul>
           </nav>
 
-          {/* Bottom bar */}
-          <div className={`flex items-center justify-between gap-2 ${itemAnim}`} style={itemStyle(550)}>
-            <div className="flex items-center gap-2">
-              <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-sm h-12 px-3">
+          {/* Bottom actions — stacked vertically */}
+          <div className="flex flex-col gap-3">
+            <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-sm h-12 w-full justify-center">
+              <Link href="#contact" onClick={close}>
+                {t('nav.bookCall')}
+                <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+            <div className="flex items-center justify-between">
+              <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-sm h-12 px-0">
                 <Link href="/login" onClick={close}>
                   {t('nav.clientPortal')}
                 </Link>
               </Button>
-              <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-sm h-12 px-5">
-                <Link href="#contact" onClick={close}>
-                  {t('nav.bookCall')}
-                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
+              <LanguageSwitcher />
             </div>
-            <LanguageSwitcher />
           </div>
         </div>
       </div>
