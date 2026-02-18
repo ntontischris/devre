@@ -125,10 +125,14 @@ export function LandingMobileNav() {
         {/* Decorative gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_30%,rgba(201,160,51,0.08),transparent)]" aria-hidden="true" />
 
-        <div className="relative h-full flex flex-col items-center justify-center px-6 sm:px-8">
+        {/* Scrollable content area — clears nav bar at top, has padding at bottom */}
+        <div className="relative h-full flex flex-col items-center justify-between pt-20 pb-6 px-6 sm:px-8 overflow-y-auto">
+          {/* Spacer to push nav toward center */}
+          <div className="flex-1" />
+
           {/* Navigation links */}
           <nav aria-label={t('nav.mobileNavigation')}>
-            <ul className="flex flex-col items-center gap-2 mb-12">
+            <ul className="flex flex-col items-center gap-1">
               {links.map((link, i) => (
                 <li key={link.href}>
                   <Link
@@ -152,7 +156,7 @@ export function LandingMobileNav() {
 
           {/* CTAs */}
           <div
-            className={`flex flex-col items-center gap-4 ${
+            className={`mt-8 flex flex-col items-center gap-3 ${
               prefersReducedMotion
                 ? 'opacity-100'
                 : `transition-all duration-500 ${open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`
@@ -164,7 +168,7 @@ export function LandingMobileNav() {
                 {t('nav.clientPortal')}
               </Link>
             </Button>
-            <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-lg px-8 py-6 h-auto">
+            <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-lg px-8 py-5 h-auto">
               <Link href="#contact" onClick={close}>
                 {t('nav.bookCall')}
                 <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
@@ -172,9 +176,10 @@ export function LandingMobileNav() {
             </Button>
           </div>
 
-          {/* Language switcher at bottom */}
+          {/* Spacer + Language switcher at bottom */}
+          <div className="flex-1" />
           <div
-            className={`absolute bottom-8 ${
+            className={`${
               prefersReducedMotion
                 ? 'opacity-100'
                 : `transition-all duration-500 ${open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`
