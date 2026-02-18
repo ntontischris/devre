@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -79,11 +78,11 @@ export function LandingMobileNav() {
     { href: '#contact', label: t('nav.contact') },
   ];
 
-  const anim = (isOpen: boolean, delay: number) =>
+  const anim = () =>
     prefersReducedMotion
       ? 'opacity-100'
       : `transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          open ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
         }`;
 
   const animStyle = (delay: number) =>
@@ -136,46 +135,23 @@ export function LandingMobileNav() {
           aria-hidden="true"
         />
 
-        {/* Content */}
-        <div className="relative h-full flex flex-col pt-20 pb-8 px-8 sm:px-12 overflow-y-auto">
-          {/* Logo area — top left, fades in */}
-          <div className={anim(open, 100)} style={animStyle(100)}>
-            <Link href="/" onClick={close} className="flex items-center gap-2.5">
-              <Image
-                src="/images/LOGO_WhiteLetter.png"
-                alt=""
-                width={28}
-                height={28}
-                className="w-7 h-7 object-contain"
-              />
-              <span className="text-white/60 font-bold text-sm tracking-tight">DEVRE MEDIA</span>
-            </Link>
-          </div>
-
-          {/* Gold accent line */}
-          <div
-            className={`mt-6 mb-8 h-px bg-gradient-to-r from-gold-500/30 to-transparent transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              open ? 'w-16 opacity-100' : 'w-0 opacity-0'
-            }`}
-            style={prefersReducedMotion ? undefined : { transitionDelay: open ? '200ms' : '0ms' }}
-            aria-hidden="true"
-          />
-
-          {/* Navigation links — left-aligned, large, staggered */}
+        {/* Content — full height, no scroll */}
+        <div className="relative h-full flex flex-col justify-between px-8 sm:px-12 pt-24 pb-8">
+          {/* Navigation links */}
           <nav aria-label={t('nav.mobileNavigation')} className="flex-1 flex flex-col justify-center">
-            <ul className="flex flex-col gap-1">
+            <ul className="flex flex-col">
               {links.map((link, i) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
                     onClick={close}
-                    className={`group flex items-center gap-4 py-3 ${anim(open, 250 + i * 70)}`}
-                    style={animStyle(250 + i * 70)}
+                    className={`group flex items-center gap-3 py-2.5 ${anim()}`}
+                    style={animStyle(150 + i * 60)}
                   >
-                    <span className="text-gold-500/40 text-xs font-mono tabular-nums group-hover:text-gold-500 transition-colors">
+                    <span className="text-gold-500/40 text-[10px] font-mono tabular-nums group-hover:text-gold-500 transition-colors">
                       0{i + 1}
                     </span>
-                    <span className="text-3xl sm:text-4xl font-black text-white/90 group-hover:text-gold-400 transition-colors">
+                    <span className="text-2xl font-black text-white/90 group-hover:text-gold-400 transition-colors">
                       {link.label}
                     </span>
                   </Link>
@@ -184,33 +160,22 @@ export function LandingMobileNav() {
             </ul>
           </nav>
 
-          {/* Bottom section — CTAs + Language */}
-          <div className="mt-auto space-y-5">
-            {/* Gold accent line */}
-            <div
-              className={`h-px bg-gradient-to-r from-gold-500/20 to-transparent transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                open ? 'w-full opacity-100' : 'w-0 opacity-0'
-              }`}
-              style={prefersReducedMotion ? undefined : { transitionDelay: open ? '700ms' : '0ms' }}
-              aria-hidden="true"
-            />
-
-            <div className={`flex items-center justify-between ${anim(open, 750)}`} style={animStyle(750)}>
-              <div className="flex items-center gap-3">
-                <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-sm h-12 px-4">
-                  <Link href="/login" onClick={close}>
-                    {t('nav.clientPortal')}
-                  </Link>
-                </Button>
-                <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-sm h-12 px-6">
-                  <Link href="#contact" onClick={close}>
-                    {t('nav.bookCall')}
-                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-              </div>
-              <LanguageSwitcher />
+          {/* Bottom bar — CTAs + Language */}
+          <div className={`flex items-center justify-between gap-2 ${anim()}`} style={animStyle(600)}>
+            <div className="flex items-center gap-2">
+              <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-sm h-12 px-3">
+                <Link href="/login" onClick={close}>
+                  {t('nav.clientPortal')}
+                </Link>
+              </Button>
+              <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-sm h-12 px-5">
+                <Link href="#contact" onClick={close}>
+                  {t('nav.bookCall')}
+                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
             </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </div>
