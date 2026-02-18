@@ -1369,9 +1369,11 @@
       "bookCall": "Book a Call",
       "login": "Login",
       "approach": "Approach",
-      "work": "Work"
+      "work": "Work",
+      "mainNavigation": "Main navigation"
     },
     "hero": {
+      "sectionLabel": "Welcome to Devre Media",
       "badge": "Where Velocity Meets Vision",
       "headline": "Where Velocity, Meets Vision.",
       "subtitle": "Crafting Your Story, At The Speed Of Now.",
@@ -1394,7 +1396,8 @@
       "highlight2Title": "Full Service",
       "highlight2Desc": "From strategy to final cut, all under one roof",
       "highlight3Title": "Long-term Focus",
-      "highlight3Desc": "We build partnerships, not just projects"
+      "highlight3Desc": "We build partnerships, not just projects",
+      "imageAlt": "Devre Media team at work"
     },
     "approach": {
       "label": "Our Approach",
@@ -1432,7 +1435,8 @@
       "featureDrone": "Drone footage included",
       "featureMusic": "Copyright-free music",
       "featureSubs": "Subtitles included",
-      "featureStrategy": "Content strategy"
+      "featureStrategy": "Content strategy",
+      "additionalFeatures": "Additional features included"
     },
     "portfolio": {
       "label": "Portfolio",
@@ -1529,7 +1533,8 @@
       "projects": "Projects delivered",
       "brands": "Brands served",
       "turnaround": "Day turnaround",
-      "years": "Years in the game"
+      "years": "Years in the game",
+      "sectionLabel": "Our achievements in numbers"
     },
     "contact": {
       "label": "Get in Touch",
@@ -1581,7 +1586,9 @@
       "emailAddress": "devremedia@gmail.com",
       "aboutUs": "About Us",
       "portfolio": "Portfolio",
-      "ourTeam": "Our Team"
-    }
+      "ourTeam": "Our Team",
+      "legalNav": "Legal information"
+    },
+    "skipToContent": "Skip to main content"
   }
 }

@@ -1369,9 +1369,11 @@
       "bookCall": "Κλείσε Ραντεβού",
       "login": "Σύνδεση",
       "approach": "Προσέγγιση",
-      "work": "Δουλειές"
+      "work": "Δουλειές",
+      "mainNavigation": "Κύρια πλοήγηση"
     },
     "hero": {
+      "sectionLabel": "Καλώς ήρθατε στη Devre Media",
       "badge": "Where Velocity Meets Vision",
       "headline": "Όπου η Ταχύτητα, Συναντά το Όραμα.",
       "subtitle": "Η Ιστορία Σου, Με Ταχύτητα Τώρα.",
@@ -1394,7 +1396,8 @@
       "highlight2Title": "Πλήρης Υπηρεσία",
       "highlight2Desc": "Από τη στρατηγική μέχρι το τελικό βίντεο, όλα κάτω από μία στέγη",
       "highlight3Title": "Μακροπρόθεσμη Εστίαση",
-      "highlight3Desc": "Χτίζουμε συνεργασίες, όχι απλά projects"
+      "highlight3Desc": "Χτίζουμε συνεργασίες, όχι απλά projects",
+      "imageAlt": "Η ομάδα Devre Media στη δουλειά"
     },
     "approach": {
       "label": "Η Προσέγγισή μας",
@@ -1432,7 +1435,8 @@
       "featureDrone": "Drone footage περιλαμβάνεται",
       "featureMusic": "Copyright-free μουσική",
       "featureSubs": "Υπότιτλοι περιλαμβάνονται",
-      "featureStrategy": "Content strategy"
+      "featureStrategy": "Content strategy",
+      "additionalFeatures": "Επιπλέον χαρακτηριστικά"
     },
     "portfolio": {
       "label": "Portfolio",
@@ -1529,7 +1533,8 @@
       "projects": "Projects ολοκληρωμένα",
       "brands": "Brands εξυπηρετήθηκαν",
       "turnaround": "Ημέρες παράδοση",
-      "years": "Χρόνια στο παιχνίδι"
+      "years": "Χρόνια στο παιχνίδι",
+      "sectionLabel": "Τα επιτεύγματά μας σε αριθμούς"
     },
     "contact": {
       "label": "Επικοινωνία",
@@ -1581,7 +1586,9 @@
       "emailAddress": "devremedia@gmail.com",
       "aboutUs": "Σχετικά με Εμάς",
       "portfolio": "Portfolio",
-      "ourTeam": "Η Ομάδα μας"
-    }
+      "ourTeam": "Η Ομάδα μας",
+      "legalNav": "Νομικές πληροφορίες"
+    },
+    "skipToContent": "Μετάβαση στο κύριο περιεχόμενο"
   }
 }
