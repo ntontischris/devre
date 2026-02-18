@@ -137,15 +137,15 @@ export async function LandingFooter() {
         </div>
 
         <div className="pt-6 sm:pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-          <p className="text-zinc-600 text-xs">
+          <p className="text-zinc-500 text-xs">
             {t('footer.copyright')} {new Date().getFullYear()} Devre Media. {t('footer.city')}.
           </p>
           <nav aria-label={t('footer.legalNav')}>
             <div className="flex items-center gap-4 sm:gap-6">
-              <span className="text-zinc-600 text-xs">
+              <span className="text-zinc-500 text-xs">
                 {t('footer.impressum')}
               </span>
-              <span className="text-zinc-600 text-xs">
+              <span className="text-zinc-500 text-xs">
                 {t('footer.privacy')}
               </span>
               <a

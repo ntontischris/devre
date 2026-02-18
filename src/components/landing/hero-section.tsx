@@ -18,6 +18,7 @@ export async function HeroSection() {
           src="/images/hero/home1.jpg"
           alt=""
           fill
+          sizes="100vw"
           className="object-cover object-top hero-ken-burns"
           priority
         />
@@ -55,7 +56,7 @@ export async function HeroSection() {
                 className="h-1.5 w-1.5 rounded-full bg-gold-500 animate-pulse"
                 aria-hidden="true"
               />
-              <span className="text-gold-400/90 text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase">
+              <span className="text-gold-400/90 text-xs font-medium tracking-[0.15em] uppercase">
                 {t('hero.badge')}
               </span>
             </div>
@@ -111,21 +112,21 @@ export async function HeroSection() {
           <div className="hero-fade-3 mt-10 sm:mt-16 flex items-center gap-4 sm:gap-8 flex-wrap">
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="text-xl sm:text-2xl font-black text-white">200+</span>
-              <span className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wider leading-tight">
+              <span className="text-xs text-zinc-400 uppercase tracking-wider leading-tight">
                 {t('stats.projects')}
               </span>
             </div>
             <div className="h-6 sm:h-8 w-px bg-white/10" aria-hidden="true" />
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="text-xl sm:text-2xl font-black text-white">50+</span>
-              <span className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wider leading-tight">
+              <span className="text-xs text-zinc-400 uppercase tracking-wider leading-tight">
                 {t('stats.brands')}
               </span>
             </div>
             <div className="h-6 sm:h-8 w-px bg-white/10 hidden sm:block" aria-hidden="true" />
             <div className="hidden sm:flex items-center gap-2 sm:gap-3">
               <span className="text-xl sm:text-2xl font-black text-white">7</span>
-              <span className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wider leading-tight">
+              <span className="text-xs text-zinc-400 uppercase tracking-wider leading-tight">
                 {t('stats.turnaround')}
               </span>
             </div>

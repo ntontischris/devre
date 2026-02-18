@@ -17,7 +17,7 @@ import {
   CtaSection,
   LandingFooter,
 } from '@/components/landing';
-import { ChatWidget } from '@/components/shared/chatbot/chat-widget';
+import { ChatWidgetLazy } from '@/components/shared/chatbot/chat-widget-lazy';
 
 export default async function LandingPage() {
   const t = await getTranslations('landing');
@@ -53,7 +53,7 @@ export default async function LandingPage() {
 
       <LandingFooter />
 
-      <ChatWidget />
+      <ChatWidgetLazy />
     </div>
   );
 }

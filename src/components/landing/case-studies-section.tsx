@@ -49,7 +49,7 @@ export async function CaseStudiesSection() {
             <ScrollReveal key={i} delay={i * 150}>
               <div className="glass-card rounded-2xl p-6 sm:p-8 h-full">
                 <div
-                  className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase mb-3 sm:mb-4 ${study.accent}`}
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mb-3 sm:mb-4 ${study.accent}`}
                 >
                   {study.tag}
                 </div>
@@ -72,7 +72,6 @@ export async function CaseStudiesSection() {
                   width={80}
                   height={32}
                   className="h-5 sm:h-6 w-auto object-contain brightness-0 invert opacity-15 hover:opacity-50 transition-opacity duration-300"
-                  unoptimized
                 />
               ))}
             </div>

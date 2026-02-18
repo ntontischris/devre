@@ -59,7 +59,7 @@ export async function ServicesSection() {
                   aria-hidden="true"
                 />
                 <div className="relative">
-                  <div className="inline-block px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-[10px] font-bold tracking-wider uppercase mb-4 sm:mb-5">
+                  <div className="inline-block px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold tracking-wider uppercase mb-4 sm:mb-5">
                     {service.tag}
                   </div>
                   <service.Icon className="h-7 w-7 sm:h-8 sm:w-8 text-gold-500 mb-4 sm:mb-5" aria-hidden="true" />

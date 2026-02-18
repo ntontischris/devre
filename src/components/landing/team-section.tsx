@@ -48,6 +48,7 @@ export async function TeamSection() {
                   src="/images/team/haris.jpg"
                   alt={`${t('team.harisName')} - ${t('team.harisRole')}`}
                   fill
+                  sizes="(min-width: 640px) 50vw, 100vw"
                   className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" aria-hidden="true" />
@@ -82,6 +83,7 @@ export async function TeamSection() {
                   src="/images/team/angelos.jpg"
                   alt={`${t('team.angelosName')} - ${t('team.angelosRole')}`}
                   fill
+                  sizes="(min-width: 640px) 50vw, 100vw"
                   className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" aria-hidden="true" />

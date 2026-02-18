@@ -95,7 +95,7 @@ export function ChatWindow({
   const charsLeft = MAX_CHARS - input.length;
 
   return (
-    <div role="dialog" aria-label="Chat with Devre Media" className="flex flex-col h-full bg-zinc-950 rounded-2xl border border-white/[0.06] shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+    <div role="dialog" aria-label={isGreek ? 'Συνομιλία με Devre Media' : 'Chat with Devre Media'} className="flex flex-col h-full bg-zinc-950 rounded-2xl border border-white/[0.06] shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-gold-500/10 via-gold-500/5 to-transparent border-b border-white/[0.06]">
         <div className="flex items-center gap-2.5">
@@ -174,7 +174,7 @@ export function ChatWindow({
           />
           <div className="flex items-center gap-1.5 shrink-0">
             {input.length > 0 && (
-              <span className={`text-[10px] ${charsLeft < 50 ? 'text-red-400' : 'text-zinc-600'}`}>
+              <span className={`text-[11px] ${charsLeft < 50 ? 'text-red-400' : 'text-zinc-500'}`}>
                 {charsLeft}
               </span>
             )}
@@ -182,12 +182,13 @@ export function ChatWindow({
               type="submit"
               disabled={isLoading || !input.trim()}
               className="p-1.5 rounded-lg bg-gold-500 text-black hover:bg-gold-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              aria-label={isGreek ? 'Αποστολή μηνύματος' : 'Send message'}
             >
-              <Send className="h-3.5 w-3.5" />
+              <Send className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
         </div>
-        <p className="text-[10px] text-zinc-600 mt-1.5 text-center">
+        <p className="text-[11px] text-zinc-500 mt-1.5 text-center">
           {isGreek ? 'Enter αποστολή · Shift+Enter νέα γραμμή' : 'Enter to send · Shift+Enter for new line'}
         </p>
       </form>

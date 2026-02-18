@@ -17,6 +17,7 @@ export async function CtaSection() {
         src="/images/hero/home2.jpg"
         alt=""
         fill
+        sizes="100vw"
         className="object-cover opacity-[0.06]"
         aria-hidden="true"
       />
@@ -56,7 +57,7 @@ export async function CtaSection() {
         </ScrollReveal>
 
         <ScrollReveal delay={500}>
-          <p className="text-zinc-600 mt-6 sm:mt-8 text-xs sm:text-sm">{t('cta.location')}</p>
+          <p className="text-zinc-500 mt-6 sm:mt-8 text-xs sm:text-sm">{t('cta.location')}</p>
         </ScrollReveal>
       </div>
     </section>

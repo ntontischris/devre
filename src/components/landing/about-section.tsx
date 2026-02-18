@@ -72,6 +72,7 @@ export async function AboutSection() {
                   src="/images/hero/home2.jpg"
                   alt={t('about.imageAlt')}
                   fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" aria-hidden="true" />

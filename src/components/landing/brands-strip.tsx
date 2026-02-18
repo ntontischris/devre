@@ -11,7 +11,7 @@ export async function BrandsStrip() {
       role="region"
       aria-label={t('hero.trustedBy')}
     >
-      <p className="text-center text-zinc-600 text-[10px] tracking-[0.3em] uppercase mb-6 sm:mb-8">
+      <p className="text-center text-zinc-500 text-xs tracking-[0.3em] uppercase mb-6 sm:mb-8">
         {t('hero.trustedBy')}
       </p>
       <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
@@ -27,7 +27,6 @@ export async function BrandsStrip() {
               width={100}
               height={40}
               className="h-6 sm:h-8 w-auto object-contain brightness-0 invert opacity-25 hover:opacity-60 transition-opacity duration-300 flex-shrink-0"
-              unoptimized
             />
           ))}
         </div>

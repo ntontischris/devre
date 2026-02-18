@@ -67,7 +67,7 @@ export async function PricingSection() {
           {/* Growth (Featured) */}
           <ScrollReveal delay={150}>
             <div className="relative glass-card rounded-2xl p-6 sm:p-8 h-full border-gold-500/30 pricing-popular">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gold-500 text-black text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gold-500 text-black text-xs font-bold tracking-wider uppercase whitespace-nowrap">
                 {t('pricing.mostPopular')}
               </div>
               <h4 className="text-lg font-bold text-white mb-2">{t('pricing.growth')}</h4>

@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 import { ArrowRight, Play, Youtube } from 'lucide-react';
 import { ScrollReveal } from '@/components/shared/scroll-reveal';
 import { PORTFOLIO_VIDEOS } from './constants';
@@ -58,12 +59,12 @@ export async function PortfolioSection() {
                 className="video-card block group aspect-video focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 rounded-2xl"
                 aria-label={`${t(`portfolio.${video.key}`)} - YouTube`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
+                <Image
+                  src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
                   alt=""
-                  width={1280}
-                  height={720}
+                  width={480}
+                  height={360}
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   loading="lazy"
                 />
