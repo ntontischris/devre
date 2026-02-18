@@ -18,10 +18,14 @@ export function CountUp({
   className = '',
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [count, setCount] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
+  const prefersReducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [count, setCount] = useState(prefersReducedMotion ? end : 0);
+  const [hasStarted, setHasStarted] = useState(prefersReducedMotion);
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
+
     const el = ref.current;
     if (!el) return;
 
@@ -37,10 +41,10 @@ export function CountUp({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasStarted]);
+  }, [hasStarted, prefersReducedMotion]);
 
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted || prefersReducedMotion) return;
 
     let raf: number;
     const startTime = performance.now();
@@ -56,7 +60,7 @@ export function CountUp({
 
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [hasStarted, end, duration]);
+  }, [hasStarted, end, duration, prefersReducedMotion]);
 
   return (
     <span ref={ref} className={className}>

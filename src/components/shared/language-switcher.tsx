@@ -41,7 +41,7 @@ export function LanguageSwitcher() {
             onClick={() => handleLocaleChange(loc)}
             className={locale === loc ? 'bg-accent font-medium' : ''}
           >
-            {loc === 'en' ? '🇬🇧' : '🇬🇷'} {localeNames[loc]}
+            <span aria-hidden="true">{loc === 'en' ? '🇬🇧' : '🇬🇷'}</span> {localeNames[loc]}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

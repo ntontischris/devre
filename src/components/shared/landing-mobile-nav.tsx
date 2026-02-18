@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
@@ -10,6 +10,11 @@ import { LanguageSwitcher } from './language-switcher';
 export function LandingMobileNav() {
   const t = useTranslations('landing');
   const [open, setOpen] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+
+  const prefersReducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -20,6 +25,47 @@ export function LandingMobileNav() {
     }
     return () => { document.body.style.overflow = ''; };
   }, [open]);
+
+  // Focus trap when overlay is open
+  useEffect(() => {
+    if (!open || !overlayRef.current) return;
+
+    const overlay = overlayRef.current;
+    const focusableSelector = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = overlay.querySelectorAll<HTMLElement>(focusableSelector);
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+    // Auto-focus first link
+    firstFocusable?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        hamburgerRef.current?.focus();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable?.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable?.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
+
+  const close = useCallback(() => setOpen(false), []);
 
   const links = [
     { href: '#about', label: t('nav.about') },
@@ -34,9 +80,12 @@ export function LandingMobileNav() {
     <>
       {/* Hamburger button — animated lines */}
       <button
+        ref={hamburgerRef}
         onClick={() => setOpen(!open)}
         className="lg:hidden relative z-[60] flex flex-col items-center justify-center w-10 h-10 gap-1.5"
-        aria-label="Toggle menu"
+        aria-expanded={open}
+        aria-controls="mobile-menu-overlay"
+        aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
       >
         <span
           className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
@@ -57,62 +106,73 @@ export function LandingMobileNav() {
 
       {/* Full-screen overlay */}
       <div
+        ref={overlayRef}
+        id="mobile-menu-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('nav.mobileMenu')}
         className={`fixed inset-0 z-50 bg-zinc-950/98 backdrop-blur-xl transition-all duration-500 ${
           open ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >
         {/* Decorative gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_30%,rgba(201,160,51,0.08),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_30%,rgba(201,160,51,0.08),transparent)]" aria-hidden="true" />
 
         <div className="relative h-full flex flex-col items-center justify-center px-8">
-          {/* Navigation links — staggered animation */}
-          <nav className="flex flex-col items-center gap-2 mb-12">
-            {links.map((link, i) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={`text-3xl sm:text-4xl font-bold text-white/80 hover:text-gold-400 transition-all duration-500 py-2 ${
-                  open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-                }`}
-                style={{
-                  transitionDelay: open ? `${150 + i * 60}ms` : '0ms',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Navigation links */}
+          <nav aria-label={t('nav.mobileNavigation')}>
+            <ul className="flex flex-col items-center gap-2 mb-12">
+              {links.map((link, i) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={close}
+                    className={`text-3xl sm:text-4xl font-bold text-white/80 hover:text-gold-400 transition-all py-2 block ${
+                      prefersReducedMotion
+                        ? 'opacity-100'
+                        : `duration-500 ${open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`
+                    }`}
+                    style={prefersReducedMotion ? undefined : {
+                      transitionDelay: open ? `${150 + i * 60}ms` : '0ms',
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
 
           {/* CTAs */}
           <div
-            className={`flex flex-col items-center gap-4 transition-all duration-500 ${
-              open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            className={`flex flex-col items-center gap-4 ${
+              prefersReducedMotion
+                ? 'opacity-100'
+                : `transition-all duration-500 ${open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`
             }`}
-            style={{ transitionDelay: open ? '550ms' : '0ms' }}
+            style={prefersReducedMotion ? undefined : { transitionDelay: open ? '550ms' : '0ms' }}
           >
-            <Link href="/login" onClick={() => setOpen(false)}>
-              <Button
-                variant="ghost"
-                className="text-zinc-400 hover:text-white text-lg"
-              >
+            <Button asChild variant="ghost" className="text-zinc-400 hover:text-white text-lg">
+              <Link href="/login" onClick={close}>
                 {t('nav.clientPortal')}
-              </Button>
-            </Link>
-            <Link href="#contact" onClick={() => setOpen(false)}>
-              <Button className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-lg px-8 py-6 h-auto">
+              </Link>
+            </Button>
+            <Button asChild className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-lg px-8 py-6 h-auto">
+              <Link href="#contact" onClick={close}>
                 {t('nav.bookCall')}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+              </Link>
+            </Button>
           </div>
 
           {/* Language switcher at bottom */}
           <div
-            className={`absolute bottom-8 transition-all duration-500 ${
-              open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            className={`absolute bottom-8 ${
+              prefersReducedMotion
+                ? 'opacity-100'
+                : `transition-all duration-500 ${open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`
             }`}
-            style={{ transitionDelay: open ? '650ms' : '0ms' }}
+            style={prefersReducedMotion ? undefined : { transitionDelay: open ? '650ms' : '0ms' }}
           >
             <LanguageSwitcher />
           </div>

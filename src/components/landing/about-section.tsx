@@ -87,10 +87,10 @@ export async function AboutSection() {
                       className="h-4 w-4 sm:h-5 sm:w-5 text-gold-500 mx-auto mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform"
                       aria-hidden="true"
                     />
-                    <h4 className="text-[10px] sm:text-xs font-bold text-white mb-0.5 sm:mb-1">
+                    <h4 className="text-xs font-bold text-white mb-0.5 sm:mb-1">
                       {item.title}
                     </h4>
-                    <p className="text-[9px] sm:text-[10px] text-zinc-500 leading-snug">
+                    <p className="text-[11px] sm:text-xs text-zinc-500 leading-snug">
                       {item.desc}
                     </p>
                   </div>

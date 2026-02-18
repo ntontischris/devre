@@ -43,15 +43,16 @@ export async function CtaSection() {
         </ScrollReveal>
 
         <ScrollReveal delay={400}>
-          <Link href="#contact">
-            <Button
-              size="lg"
-              className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto shadow-[0_0_60px_rgba(201,160,51,0.25)] animate-glow-pulse"
-            >
+          <Button
+            asChild
+            size="lg"
+            className="bg-gold-500 hover:bg-gold-400 text-black font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto shadow-[0_0_60px_rgba(201,160,51,0.25)] animate-glow-pulse"
+          >
+            <Link href="#contact">
               {t('cta.button')}
               <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </ScrollReveal>
 
         <ScrollReveal delay={500}>

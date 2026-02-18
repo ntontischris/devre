@@ -42,6 +42,22 @@ const animationStyles: Record<Animation, { hidden: string; visible: string }> = 
   },
 };
 
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return reduced;
+}
+
 export function ScrollReveal({
   children,
   animation = 'fade-up',
@@ -53,9 +69,15 @@ export function ScrollReveal({
   as: Tag = 'div',
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [isVisible, setIsVisible] = useState(prefersReducedMotion);
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setIsVisible(true);
+      return;
+    }
+
     const el = ref.current;
     if (!el) return;
 
@@ -73,9 +95,17 @@ export function ScrollReveal({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [threshold, once]);
+  }, [threshold, once, prefersReducedMotion]);
 
   const styles = animationStyles[animation];
+
+  if (prefersReducedMotion) {
+    return (
+      <Tag ref={ref as any} className={`${styles.visible} ${className}`}>
+        {children}
+      </Tag>
+    );
+  }
 
   return (
     <Tag

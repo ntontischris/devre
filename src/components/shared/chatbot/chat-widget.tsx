@@ -94,12 +94,13 @@ function ChatWidgetInner({ sessionId: initialSessionId }: { sessionId: string })
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-4 sm:right-6 z-50 h-14 w-14 rounded-full bg-gold-500 text-black flex items-center justify-center shadow-lg shadow-gold-500/20 hover:bg-gold-400 hover:shadow-gold-500/30 hover:scale-105 active:scale-95 transition-all duration-200 animate-glow-pulse"
-        aria-label="Chat with us"
+        aria-label={isOpen ? 'Close chat' : 'Open chat'}
+        aria-expanded={isOpen}
       >
         {isOpen ? (
-          <X className="h-6 w-6" />
+          <X className="h-6 w-6" aria-hidden="true" />
         ) : (
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-6 w-6" aria-hidden="true" />
         )}
       </button>
     </>

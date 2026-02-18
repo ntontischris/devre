@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,11 +46,24 @@ export function LandingContactForm() {
     }
   };
 
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status === 'success') {
+      successRef.current?.focus();
+    }
+  }, [status]);
+
   if (status === 'success') {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div
+        ref={successRef}
+        role="status"
+        tabIndex={-1}
+        className="flex flex-col items-center justify-center py-12 text-center outline-none"
+      >
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
-          <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+          <CheckCircle2 className="h-8 w-8 text-emerald-400" aria-hidden="true" />
         </div>
         <p className="text-lg font-medium text-white">{t('success')}</p>
         <Button
@@ -134,8 +147,8 @@ export function LandingContactForm() {
       </div>
 
       {status === 'error' && (
-        <div className="flex items-center gap-2 text-sm text-red-400">
-          <AlertCircle className="h-4 w-4" />
+        <div role="alert" aria-live="assertive" className="flex items-center gap-2 text-sm text-red-400">
+          <AlertCircle className="h-4 w-4" aria-hidden="true" />
           {t('error')}
         </div>
       )}
@@ -143,6 +156,7 @@ export function LandingContactForm() {
       <Button
         type="submit"
         disabled={status === 'sending'}
+        aria-busy={status === 'sending'}
         className="w-full bg-gold-500 text-zinc-950 hover:bg-gold-400 font-semibold h-12 text-base shadow-lg shadow-gold-500/20 disabled:opacity-50"
       >
         {status === 'sending' ? (

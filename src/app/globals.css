@@ -499,3 +499,66 @@
   animation: glow-pulse 3s ease-in-out infinite;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION — Disable all animations for users who prefer it
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-ken-burns,
+  .hero-clip-reveal,
+  .hero-line-expand,
+  .hero-fade-1,
+  .hero-fade-2,
+  .hero-fade-3,
+  .hero-text-glow-pulse,
+  .hero-orb,
+  .animate-scroll-bounce,
+  .animate-glow-pulse,
+  .animate-float,
+  .text-shimmer,
+  .animate-line-draw,
+  .film-grain::before,
+  .pricing-popular::after {
+    animation: none !important;
+  }
+
+  /* Force hero elements to their visible final state */
+  .hero-clip-reveal,
+  .hero-line-expand,
+  .hero-fade-1,
+  .hero-fade-2,
+  .hero-fade-3 {
+    opacity: 1;
+    clip-path: none;
+    transform: none;
+  }
+
+  /* Disable hover transforms */
+  .bento-card:hover {
+    transform: none;
+  }
+
+  /* Stop marquee animations */
+  [class*="animate-[marquee"] {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NO-JS FALLBACK — Make content visible without JavaScript
+   ═══════════════════════════════════════════════════════════════ */
+@media (scripting: none) {
+  .hero-clip-reveal,
+  .hero-line-expand,
+  .hero-fade-1,
+  .hero-fade-2,
+  .hero-fade-3 {
+    opacity: 1;
+    clip-path: none;
+    transform: none;
+  }
+}
+

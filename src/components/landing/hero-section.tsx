@@ -84,25 +84,27 @@ export async function HeroSection() {
 
           {/* CTAs */}
           <div className="hero-fade-2 mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-start gap-3 sm:gap-4">
-            <Link href="#contact">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-gold-500 hover:bg-gold-400 text-black font-bold text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-[0_0_40px_rgba(201,160,51,0.25)] hover:shadow-[0_0_60px_rgba(201,160,51,0.35)] transition-all duration-300"
-              >
+            <Button
+              asChild
+              size="lg"
+              className="w-full sm:w-auto bg-gold-500 hover:bg-gold-400 text-black font-bold text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-[0_0_40px_rgba(201,160,51,0.25)] hover:shadow-[0_0_60px_rgba(201,160,51,0.35)] transition-all duration-300"
+            >
+              <Link href="#contact">
                 {t('hero.ctaPrimary')}
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-              </Button>
-            </Link>
-            <Link href="#portfolio">
-              <Button
-                size="lg"
-                variant="ghost"
-                className="w-full sm:w-auto text-zinc-300 hover:text-white hover:bg-white/5 text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6 h-auto border border-white/10 hover:border-white/20 transition-all duration-300"
-              >
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="ghost"
+              className="w-full sm:w-auto text-zinc-300 hover:text-white hover:bg-white/5 text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6 h-auto border border-white/10 hover:border-white/20 transition-all duration-300"
+            >
+              <Link href="#portfolio">
                 <Play className="mr-2 h-4 w-4" aria-hidden="true" />
                 {t('hero.ctaSecondary')}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           {/* Social proof stats */}
@@ -127,6 +129,9 @@ export async function HeroSection() {
                 {t('stats.turnaround')}
               </span>
             </div>
+            <span className="sr-only sm:hidden">
+              7 {t('stats.turnaround')}
+            </span>
           </div>
         </div>
       </div>

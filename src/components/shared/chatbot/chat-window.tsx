@@ -95,11 +95,11 @@ export function ChatWindow({
   const charsLeft = MAX_CHARS - input.length;
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 rounded-2xl border border-white/[0.06] shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+    <div role="dialog" aria-label="Chat with Devre Media" className="flex flex-col h-full bg-zinc-950 rounded-2xl border border-white/[0.06] shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-gold-500/10 via-gold-500/5 to-transparent border-b border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="h-2 w-2 rounded-full bg-gold-500 animate-pulse" />
+          <div className="h-2 w-2 rounded-full bg-gold-500 animate-pulse" aria-hidden="true" />
           <span className="text-sm font-semibold text-white">Devre Media</span>
         </div>
         <div className="flex items-center gap-1">
@@ -107,22 +107,23 @@ export function ChatWindow({
             <button
               onClick={onNewChat}
               className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-              title={isGreek ? 'Νέα συνομιλία' : 'New chat'}
+              aria-label={isGreek ? 'Νέα συνομιλία' : 'New chat'}
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           )}
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label={isGreek ? 'Κλείσιμο συνομιλίας' : 'Close chat'}
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 scrollbar-thin">
+      <div role="log" aria-live="polite" className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 scrollbar-thin">
         {!hasMessages ? (
           <ChatWelcomeScreen language={language} onQuickAction={onQuickAction} />
         ) : (
@@ -166,6 +167,7 @@ export function ChatWindow({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={isGreek ? 'Γράψε ένα μήνυμα...' : 'Type a message...'}
+            aria-label={isGreek ? 'Μήνυμα' : 'Message'}
             className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none resize-none min-h-[20px] max-h-[100px] leading-5"
             rows={1}
             disabled={isLoading}

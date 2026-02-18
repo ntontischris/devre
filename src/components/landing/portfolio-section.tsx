@@ -62,6 +62,8 @@ export async function PortfolioSection() {
                 <img
                   src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
                   alt=""
+                  width={1280}
+                  height={720}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   loading="lazy"
                 />

@@ -56,14 +56,11 @@ export async function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Link href="#contact">
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 sm:h-11"
-                >
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 sm:h-11">
+                <Link href="#contact">
                   {t('pricing.getQuote')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
 
@@ -92,11 +89,11 @@ export async function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Link href="#contact">
-                <Button className="w-full bg-gold-500 hover:bg-gold-400 text-black font-bold h-10 sm:h-11">
+              <Button asChild className="w-full bg-gold-500 hover:bg-gold-400 text-black font-bold h-10 sm:h-11">
+                <Link href="#contact">
                   {t('pricing.getQuote')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
 
@@ -123,14 +120,11 @@ export async function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Link href="#contact">
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 sm:h-11"
-                >
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 sm:h-11">
+                <Link href="#contact">
                   {t('pricing.getQuote')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
         </div>
@@ -145,14 +139,11 @@ export async function PricingSection() {
                 <span className="text-zinc-500 ml-1 text-sm">{t('pricing.epMonth')}</span>
               </div>
               <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('pricing.podcastDesc')}</p>
-              <Link href="#contact">
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10"
-                >
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10">
+                <Link href="#contact">
                   {t('pricing.getQuote')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={150}>
@@ -163,14 +154,11 @@ export async function PricingSection() {
                 <span className="text-zinc-500 ml-1 text-sm">{t('pricing.videos')}</span>
               </div>
               <p className="text-zinc-400 text-sm mb-4 sm:mb-6">{t('pricing.eventDesc')}</p>
-              <Link href="#contact">
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10"
-                >
+              <Button asChild variant="outline" className="w-full border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10">
+                <Link href="#contact">
                   {t('pricing.getQuote')}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
         </div>

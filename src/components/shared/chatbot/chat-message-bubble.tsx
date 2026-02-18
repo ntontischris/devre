@@ -140,13 +140,13 @@ export function ChatMessageBubble({ role, content, onSuggestionClick, isLatest }
 
           {/* Copy button */}
           {!isUser && (
-            <div className="flex items-center gap-2 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2 px-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
               <button
                 onClick={handleCopy}
-                className="p-0.5 rounded text-zinc-500 hover:text-zinc-300 transition-colors"
-                title="Copy"
+                className="p-0.5 rounded text-zinc-500 hover:text-zinc-300 focus-visible:opacity-100 transition-colors"
+                aria-label={copied ? 'Copied' : 'Copy message'}
               >
-                {copied ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
+                {copied ? <Check className="h-3 w-3 text-green-400" aria-hidden="true" /> : <Copy className="h-3 w-3" aria-hidden="true" />}
               </button>
             </div>
           )}

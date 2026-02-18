@@ -142,18 +142,12 @@ export async function LandingFooter() {
           </p>
           <nav aria-label={t('footer.legalNav')}>
             <div className="flex items-center gap-4 sm:gap-6">
-              <a
-                href="#"
-                className="text-zinc-600 hover:text-gold-500 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
-              >
+              <span className="text-zinc-600 text-xs">
                 {t('footer.impressum')}
-              </a>
-              <a
-                href="#"
-                className="text-zinc-600 hover:text-gold-500 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
-              >
+              </span>
+              <span className="text-zinc-600 text-xs">
                 {t('footer.privacy')}
-              </a>
+              </span>
               <a
                 href="mailto:devremedia@gmail.com"
                 className="text-zinc-600 hover:text-gold-500 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"

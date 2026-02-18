@@ -48,24 +48,17 @@ export async function LandingNav() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
-            <Link href="/login" className="hidden md:block">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-zinc-400 hover:text-white hover:bg-white/5 text-[13px]"
-              >
+            <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex text-zinc-400 hover:text-white hover:bg-white/5 text-[13px]">
+              <Link href="/login">
                 {t('nav.clientPortal')}
-              </Button>
-            </Link>
-            <Link href="#contact" className="hidden md:block">
-              <Button
-                size="sm"
-                className="bg-gold-500 hover:bg-gold-400 text-black font-semibold text-[13px]"
-              >
+              </Link>
+            </Button>
+            <Button asChild size="sm" className="hidden lg:inline-flex bg-gold-500 hover:bg-gold-400 text-black font-semibold text-[13px]">
+              <Link href="#contact">
                 {t('nav.bookCall')}
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <div className="lg:hidden">
               <LandingMobileNav />
             </div>
