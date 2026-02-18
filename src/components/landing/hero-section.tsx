@@ -52,10 +52,10 @@ export async function HeroSection() {
 
         {/* Main headline */}
         <h1 className="hero-clip-reveal hero-text-glow-pulse" style={{ animationDelay: '0.6s' }}>
-          <span className="block text-[clamp(2.5rem,8vw,8rem)] font-black text-white leading-[0.95] tracking-[-0.03em]">
+          <span className="block text-[clamp(2rem,7vw,8rem)] font-black text-white leading-[0.95] tracking-[-0.03em]">
             {t('hero.titleLine1')}
           </span>
-          <span className="block text-[clamp(2.5rem,8vw,8rem)] font-black leading-[0.95] tracking-[-0.03em] text-shimmer">
+          <span className="block text-[clamp(2rem,7vw,8rem)] font-black leading-[0.95] tracking-[-0.03em] text-shimmer">
             {t('hero.titleLine2')}
           </span>
         </h1>

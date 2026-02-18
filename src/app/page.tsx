@@ -23,7 +23,7 @@ export default async function LandingPage() {
   const t = await getTranslations('landing');
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white selection:bg-gold-500/30 selection:text-white">
+    <div className="min-h-screen bg-zinc-950 text-white selection:bg-gold-500/30 selection:text-white overflow-x-hidden">
       {/* Skip to content link for keyboard/screen reader users */}
       <a
         href="#main-content"

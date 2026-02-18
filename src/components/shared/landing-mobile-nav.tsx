@@ -113,12 +113,8 @@ export function LandingMobileNav() {
           aria-hidden="true"
         />
 
-        {/* All content — fades in together, no staggered delays */}
-        <div
-          className={`relative h-full flex flex-col justify-between px-6 sm:px-10 pt-24 pb-8 transition-opacity duration-300 ease-out ${
-            open ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
+        {/* All content — instant, no transitions */}
+        <div className="relative h-full flex flex-col justify-between px-6 sm:px-10 pt-24 pb-8">
           {/* Navigation links */}
           <nav aria-label={t('nav.mobileNavigation')} className="flex-1 flex flex-col justify-center">
             <ul className="flex flex-col">
