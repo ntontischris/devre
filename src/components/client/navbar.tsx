@@ -49,10 +49,11 @@ export function ClientNavbar() {
           variant="ghost"
           size="icon"
           className="md:hidden mr-2"
-          onClick={() => setMobileMenuOpen(true)}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-expanded={mobileMenuOpen}
+          aria-label={t('toggleMenu')}
         >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
+          <Menu className="h-5 w-5" aria-hidden="true" />
         </Button>
 
         {/* Logo */}

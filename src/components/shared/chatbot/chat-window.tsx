@@ -147,7 +147,7 @@ export function ChatWindow({
             })}
             {isLoading && <ChatTypingIndicator />}
             {error && (
-              <div className="text-center text-xs text-red-400 py-2 bg-red-500/5 rounded-lg border border-red-500/10">
+              <div role="alert" className="text-center text-xs text-red-400 py-2 bg-red-500/5 rounded-lg border border-red-500/10">
                 {isGreek
                   ? 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.'
                   : 'Something went wrong. Please try again.'}

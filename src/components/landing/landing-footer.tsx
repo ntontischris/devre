@@ -146,22 +146,20 @@ export async function LandingFooter() {
           <p className="text-zinc-400 text-xs">
             {t('footer.copyright')} {new Date().getFullYear()} Devre Media. {t('footer.city')}.
           </p>
-          <nav aria-label={t('footer.legalNav')}>
-            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2 sm:gap-x-6">
-              <span className="text-zinc-400 text-xs">
-                {t('footer.impressum')}
-              </span>
-              <span className="text-zinc-400 text-xs">
-                {t('footer.privacy')}
-              </span>
-              <a
-                href="mailto:devremedia@gmail.com"
-                className="text-zinc-400 hover:text-gold-500 text-xs transition-colors min-h-[48px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
-              >
-                {t('footer.emailAddress')}
-              </a>
-            </div>
-          </nav>
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2 sm:gap-x-6">
+            <span className="text-zinc-400 text-xs">
+              {t('footer.impressum')}
+            </span>
+            <span className="text-zinc-400 text-xs">
+              {t('footer.privacy')}
+            </span>
+            <a
+              href="mailto:devremedia@gmail.com"
+              className="text-zinc-400 hover:text-gold-500 text-xs transition-colors min-h-[48px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded-sm"
+            >
+              {t('footer.emailAddress')}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 
 type Animation = 'fade-up' | 'fade-in' | 'fade-down' | 'slide-left' | 'slide-right' | 'scale-up';
 
@@ -12,48 +10,7 @@ interface ScrollRevealProps {
   className?: string;
   threshold?: number;
   once?: boolean;
-  as?: 'div' | 'section' | 'span' | 'h1' | 'h2' | 'h3' | 'p';
-}
-
-const animationStyles: Record<Animation, { hidden: string; visible: string }> = {
-  'fade-up': {
-    hidden: 'translate-y-10 opacity-0',
-    visible: 'translate-y-0 opacity-100',
-  },
-  'fade-down': {
-    hidden: '-translate-y-10 opacity-0',
-    visible: 'translate-y-0 opacity-100',
-  },
-  'fade-in': {
-    hidden: 'opacity-0',
-    visible: 'opacity-100',
-  },
-  'slide-left': {
-    hidden: 'translate-x-16 opacity-0',
-    visible: 'translate-x-0 opacity-100',
-  },
-  'slide-right': {
-    hidden: '-translate-x-16 opacity-0',
-    visible: 'translate-x-0 opacity-100',
-  },
-  'scale-up': {
-    hidden: 'scale-90 opacity-0',
-    visible: 'scale-100 opacity-100',
-  },
-};
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  return reduced;
+  as?: 'div' | 'section' | 'span' | 'h1' | 'h2' | 'h3' | 'p' | 'li';
 }
 
 export function ScrollReveal({
@@ -62,53 +19,26 @@ export function ScrollReveal({
   delay = 0,
   duration = 800,
   className = '',
-  threshold = 0.15,
-  once = true,
+  // threshold and once are kept for API compatibility but unused in the CSS approach
+  threshold: _threshold,
+  once: _once,
   as: Tag = 'div',
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const [isVisible, setIsVisible] = useState(prefersReducedMotion);
+  const style: CSSProperties & { '--reveal-delay'?: string; '--reveal-duration'?: string } = {};
 
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      setIsVisible(true);
-      return;
-    }
-
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          if (once) observer.unobserve(el);
-        } else if (!once) {
-          setIsVisible(false);
-        }
-      },
-      { threshold, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold, once, prefersReducedMotion]);
-
-  const styles = animationStyles[animation];
+  if (delay !== 0) {
+    style['--reveal-delay'] = `${delay}ms`;
+  }
+  if (duration !== 800) {
+    style['--reveal-duration'] = `${duration}ms`;
+  }
 
   return (
     <Tag
-      ref={ref as any}
-      className={`${
-        prefersReducedMotion
-          ? styles.visible
-          : `transition-all ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${isVisible ? styles.visible : styles.hidden}`
-      } ${className}`}
-      style={prefersReducedMotion ? undefined : {
-        transitionDuration: `${duration}ms`,
-        transitionDelay: `${delay}ms`,
-      }}
+      data-reveal=""
+      data-animation={animation}
+      className={className}
+      style={Object.keys(style).length > 0 ? (style as CSSProperties) : undefined}
     >
       {children}
     </Tag>

@@ -95,6 +95,7 @@
     "password": "Κωδικός",
     "toggleTheme": "Αλλαγή θέματος",
     "openMenu": "Άνοιγμα μενού",
+    "userMenu": "Μενού χρήστη",
     "menu": "Μενού",
     "comingSoon": "Σύντομα",
     "unknownSize": "Άγνωστο μέγεθος"
@@ -122,7 +123,8 @@
     "navigation": "Πλοήγηση",
     "expandSidebar": "Ανάπτυξη πλευρικής μπάρας",
     "collapseSidebar": "Σύμπτυξη πλευρικής μπάρας",
-    "chatbot": "AI Chatbot"
+    "chatbot": "AI Chatbot",
+    "toggleMenu": "Εναλλαγή μενού"
   },
 
   "auth": {

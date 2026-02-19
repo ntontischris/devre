@@ -38,8 +38,8 @@ export function SidebarNav({
         isCollapsed ? 'px-2 justify-center' : 'px-4'
       )}
     >
-      <Link href={href}>
-        <Icon className="h-5 w-5 shrink-0" />
+      <Link href={href} aria-label={isCollapsed ? label : undefined}>
+        <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
         {!isCollapsed && <span className="flex-1 text-left">{label}</span>}
       </Link>
     </Button>

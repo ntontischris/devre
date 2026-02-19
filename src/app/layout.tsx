@@ -1,10 +1,33 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
+
+// Namespaces only used server-side (via getTranslations) — excluded from client bundle
+const SERVER_ONLY_NAMESPACES = [
+  'auth',
+  'dashboard',
+  'clients',
+  'projects',
+  'filmingPrep',
+  'calendar',
+  'reports',
+  'salesResources',
+  'validation',
+];
+
+function pickClientMessages(messages: Record<string, unknown>) {
+  const picked: Record<string, unknown> = {};
+  for (const key of Object.keys(messages)) {
+    if (!SERVER_ONLY_NAMESPACES.includes(key)) {
+      picked[key] = messages[key];
+    }
+  }
+  return picked;
+}
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,6 +40,11 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
   display: 'swap',
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -36,12 +64,15 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <link rel="dns-prefetch" href="https://img.youtube.com" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
         style={{ margin: 0, backgroundColor: 'var(--background, #09090b)' }}
       >
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={pickClientMessages(messages as Record<string, unknown>)}>
           <Providers>
             {children}
             <Toaster richColors position="top-right" />

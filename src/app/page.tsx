@@ -18,6 +18,7 @@ import {
   LandingFooter,
 } from '@/components/landing';
 import { ChatWidgetLazy } from '@/components/shared/chatbot/chat-widget-lazy';
+import { ScrollRevealInit } from '@/components/shared/scroll-reveal-init';
 
 export default async function LandingPage() {
   const t = await getTranslations('landing');
@@ -54,6 +55,7 @@ export default async function LandingPage() {
       <LandingFooter />
 
       <ChatWidgetLazy />
+      <ScrollRevealInit />
     </div>
   );
 }

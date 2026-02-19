@@ -26,16 +26,16 @@ export async function ProcessSection() {
           </div>
         </ScrollReveal>
 
-        <ol className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 lg:gap-4">
+        <div className="relative">
           {/* Connecting gold line (desktop only) */}
           <div
-            className="hidden lg:block absolute top-5 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-gold-500/20 via-gold-500/30 to-gold-500/20"
+            className="hidden lg:block absolute top-5 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-gold-500/20 via-gold-500/30 to-gold-500/20 z-0"
             aria-hidden="true"
           />
 
-          {steps.map((step, i) => (
-            <ScrollReveal key={step} delay={i * 150}>
-              <li className="relative text-center">
+          <ol className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 lg:gap-4">
+            {steps.map((step, i) => (
+              <ScrollReveal key={step} as="li" delay={i * 150} className="relative text-center">
                 {/* Step circle */}
                 <div className="relative z-10 mx-auto w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center mb-4 sm:mb-5">
                   <span className="text-gold-500 font-bold text-sm">0{step}</span>
@@ -46,10 +46,10 @@ export async function ProcessSection() {
                 <p className="text-zinc-400 leading-relaxed text-sm max-w-xs mx-auto">
                   {t(`process.step${step}Desc`)}
                 </p>
-              </li>
-            </ScrollReveal>
-          ))}
-        </ol>
+              </ScrollReveal>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );

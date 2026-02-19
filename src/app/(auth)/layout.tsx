@@ -27,7 +27,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             {t('brandDescription')}
           </p>
           <div className="mt-12 flex items-center gap-3 text-zinc-500 text-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
             <span>{t('trustedBy')}</span>
           </div>
         </div>

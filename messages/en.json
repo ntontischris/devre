@@ -95,6 +95,7 @@
     "password": "Password",
     "toggleTheme": "Toggle theme",
     "openMenu": "Open menu",
+    "userMenu": "User menu",
     "menu": "Menu",
     "comingSoon": "Coming soon",
     "unknownSize": "Unknown size"
@@ -122,7 +123,8 @@
     "navigation": "Navigation",
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
-    "chatbot": "AI Chatbot"
+    "chatbot": "AI Chatbot",
+    "toggleMenu": "Toggle menu"
   },
 
   "auth": {

@@ -91,6 +91,7 @@ export function DataTable<TData, TValue>({
       {searchKey && (
         <div className="flex items-center justify-between">
           <Input
+            aria-label={searchPlaceholder ?? t('search')}
             placeholder={searchPlaceholder ?? t('search')}
             value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
@@ -175,7 +176,7 @@ function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) 
               table.setPageSize(Number(value));
             }}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger className="h-8 w-[70px]" aria-label={t('rowsPerPage')}>
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">

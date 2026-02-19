@@ -144,6 +144,38 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   SCROLL REVEAL ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-reveal] {
+  opacity: 0;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: var(--reveal-duration, 800ms);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal][data-animation="fade-up"] { transform: translateY(2.5rem); }
+[data-reveal][data-animation="fade-down"] { transform: translateY(-2.5rem); }
+[data-reveal][data-animation="fade-in"] { transform: none; }
+[data-reveal][data-animation="slide-left"] { transform: translateX(4rem); }
+[data-reveal][data-animation="slide-right"] { transform: translateX(-4rem); }
+[data-reveal][data-animation="scale-up"] { transform: scale(0.9); }
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    LANDING PAGE — CINEMATIC DESIGN SYSTEM
    ═══════════════════════════════════════════════════════════════ */
 
