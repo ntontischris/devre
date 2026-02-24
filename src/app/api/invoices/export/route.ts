@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+
+const dateParamSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional();
 
 export const dynamic = 'force-dynamic';
 
@@ -12,8 +15,8 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const dateFrom = searchParams.get('from');
-    const dateTo = searchParams.get('to');
+    const dateFrom = dateParamSchema.safeParse(searchParams.get('from') || undefined).data;
+    const dateTo = dateParamSchema.safeParse(searchParams.get('to') || undefined).data;
 
     let query = supabase
       .from('invoices')
@@ -25,7 +28,8 @@ export async function GET(request: NextRequest) {
 
     const { data: invoices, error } = await query;
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error('Invoice export query error:', error);
+      return NextResponse.json({ error: 'Failed to fetch invoices' }, { status: 500 });
     }
 
     // Build CSV

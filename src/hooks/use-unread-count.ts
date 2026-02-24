@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { RealtimeChannel } from '@supabase/supabase-js';
 
 interface UseUnreadCountResult {
   unreadCount: number;
@@ -20,8 +19,6 @@ export function useUnreadCount(currentUserId: string | null): UseUnreadCountResu
     }
 
     const supabase = createClient();
-    let channel: RealtimeChannel;
-
     const fetchUnreadCount = async () => {
       setIsLoading(true);
       try {
@@ -34,8 +31,8 @@ export function useUnreadCount(currentUserId: string | null): UseUnreadCountResu
         if (!error && count !== null) {
           setUnreadCount(count);
         }
-      } catch (error) {
-        console.error('Failed to fetch unread count:', error);
+      } catch (err) {
+        console.error('Failed to fetch unread count:', err);
       } finally {
         setIsLoading(false);
       }
@@ -45,7 +42,7 @@ export function useUnreadCount(currentUserId: string | null): UseUnreadCountResu
     fetchUnreadCount();
 
     // Subscribe to changes
-    channel = supabase
+    const channel = supabase
       .channel('unread-messages')
       .on(
         'postgres_changes',
@@ -54,9 +51,10 @@ export function useUnreadCount(currentUserId: string | null): UseUnreadCountResu
           schema: 'public',
           table: 'messages',
         },
-        (payload: any) => {
+        (payload) => {
           // Only increment if it's not from the current user
-          if (payload.new.sender_id !== currentUserId) {
+          const newMsg = payload.new as Record<string, unknown>;
+          if (newMsg.sender_id !== currentUserId) {
             setUnreadCount((prev) => prev + 1);
           }
         }
@@ -68,11 +66,13 @@ export function useUnreadCount(currentUserId: string | null): UseUnreadCountResu
           schema: 'public',
           table: 'messages',
         },
-        (payload: any) => {
+        (payload) => {
+          const oldMsg = payload.old as Record<string, unknown>;
+          const newMsg = payload.new as Record<string, unknown>;
           // If a message was marked as read
-          if (payload.old.read_at === null && payload.new.read_at !== null) {
+          if (oldMsg.read_at === null && newMsg.read_at !== null) {
             // Only decrement if it wasn't sent by the current user
-            if (payload.new.sender_id !== currentUserId) {
+            if (newMsg.sender_id !== currentUserId) {
               setUnreadCount((prev) => Math.max(0, prev - 1));
             }
           }
@@ -81,9 +81,7 @@ export function useUnreadCount(currentUserId: string | null): UseUnreadCountResu
       .subscribe();
 
     return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
+      supabase.removeChannel(channel);
     };
   }, [currentUserId]);
 

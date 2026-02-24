@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createKbArticleSchema, updateKbArticleSchema } from '@/lib/schemas/kb-article';
 import type { ActionResult, KbArticle } from '@/types';
 import { revalidatePath } from 'next/cache';
+import { escapePostgrestFilter } from '@/lib/utils';
 
 export async function getKbArticles(categoryId?: string): Promise<ActionResult<unknown[]>> {
   try {
@@ -82,7 +83,7 @@ export async function searchArticles(query: string): Promise<ActionResult<unknow
       .from('kb_articles')
       .select('id, title, slug, summary, category:kb_categories(title, slug)')
       .eq('published', true)
-      .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+      .or(`title.ilike.%${escapePostgrestFilter(query)}%,content.ilike.%${escapePostgrestFilter(query)}%`)
       .order('created_at', { ascending: false })
       .limit(20);
 

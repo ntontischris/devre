@@ -19,11 +19,20 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
 
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error('Webhook error: STRIPE_WEBHOOK_SECRET not configured');
+    return NextResponse.json(
+      { error: 'Webhook not configured' },
+      { status: 500 }
+    );
+  }
+
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      webhookSecret
     );
   } catch (error) {
     console.error('Webhook signature verification failed:', error);
@@ -50,11 +59,26 @@ export async function POST(request: NextRequest) {
         // Use admin client to bypass RLS for system operation
         const supabase = createAdminClient();
 
+        // Check if already paid to handle webhook retries idempotently
+        const { data: existingInvoice } = await supabase
+          .from('invoices')
+          .select('status')
+          .eq('id', invoiceId)
+          .single();
+
+        if (existingInvoice?.status === 'paid') {
+          console.log(`Invoice ${invoiceId} already paid, skipping duplicate webhook`);
+          break;
+        }
+
         const { error: updateError } = await supabase
           .from('invoices')
           .update({
             status: 'paid',
             paid_at: new Date().toISOString(),
+            stripe_payment_intent_id: typeof session.payment_intent === 'string'
+              ? session.payment_intent
+              : session.payment_intent?.id || null,
           })
           .eq('id', invoiceId);
 

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createLeadSchema, updateLeadSchema } from '@/lib/schemas/lead';
 import type { ActionResult, LeadFilters, Lead } from '@/types';
 import { revalidatePath } from 'next/cache';
+import { escapePostgrestFilter } from '@/lib/utils';
 
 export async function getLeads(filters?: LeadFilters): Promise<ActionResult<unknown[]>> {
   try {
@@ -25,7 +26,8 @@ export async function getLeads(filters?: LeadFilters): Promise<ActionResult<unkn
       query = query.eq('assigned_to', filters.assigned_to);
     }
     if (filters?.search) {
-      query = query.or(`contact_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,company_name.ilike.%${filters.search}%`);
+      const s = escapePostgrestFilter(filters.search);
+      query = query.or(`contact_name.ilike.%${s}%,email.ilike.%${s}%,company_name.ilike.%${s}%`);
     }
     if (filters?.expected_close_from) {
       query = query.gte('expected_close_date', filters.expected_close_from);

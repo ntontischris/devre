@@ -5,6 +5,7 @@ import { createProjectSchema, updateProjectSchema } from '@/lib/schemas/project'
 import type { ActionResult, ProjectWithClient, Project } from '@/types/index';
 import type { ProjectStatus, Priority } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
+import { escapePostgrestFilter } from '@/lib/utils';
 
 interface ProjectFilters {
   client_id?: string;
@@ -39,7 +40,8 @@ export async function getProjects(filters?: ProjectFilters): Promise<ActionResul
       }
     }
     if (filters?.search) {
-      query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      const s = escapePostgrestFilter(filters.search);
+      query = query.or(`title.ilike.%${s}%,description.ilike.%${s}%`);
     }
 
     const { data, error } = await query;

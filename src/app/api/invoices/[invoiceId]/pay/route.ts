@@ -30,6 +30,21 @@ export async function POST(
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }
 
+    // 3b. Verify the authenticated user owns this invoice (via client.user_id)
+    const clientUserId = (invoice.client as { user_id?: string } | null)?.user_id;
+    if (!clientUserId || clientUserId !== user.id) {
+      // Also allow admin/super_admin to initiate payments
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
+      if (!isAdmin) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
     if (invoice.status === 'paid') {
       return NextResponse.json({ error: 'Invoice already paid' }, { status: 400 });
     }

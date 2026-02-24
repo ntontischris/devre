@@ -4,6 +4,7 @@ import { createClient as createSupabase } from '@/lib/supabase/server';
 import { createClientSchema, updateClientSchema } from '@/lib/schemas/client';
 import type { ActionResult } from '@/types/index';
 import { revalidatePath } from 'next/cache';
+import { escapePostgrestFilter } from '@/lib/utils';
 
 export async function getClients(filters?: {
   status?: string;
@@ -17,8 +18,9 @@ export async function getClients(filters?: {
       query = query.eq('status', filters.status);
     }
     if (filters?.search) {
+      const s = escapePostgrestFilter(filters.search);
       query = query.or(
-        `contact_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,company_name.ilike.%${filters.search}%`,
+        `contact_name.ilike.%${s}%,email.ilike.%${s}%,company_name.ilike.%${s}%`,
       );
     }
 

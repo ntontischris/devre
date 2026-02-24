@@ -45,7 +45,8 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      console.error('Invite error:', error);
+      return NextResponse.json({ error: 'Failed to send invitation' }, { status: 400 });
     }
 
     return NextResponse.json({ data: { user: data.user } });
