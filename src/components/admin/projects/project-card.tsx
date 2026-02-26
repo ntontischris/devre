@@ -82,7 +82,7 @@ function CardInner({ project }: { project: ProjectWithClient }) {
       <div className="flex items-center gap-1 text-[11px] text-muted-foreground mb-1.5">
         <Building2 className="h-3 w-3 flex-shrink-0" />
         <span className="truncate">
-          {project.client.company_name || project.client.contact_name}
+          {project.client?.company_name || project.client?.contact_name}
         </span>
       </div>
 

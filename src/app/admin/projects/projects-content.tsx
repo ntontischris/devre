@@ -18,6 +18,7 @@ interface ProjectsContentProps {
 export function ProjectsContent({ projects }: ProjectsContentProps) {
   const t = useTranslations('projects');
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const savedView = localStorage.getItem('projects-view') as 'kanban' | 'list' | null;
@@ -25,6 +26,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setView(savedView);
     }
+    setMounted(true);
   }, []);
 
   const handleViewChange = (newView: 'kanban' | 'list') => {
@@ -49,11 +51,11 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         </div>
       </PageHeader>
 
-      {view === 'kanban' ? (
+      {mounted && (view === 'kanban' ? (
         <ProjectBoard projects={projects} />
       ) : (
         <ProjectList projects={projects} />
-      )}
+      ))}
     </div>
   );
 }
