@@ -122,7 +122,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
         >
           <Building2 className="h-4 w-4" />
           <span className="font-medium">
-            {project.client.company_name || project.client.contact_name}
+            {project.client?.company_name || project.client?.contact_name}
           </span>
         </Link>
         <StatusBadge status={project.status} />

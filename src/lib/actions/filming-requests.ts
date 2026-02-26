@@ -138,10 +138,39 @@ export async function convertToProject(id: string): Promise<ActionResult<unknown
       return { data: null, error: 'Only accepted requests can be converted to projects' };
     }
 
+    // Resolve client_id: use existing, or find/create from contact info (public bookings)
+    let clientId = request.client_id as string | null;
+    if (!clientId && request.contact_email) {
+      const { data: existingClient } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('email', request.contact_email)
+        .single();
+
+      if (existingClient) {
+        clientId = existingClient.id;
+      } else {
+        const { data: newClient, error: clientError } = await supabase
+          .from('clients')
+          .insert({
+            contact_name: request.contact_name || request.contact_email,
+            email: request.contact_email,
+            phone: request.contact_phone || null,
+            company_name: request.contact_company || null,
+            status: 'active',
+          })
+          .select('id')
+          .single();
+
+        if (clientError) return { data: null, error: clientError.message };
+        clientId = newClient.id;
+      }
+    }
+
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .insert({
-        client_id: request.client_id,
+        client_id: clientId,
         title: request.title,
         description: request.description,
         project_type: request.project_type || 'other',
@@ -166,6 +195,7 @@ export async function convertToProject(id: string): Promise<ActionResult<unknown
 
     revalidatePath('/admin/filming-requests');
     revalidatePath('/admin/projects');
+    revalidatePath('/admin/clients');
     return { data: project, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to convert filming request to project' };
