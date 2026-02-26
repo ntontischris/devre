@@ -40,6 +40,7 @@ export async function GET(
           total: invoice.total,
           currency: invoice.currency || 'EUR',
           notes: invoice.notes,
+          tax_rate: invoice.tax_rate,
           line_items: invoice.line_items as Array<{ description: string; quantity: number; unit_price: number }>,
         },
         clientName: invoice.client?.contact_name || invoice.client?.company_name || 'Unknown',

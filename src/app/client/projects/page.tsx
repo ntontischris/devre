@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { getProjects } from '@/lib/actions/projects';
+import { getClientFilmingRequests } from '@/lib/actions/filming-requests';
 import { redirect } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { ProjectsList } from '@/components/client/projects/projects-list';
@@ -14,8 +15,13 @@ export default async function ClientProjectsPage() {
     redirect('/login');
   }
 
-  const projectsResult = await getProjects({ client_id: user.id });
+  const [projectsResult, requestsResult] = await Promise.all([
+    getProjects({ client_id: user.id }),
+    getClientFilmingRequests(),
+  ]);
+
   const projects = projectsResult.data ?? [];
+  const filmingRequests = requestsResult.data ?? [];
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 space-y-6">
@@ -24,7 +30,7 @@ export default async function ClientProjectsPage() {
         description={t('description')}
       />
 
-      <ProjectsList projects={projects} />
+      <ProjectsList projects={projects} filmingRequests={filmingRequests} />
     </div>
   );
 }

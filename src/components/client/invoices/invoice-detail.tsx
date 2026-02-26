@@ -43,7 +43,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   };
 
   const handleDownloadPDF = () => {
-    toast.info(t('pdfDownloadComingSoon'));
+    window.open(`/api/invoices/${invoice.id}/pdf`, '_blank');
   };
 
   return (

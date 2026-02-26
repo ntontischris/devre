@@ -33,6 +33,25 @@ export async function getFilmingRequests(filters?: {
   }
 }
 
+export async function getClientFilmingRequests(): Promise<ActionResult<FilmingRequest[]>> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { data: null, error: 'Not authenticated' };
+
+    // RLS automatically filters to only this client's requests
+    const { data, error } = await supabase
+      .from('filming_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) return { data: null, error: error.message };
+    return { data: data ?? [], error: null };
+  } catch (err: unknown) {
+    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch filming requests' };
+  }
+}
+
 export async function getFilmingRequest(id: string): Promise<ActionResult<FilmingRequest>> {
   try {
     const supabase = await createClient();
