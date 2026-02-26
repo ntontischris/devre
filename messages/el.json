@@ -103,7 +103,24 @@
     "userMenu": "Μενού χρήστη",
     "menu": "Μενού",
     "comingSoon": "Σύντομα",
-    "unknownSize": "Άγνωστο μέγεθος"
+    "unknownSize": "Άγνωστο μέγεθος",
+    "messages": "Μηνύματα",
+    "timeline": "Χρονοδιάγραμμα",
+    "notSet": "Μη ορισμένο",
+    "clientInformation": "Στοιχεία Πελάτη",
+    "company": "Εταιρεία",
+    "contact": "Επαφή",
+    "viewDetails": "Προβολή Λεπτομερειών",
+    "daysOverdue": "ημέρες καθυστέρηση",
+    "daysRemaining": "ημέρες απομένουν",
+    "progress": "Πρόοδος",
+    "completedOn": "Ολοκληρώθηκε στις",
+    "noTasksYet": "Δεν υπάρχουν εργασίες",
+    "noTasksDescription": "Οι εργασίες αυτού του έργου θα εμφανιστούν εδώ",
+    "noDeliverablesYet": "Δεν υπάρχουν παραδοτέα",
+    "noDeliverablesDescription": "Τα παραδοτέα αυτού του έργου θα εμφανιστούν εδώ",
+    "pleaseWait": "Παρακαλώ περιμένετε...",
+    "confirmDeleteMessage": "Η ενέργεια δεν μπορεί να αναιρεθεί. Το έργο και όλα τα σχετικά δεδομένα θα διαγραφούν μόνιμα."
   },
 
   "nav": {

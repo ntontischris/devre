@@ -103,7 +103,24 @@
     "userMenu": "User menu",
     "menu": "Menu",
     "comingSoon": "Coming soon",
-    "unknownSize": "Unknown size"
+    "unknownSize": "Unknown size",
+    "messages": "Messages",
+    "timeline": "Timeline",
+    "notSet": "Not set",
+    "clientInformation": "Client Information",
+    "company": "Company",
+    "contact": "Contact",
+    "viewDetails": "View Details",
+    "daysOverdue": "days overdue",
+    "daysRemaining": "days remaining",
+    "progress": "Progress",
+    "completedOn": "Completed on",
+    "noTasksYet": "No tasks yet",
+    "noTasksDescription": "Tasks for this project will appear here",
+    "noDeliverablesYet": "No deliverables yet",
+    "noDeliverablesDescription": "Deliverables for this project will appear here",
+    "pleaseWait": "Please wait...",
+    "confirmDeleteMessage": "This action cannot be undone. The project and all associated data will be permanently deleted."
   },
 
   "nav": {

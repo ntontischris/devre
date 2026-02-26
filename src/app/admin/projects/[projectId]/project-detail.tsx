@@ -290,6 +290,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
             </CardContent>
           </Card>
 
+          {project.client && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -345,6 +346,7 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
               </Button>
             </CardContent>
           </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="tasks">
