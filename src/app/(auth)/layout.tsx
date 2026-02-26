@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const t = await getTranslations('auth');
+  const tc = await getTranslations('common');
   return (
     <div className="flex min-h-screen">
       {/* Brand Panel - Left (hidden on mobile) */}
@@ -34,7 +36,14 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       </div>
 
       {/* Form Panel - Right */}
-      <div className="flex flex-1 items-center justify-center bg-stone-50 dark:bg-zinc-950 p-4 sm:p-8">
+      <div className="relative flex flex-1 items-center justify-center bg-stone-50 dark:bg-zinc-950 p-4 sm:p-8">
+        <Link
+          href="/"
+          className="absolute top-5 left-5 inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all hover:bg-accent hover:shadow-md"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {tc('back')}
+        </Link>
         <div className="w-full max-w-md space-y-6">
           {/* Logo (mobile only) */}
           <div className="text-center lg:hidden">

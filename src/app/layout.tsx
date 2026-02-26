@@ -8,7 +8,6 @@ import './globals.css';
 
 // Namespaces only used server-side (via getTranslations) — excluded from client bundle
 const SERVER_ONLY_NAMESPACES = [
-  'auth',
   'dashboard',
   'clients',
   'projects',
