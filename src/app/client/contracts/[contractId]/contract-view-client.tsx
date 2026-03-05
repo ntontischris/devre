@@ -41,10 +41,10 @@ export function ContractViewClient({ contract }: ContractViewClientProps) {
   return (
     <>
       <PageHeader title={contract.title}>
-        {contract.status === 'signed' && (
+        {['sent', 'viewed', 'signed'].includes(contract.status) && (
           <Button onClick={handleDownloadPDF}>
             <Download className="h-4 w-4 mr-2" />
-            Download PDF
+            {t('downloadPdf')}
           </Button>
         )}
       </PageHeader>

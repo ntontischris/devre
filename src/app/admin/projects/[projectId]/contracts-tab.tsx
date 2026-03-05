@@ -51,7 +51,7 @@ export function ContractsTab({ project, contracts: initialContracts }: Contracts
       </div>
 
       <Dialog open={isCreatorOpen} onOpenChange={setIsCreatorOpen}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>{t('addContract')}</DialogTitle>
           </DialogHeader>

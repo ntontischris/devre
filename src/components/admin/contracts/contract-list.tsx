@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
-import { FileText, Eye, Send, Trash2, Download } from 'lucide-react';
+import { FileText, Eye, Trash2, Download } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { deleteContract, sendContract } from '@/lib/actions/contracts';
+import { deleteContract } from '@/lib/actions/contracts';
 import { toast } from 'sonner';
 import type { Contract } from '@/types';
 
@@ -33,6 +33,7 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
+
     if (!deleteId) return;
 
     setIsDeleting(true);
@@ -48,16 +49,6 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
     onDelete(deleteId);
     setDeleteId(null);
     setIsDeleting(false);
-  };
-
-  const handleSendToClient = async (contractId: string) => {
-    const result = await sendContract(contractId);
-    if (result.error) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success(t('contractSentToClient'));
-    onDelete(contractId); // Trigger refresh from parent
   };
 
   const handleDownloadPDF = async (contractId: string) => {
@@ -132,24 +123,13 @@ export function ContractList({ contracts, onDelete }: ContractListProps) {
                         <Eye className="h-4 w-4" />
                       </Link>
                     </Button>
-                    {contract.status === 'signed' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDownloadPDF(contract.id)}
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {contract.status === 'draft' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleSendToClient(contract.id)}
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDownloadPDF(contract.id)}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="outline"
