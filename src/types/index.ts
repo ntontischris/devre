@@ -256,6 +256,9 @@ export type Contract = {
   viewed_at: string | null;
   signed_at: string | null;
   expires_at: string | null;
+  service_type: string | null;
+  agreed_amount: number | null;
+  payment_method: string | null;
   created_by: string;
   created_at: string;
 };

@@ -2,26 +2,27 @@ import { z } from 'zod';
 import { CONTRACT_STATUSES } from '@/lib/constants';
 
 /**
- * Create contract schema validation
+ * Create contract schema — structured form fields only.
+ * Title and content are auto-generated server-side.
  */
 export const createContractSchema = z.object({
   project_id: z.string().uuid('Invalid project ID').optional().nullable(),
   client_id: z.string().uuid('Invalid client ID'),
-  title: z.string().min(1, 'Title is required').max(255, 'Title must be at most 255 characters'),
-  content: z.string().min(1, 'Content is required').max(50000, 'Content must be at most 50000 characters'),
-  template_id: z.string().uuid('Invalid template ID').optional(),
-  expires_at: z.string().optional(),
+  service_type: z.string().min(1, 'Service type is required').max(255),
+  agreed_amount: z.number().positive('Amount must be a positive number'),
+  payment_method: z.enum(['bank_transfer', 'cash', 'card', 'installments']),
+  expires_at: z.string().date('Invalid date format').optional(),
 });
 
 export type CreateContractInput = z.infer<typeof createContractSchema>;
 
 /**
- * Update contract schema validation (limited fields)
+ * Update contract schema (limited fields)
  */
 export const updateContractSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255, 'Title must be at most 255 characters').optional(),
-  content: z.string().min(1, 'Content is required').max(50000, 'Content must be at most 50000 characters').optional(),
-  expires_at: z.string().optional(),
+  title: z.string().min(1, 'Title is required').max(255).optional(),
+  content: z.string().min(1, 'Content is required').max(50000).optional(),
+  expires_at: z.string().date('Invalid date format').optional(),
 });
 
 export type UpdateContractInput = z.infer<typeof updateContractSchema>;
@@ -29,15 +30,24 @@ export type UpdateContractInput = z.infer<typeof updateContractSchema>;
 /**
  * Contract response schema (includes database fields)
  */
-export const contractResponseSchema = createContractSchema.extend({
+export const contractResponseSchema = z.object({
   id: z.string().uuid(),
+  project_id: z.string().uuid().optional().nullable(),
+  client_id: z.string().uuid(),
+  title: z.string(),
+  content: z.string(),
+  template_id: z.string().uuid().optional().nullable(),
   status: z.enum(CONTRACT_STATUSES),
-  signed_at: z.string().datetime().optional(),
-  signature_image: z.string().optional(),
-  file_path: z.string().optional(),
+  service_type: z.string().optional().nullable(),
+  agreed_amount: z.number().optional().nullable(),
+  payment_method: z.string().optional().nullable(),
+  signed_at: z.string().datetime().optional().nullable(),
+  signature_image: z.string().optional().nullable(),
+  file_path: z.string().optional().nullable(),
+  expires_at: z.string().optional().nullable(),
   created_by: z.string().uuid(),
   created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  updated_at: z.string().datetime().optional(),
 });
 
 export type ContractResponse = z.infer<typeof contractResponseSchema>;
@@ -46,7 +56,10 @@ export type ContractResponse = z.infer<typeof contractResponseSchema>;
  * Sign contract schema validation
  */
 export const signContractSchema = z.object({
-  signature_image: z.string().min(1, 'Signature is required').max(500000, 'Signature data is too large'),
+  signature_image: z
+    .string()
+    .min(1, 'Signature is required')
+    .max(500000, 'Signature data is too large'),
 });
 
 export type SignContractInput = z.infer<typeof signContractSchema>;

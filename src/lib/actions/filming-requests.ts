@@ -2,7 +2,11 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createFilmingRequestSchema, reviewFilmingRequestSchema, publicBookingSchema } from '@/lib/schemas/filming-request';
+import {
+  createFilmingRequestSchema,
+  reviewFilmingRequestSchema,
+  publicBookingSchema,
+} from '@/lib/schemas/filming-request';
 import type { ActionResult, FilmingRequest } from '@/types/index';
 import type { FilmingRequestStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
@@ -12,6 +16,11 @@ export async function getFilmingRequests(filters?: {
 }): Promise<ActionResult<FilmingRequest[]>> {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { data: null, error: 'User not authenticated' };
+
     let query = supabase
       .from('filming_requests')
       .select('*')
@@ -29,14 +38,19 @@ export async function getFilmingRequests(filters?: {
     if (error) return { data: null, error: error.message };
     return { data, error: null };
   } catch (err: unknown) {
-    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch filming requests' };
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch filming requests',
+    };
   }
 }
 
 export async function getClientFilmingRequests(): Promise<ActionResult<FilmingRequest[]>> {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { data: null, error: 'Not authenticated' };
 
     // RLS automatically filters to only this client's requests
@@ -48,13 +62,21 @@ export async function getClientFilmingRequests(): Promise<ActionResult<FilmingRe
     if (error) return { data: null, error: error.message };
     return { data: data ?? [], error: null };
   } catch (err: unknown) {
-    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch filming requests' };
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch filming requests',
+    };
   }
 }
 
 export async function getFilmingRequest(id: string): Promise<ActionResult<FilmingRequest>> {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { data: null, error: 'User not authenticated' };
+
     const { data, error } = await supabase
       .from('filming_requests')
       .select('*')
@@ -64,7 +86,10 @@ export async function getFilmingRequest(id: string): Promise<ActionResult<Filmin
     if (error) return { data: null, error: error.message };
     return { data, error: null };
   } catch (err: unknown) {
-    return { data: null, error: err instanceof Error ? err.message : 'Failed to fetch filming request' };
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch filming request',
+    };
   }
 }
 
@@ -73,7 +98,9 @@ export async function createFilmingRequest(input: unknown): Promise<ActionResult
     const validated = createFilmingRequestSchema.parse(input);
     const supabase = await createClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { data: null, error: 'User not authenticated' };
 
     // Find the client record linked to this user
@@ -105,12 +132,17 @@ export async function createFilmingRequest(input: unknown): Promise<ActionResult
   }
 }
 
-export async function reviewFilmingRequest(id: string, input: unknown): Promise<ActionResult<FilmingRequest>> {
+export async function reviewFilmingRequest(
+  id: string,
+  input: unknown,
+): Promise<ActionResult<FilmingRequest>> {
   try {
     const validated = reviewFilmingRequestSchema.parse(input);
     const supabase = await createClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { data: null, error: 'User not authenticated' };
 
     const { data, error } = await supabase
@@ -141,8 +173,11 @@ export async function reviewFilmingRequest(id: string, input: unknown): Promise<
 export async function convertToProject(id: string): Promise<ActionResult<unknown>> {
   try {
     const supabase = await createClient();
+    const adminSupabase = createAdminClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { data: null, error: 'User not authenticated' };
 
     const { data: request, error: fetchError } = await supabase
@@ -158,32 +193,60 @@ export async function convertToProject(id: string): Promise<ActionResult<unknown
     }
 
     // Resolve client_id: use existing, or find/create from contact info (public bookings)
+    // Use admin client to bypass RLS for client creation
     let clientId = request.client_id as string | null;
-    if (!clientId && request.contact_email) {
-      const { data: existingClient } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('email', request.contact_email)
-        .single();
 
-      if (existingClient) {
-        clientId = existingClient.id;
+    if (!clientId) {
+      const contactEmail = request.contact_email as string | null;
+      const contactName = (request.contact_name || contactEmail || 'Unknown') as string;
+
+      if (contactEmail) {
+        // Try to find existing client by email
+        const { data: existingClient } = await adminSupabase
+          .from('clients')
+          .select('id')
+          .eq('email', contactEmail)
+          .single();
+
+        if (existingClient) {
+          clientId = existingClient.id;
+        } else {
+          // Auto-create client from booking contact info
+          const { data: newClient, error: clientError } = await adminSupabase
+            .from('clients')
+            .insert({
+              contact_name: contactName,
+              email: contactEmail,
+              phone: (request.contact_phone as string | null) ?? null,
+              company_name: (request.contact_company as string | null) ?? null,
+              status: 'active',
+            })
+            .select('id')
+            .single();
+
+          if (clientError)
+            return { data: null, error: `Failed to create client: ${clientError.message}` };
+          clientId = newClient.id;
+        }
       } else {
-        const { data: newClient, error: clientError } = await supabase
+        // No email — create a placeholder client from whatever info we have
+        const { data: newClient, error: clientError } = await adminSupabase
           .from('clients')
           .insert({
-            contact_name: request.contact_name || request.contact_email,
-            email: request.contact_email,
-            phone: request.contact_phone || null,
-            company_name: request.contact_company || null,
+            contact_name: contactName,
+            email: `placeholder-${crypto.randomUUID()}@placeholder.local`,
             status: 'active',
           })
           .select('id')
           .single();
 
-        if (clientError) return { data: null, error: clientError.message };
+        if (clientError)
+          return { data: null, error: `Failed to create client: ${clientError.message}` };
         clientId = newClient.id;
       }
+
+      // Update filming_request with resolved client_id
+      await adminSupabase.from('filming_requests').update({ client_id: clientId }).eq('id', id);
     }
 
     const { data: project, error: projectError } = await supabase
@@ -217,11 +280,16 @@ export async function convertToProject(id: string): Promise<ActionResult<unknown
     revalidatePath('/admin/clients');
     return { data: project, error: null };
   } catch (err: unknown) {
-    return { data: null, error: err instanceof Error ? err.message : 'Failed to convert filming request to project' };
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to convert filming request to project',
+    };
   }
 }
 
-export async function createPublicFilmingRequest(input: unknown): Promise<ActionResult<FilmingRequest>> {
+export async function createPublicFilmingRequest(
+  input: unknown,
+): Promise<ActionResult<FilmingRequest>> {
   try {
     const validated = publicBookingSchema.parse(input);
     const supabase = createAdminClient();

@@ -12,9 +12,7 @@ interface ClientDetailPageProps {
   }>;
 }
 
-export async function generateMetadata({
-  params,
-}: ClientDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ClientDetailPageProps): Promise<Metadata> {
   const { clientId } = await params;
   const result = await getClient(clientId);
   const t = await getTranslations('clients');
@@ -31,9 +29,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ClientDetailPage({
-  params,
-}: ClientDetailPageProps) {
+export default async function ClientDetailPage({ params }: ClientDetailPageProps) {
   const { clientId } = await params;
   const [clientResult, contractsResult] = await Promise.all([
     getClient(clientId),
@@ -45,7 +41,7 @@ export default async function ClientDetailPage({
   }
 
   const client = clientResult.data as Client;
-  const contracts = (contractsResult.data ?? []) as Array<{
+  const contracts = (contractsResult.data ?? []) as unknown as Array<{
     id: string;
     title: string;
     status: string;
