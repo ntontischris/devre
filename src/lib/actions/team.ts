@@ -128,15 +128,44 @@ export async function inviteTeamMember(
 
     // Use admin client to invite user via Supabase Auth
     const adminClient = createAdminClient();
+    const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/onboarding`;
+
     const { data: inviteData, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
       data: {
         role,
         invited_by: user.id,
       },
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/onboarding`,
+      redirectTo,
     });
 
     if (error) {
+      // If user already exists (expired invite), resend via recovery link
+      const isUserExists =
+        error.message.toLowerCase().includes('already') ||
+        error.message.toLowerCase().includes('exists');
+
+      if (isUserExists) {
+        // Send a recovery email — user clicks link → lands on /onboarding → sets password
+        const { error: resetError } = await adminClient.auth.resetPasswordForEmail(email, {
+          redirectTo,
+        });
+
+        if (resetError) {
+          return { data: null, error: resetError.message };
+        }
+
+        // Update role in case it changed
+        const { data: authData } = await adminClient.auth.admin.listUsers();
+        const existingUser = authData?.users.find((u) => u.email === email);
+        if (existingUser) {
+          await supabase.from('user_profiles').update({ role }).eq('id', existingUser.id);
+        }
+
+        revalidatePath('/admin/settings');
+        revalidatePath('/admin/users');
+        return { data: { email }, error: null };
+      }
+
       return { data: null, error: error.message };
     }
 
