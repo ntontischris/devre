@@ -128,6 +128,8 @@ export async function updateClient(id: string, input: unknown): Promise<ActionRe
 
     revalidatePath('/admin/clients');
     revalidatePath(`/admin/clients/${id}`);
+    revalidatePath('/client/settings');
+    revalidatePath('/client/dashboard');
     return { data, error: null };
   } catch (error: unknown) {
     if (error instanceof Error) {

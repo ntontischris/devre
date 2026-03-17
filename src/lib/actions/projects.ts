@@ -6,6 +6,8 @@ import type { ActionResult, ProjectWithClient, Project } from '@/types/index';
 import type { ProjectStatus, Priority } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 import { escapePostgrestFilter } from '@/lib/utils';
+import { createNotification, getClientUserIdFromProject } from '@/lib/actions/notifications';
+import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 interface ProjectFilters {
   client_id?: string;
@@ -97,6 +99,8 @@ export async function createProject(input: unknown): Promise<ActionResult<Projec
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/projects');
+    revalidatePath('/client/projects');
+    revalidatePath('/client/dashboard');
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -129,6 +133,9 @@ export async function updateProject(
 
     revalidatePath('/admin/projects');
     revalidatePath(`/admin/projects/${id}`);
+    revalidatePath('/client/projects');
+    revalidatePath(`/client/projects/${id}`);
+    revalidatePath('/client/dashboard');
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -160,6 +167,21 @@ export async function updateProjectStatus(
 
     revalidatePath('/admin/projects');
     revalidatePath(`/admin/projects/${id}`);
+    revalidatePath('/client/projects');
+    revalidatePath(`/client/projects/${id}`);
+    revalidatePath('/client/dashboard');
+
+    // Notify client of status change
+    const clientUserId = await getClientUserIdFromProject(id);
+    if (clientUserId) {
+      createNotification({
+        userId: clientUserId,
+        type: NOTIFICATION_TYPES.PROJECT_STATUS,
+        title: `Project "${data.title}" status updated to ${status}`,
+        actionUrl: `/client/projects/${id}`,
+      });
+    }
+
     return { data, error: null };
   } catch (err: unknown) {
     return {
@@ -181,6 +203,8 @@ export async function deleteProject(id: string): Promise<ActionResult<void>> {
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/projects');
+    revalidatePath('/client/projects');
+    revalidatePath('/client/dashboard');
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete project' };

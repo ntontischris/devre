@@ -15,6 +15,13 @@ import type {
 } from '@/types/index';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
+import {
+  createNotification,
+  createNotificationForMany,
+  getClientUserIdFromClientId,
+  getAdminUserIds,
+} from '@/lib/actions/notifications';
+import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 import { PAYMENT_METHOD_LABELS } from '@/lib/constants';
 
@@ -250,6 +257,20 @@ export async function createContract(input: unknown): Promise<ActionResult<Contr
     revalidatePath(`/admin/clients/${validated.client_id}`);
     revalidatePath('/admin/contracts');
     revalidatePath('/client/contracts');
+    revalidatePath('/client/dashboard');
+
+    // Notify client about new contract
+    const clientUserId = await getClientUserIdFromClientId(validated.client_id);
+    if (clientUserId) {
+      createNotification({
+        userId: clientUserId,
+        type: NOTIFICATION_TYPES.CONTRACT_SENT,
+        title: 'New contract requires your signature',
+        body: title,
+        actionUrl: '/client/contracts',
+      });
+    }
+
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -354,7 +375,19 @@ export async function signContract(
     }
     revalidatePath(`/admin/contracts/${id}`);
     revalidatePath('/client/contracts');
+    revalidatePath('/client/dashboard');
     revalidatePath('/admin/contracts');
+    revalidatePath('/admin/dashboard');
+
+    // Notify all admins about signed contract
+    const adminIds = await getAdminUserIds();
+    createNotificationForMany(adminIds, {
+      type: NOTIFICATION_TYPES.CONTRACT_SIGNED,
+      title: 'Contract signed by client',
+      body: data.title ?? undefined,
+      actionUrl: `/admin/contracts/${id}`,
+    });
+
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -451,6 +484,8 @@ export async function deleteContract(id: string): Promise<ActionResult<void>> {
     if (contract?.project_id) {
       revalidatePath(`/admin/projects/${contract.project_id}`);
     }
+    revalidatePath('/client/contracts');
+    revalidatePath('/client/dashboard');
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete contract' };

@@ -16,7 +16,9 @@ export default async function ClientInvoicesPage() {
     redirect('/login');
   }
 
-  const invoicesResult = await getInvoices();
+  const invoicesResult = await getInvoices({
+    status: ['sent', 'viewed', 'overdue', 'paid', 'cancelled'],
+  });
   const invoices = (invoicesResult.data ?? []) as import('@/types').InvoiceWithRelations[];
 
   return (

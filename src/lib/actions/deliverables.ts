@@ -5,6 +5,13 @@ import { createDeliverableSchema, createAnnotationSchema } from '@/lib/schemas/d
 import type { ActionResult, Deliverable, VideoAnnotation } from '@/types/index';
 import type { DeliverableStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
+import {
+  createNotification,
+  createNotificationForMany,
+  getClientUserIdFromProject,
+  getAdminUserIds,
+} from '@/lib/actions/notifications';
+import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 export async function getDeliverablesByProject(
   projectId: string,
@@ -96,6 +103,21 @@ export async function createDeliverable(input: unknown): Promise<ActionResult<De
     if (error) return { data: null, error: error.message };
 
     revalidatePath(`/admin/projects/${validated.project_id}`);
+    revalidatePath(`/client/projects/${validated.project_id}`);
+    revalidatePath('/client/dashboard');
+
+    // Notify client about new deliverable
+    const clientUserId = await getClientUserIdFromProject(validated.project_id);
+    if (clientUserId) {
+      createNotification({
+        userId: clientUserId,
+        type: NOTIFICATION_TYPES.DELIVERABLE_UPLOADED,
+        title: 'New deliverable ready for review',
+        body: data.title,
+        actionUrl: `/client/projects/${validated.project_id}`,
+      });
+    }
+
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -129,6 +151,37 @@ export async function updateDeliverableStatus(
 
     if (data?.project_id) {
       revalidatePath(`/admin/projects/${data.project_id}`);
+      revalidatePath(`/client/projects/${data.project_id}`);
+      revalidatePath('/client/dashboard');
+
+      // Determine who to notify based on who made the change
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      const isAdmin = profile?.role === 'super_admin' || profile?.role === 'admin';
+
+      if (isAdmin) {
+        // Admin changed status -> notify client
+        const clientUserId = await getClientUserIdFromProject(data.project_id);
+        if (clientUserId) {
+          createNotification({
+            userId: clientUserId,
+            type: NOTIFICATION_TYPES.DELIVERABLE_REVIEWED,
+            title: `Deliverable "${data.title}" marked as ${status}`,
+            actionUrl: `/client/projects/${data.project_id}`,
+          });
+        }
+      } else {
+        // Client changed status -> notify admins
+        const adminIds = await getAdminUserIds();
+        createNotificationForMany(adminIds, {
+          type: NOTIFICATION_TYPES.DELIVERABLE_REVIEWED,
+          title: `Deliverable "${data.title}" marked as ${status}`,
+          actionUrl: `/admin/projects/${data.project_id}`,
+        });
+      }
     }
     return { data, error: null };
   } catch (err: unknown) {
@@ -159,6 +212,7 @@ export async function deleteDeliverable(id: string): Promise<ActionResult<void>>
 
     if (deliverable?.project_id) {
       revalidatePath(`/admin/projects/${deliverable.project_id}`);
+      revalidatePath(`/client/projects/${deliverable.project_id}`);
     }
     return { data: undefined, error: null };
   } catch (err: unknown) {
@@ -214,6 +268,16 @@ export async function createAnnotation(input: unknown): Promise<ActionResult<Vid
     if (error) return { data: null, error: error.message };
 
     revalidatePath(`/admin/deliverables/${validated.deliverable_id}`);
+
+    // Also revalidate client project page
+    const { data: deliverable } = await supabase
+      .from('deliverables')
+      .select('project_id')
+      .eq('id', validated.deliverable_id)
+      .single();
+    if (deliverable?.project_id) {
+      revalidatePath(`/client/projects/${deliverable.project_id}`);
+    }
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -248,6 +312,16 @@ export async function resolveAnnotation(id: string): Promise<ActionResult<VideoA
 
     if (data?.deliverable_id) {
       revalidatePath(`/admin/deliverables/${data.deliverable_id}`);
+
+      // Also revalidate client project page
+      const { data: deliverable } = await supabase
+        .from('deliverables')
+        .select('project_id')
+        .eq('id', data.deliverable_id)
+        .single();
+      if (deliverable?.project_id) {
+        revalidatePath(`/client/projects/${deliverable.project_id}`);
+      }
     }
     return { data, error: null };
   } catch (err: unknown) {

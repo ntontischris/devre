@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Breadcrumbs } from './breadcrumbs';
 import { ThemeToggle } from '@/components/admin/theme-toggle';
-import { NotificationBell } from '@/components/admin/notification-bell';
+import { NotificationBell } from '@/components/shared/notification-bell';
 import { UserNav } from './user-nav';
 import { MobileNav } from './mobile-nav';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';

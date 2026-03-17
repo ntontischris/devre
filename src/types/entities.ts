@@ -271,10 +271,9 @@ export type Notification = {
   user_id: string;
   type: string;
   title: string;
-  message: string;
-  link: string | null;
+  body: string | null;
   read: boolean;
-  read_at: string | null;
+  action_url: string | null;
   created_at: string;
 };
 

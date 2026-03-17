@@ -21,6 +21,7 @@ import { MobileNav } from './mobile-nav';
 import { useEffect, useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
+import { NotificationBell } from '@/components/shared/notification-bell';
 import { useTranslations } from 'next-intl';
 
 export function ClientNavbar() {
@@ -109,6 +110,7 @@ export function ClientNavbar() {
             <>
               <LanguageSwitcher />
               <ThemeToggle />
+              <NotificationBell />
               <UserNav />
             </>
           ) : (

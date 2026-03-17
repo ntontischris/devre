@@ -5,6 +5,13 @@ import { createInvoiceSchema, updateInvoiceSchema, type LineItem } from '@/lib/s
 import type { ActionResult, Invoice, InvoiceWithRelations } from '@/types/index';
 import type { InvoiceStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
+import {
+  createNotification,
+  createNotificationForMany,
+  getClientUserIdFromClientId,
+  getAdminUserIds,
+} from '@/lib/actions/notifications';
+import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 interface InvoiceFilters {
   status?: InvoiceStatus | InvoiceStatus[];
@@ -245,6 +252,31 @@ export async function updateInvoiceStatus(
     revalidatePath(`/admin/invoices/${id}`);
     revalidatePath('/client/invoices');
     revalidatePath('/client/dashboard');
+
+    // Send notifications based on status change
+    if (status === 'sent' && data.client_id) {
+      const clientUserId = await getClientUserIdFromClientId(data.client_id);
+      if (clientUserId) {
+        createNotification({
+          userId: clientUserId,
+          type: NOTIFICATION_TYPES.INVOICE_SENT,
+          title: `Invoice ${data.invoice_number} sent`,
+          body: `Amount: €${data.total?.toFixed(2) ?? '0.00'}`,
+          actionUrl: '/client/invoices',
+        });
+      }
+    }
+
+    if (status === 'paid') {
+      const adminIds = await getAdminUserIds();
+      createNotificationForMany(adminIds, {
+        type: NOTIFICATION_TYPES.INVOICE_PAID,
+        title: `Invoice ${data.invoice_number} paid`,
+        body: `Amount: €${data.total?.toFixed(2) ?? '0.00'}`,
+        actionUrl: `/admin/invoices`,
+      });
+    }
+
     return { data, error: null };
   } catch (err: unknown) {
     return {
@@ -266,6 +298,8 @@ export async function deleteInvoice(id: string): Promise<ActionResult<void>> {
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/invoices');
+    revalidatePath('/client/invoices');
+    revalidatePath('/client/dashboard');
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete invoice' };

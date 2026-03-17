@@ -10,6 +10,13 @@ import {
 import type { ActionResult, FilmingRequest, Project } from '@/types/index';
 import type { FilmingRequestStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
+import {
+  createNotification,
+  createNotificationForMany,
+  getClientUserIdFromClientId,
+  getAdminUserIds,
+} from '@/lib/actions/notifications';
+import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 export async function getFilmingRequests(filters?: {
   status?: FilmingRequestStatus | FilmingRequestStatus[];
@@ -131,6 +138,18 @@ export async function createFilmingRequest(input: unknown): Promise<ActionResult
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/filming-requests');
+    revalidatePath('/client/projects');
+    revalidatePath('/client/dashboard');
+
+    // Notify all admins about new booking request
+    const adminIds = await getAdminUserIds();
+    createNotificationForMany(adminIds, {
+      type: NOTIFICATION_TYPES.BOOKING_SUBMITTED,
+      title: 'New booking request submitted',
+      body: data.title,
+      actionUrl: '/admin/filming-requests',
+    });
+
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -180,6 +199,22 @@ export async function reviewFilmingRequest(
 
     revalidatePath('/admin/filming-requests');
     revalidatePath(`/admin/filming-requests/${id}`);
+    revalidatePath('/client/projects');
+    revalidatePath('/client/dashboard');
+
+    // Notify client if they have an account
+    if (data.client_id) {
+      const clientUserId = await getClientUserIdFromClientId(data.client_id);
+      if (clientUserId) {
+        createNotification({
+          userId: clientUserId,
+          type: NOTIFICATION_TYPES.FILMING_REQUEST_STATUS,
+          title: `Filming request "${data.title}" ${validated.status}`,
+          actionUrl: '/client/dashboard',
+        });
+      }
+    }
+
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -310,6 +345,8 @@ export async function convertToProject(id: string): Promise<ActionResult<Project
     revalidatePath('/admin/filming-requests');
     revalidatePath('/admin/projects');
     revalidatePath('/admin/clients');
+    revalidatePath('/client/projects');
+    revalidatePath('/client/dashboard');
     return { data: project, error: null };
   } catch (err: unknown) {
     return {

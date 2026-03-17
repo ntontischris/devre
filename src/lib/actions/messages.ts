@@ -4,6 +4,13 @@ import { createClient } from '@/lib/supabase/server';
 import { createMessageSchema } from '@/lib/schemas/message';
 import type { ActionResult, Message } from '@/types/index';
 import { revalidatePath } from 'next/cache';
+import {
+  createNotification,
+  createNotificationForMany,
+  getClientUserIdFromProject,
+  getAdminUserIds,
+} from '@/lib/actions/notifications';
+import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 export async function getMessagesByProject(projectId: string): Promise<ActionResult<Message[]>> {
   try {
@@ -51,6 +58,37 @@ export async function createMessage(input: unknown): Promise<ActionResult<Messag
     if (error) return { data: null, error: error.message };
 
     revalidatePath(`/admin/projects/${validated.project_id}`);
+    revalidatePath(`/client/projects/${validated.project_id}`);
+
+    // Notify the other party about new message
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    const isAdmin = profile?.role === 'super_admin' || profile?.role === 'admin';
+
+    if (isAdmin) {
+      // Admin sent message -> notify client
+      const clientUserId = await getClientUserIdFromProject(validated.project_id);
+      if (clientUserId) {
+        createNotification({
+          userId: clientUserId,
+          type: NOTIFICATION_TYPES.NEW_MESSAGE,
+          title: 'New message in your project',
+          actionUrl: `/client/projects/${validated.project_id}`,
+        });
+      }
+    } else {
+      // Client sent message -> notify admins
+      const adminIds = await getAdminUserIds();
+      createNotificationForMany(adminIds, {
+        type: NOTIFICATION_TYPES.NEW_MESSAGE,
+        title: 'New message from client',
+        actionUrl: `/admin/projects/${validated.project_id}`,
+      });
+    }
+
     return { data, error: null };
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -79,6 +117,7 @@ export async function markMessagesAsRead(projectId: string): Promise<ActionResul
     if (error) return { data: null, error: error.message };
 
     revalidatePath(`/admin/projects/${projectId}`);
+    revalidatePath(`/client/projects/${projectId}`);
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return {

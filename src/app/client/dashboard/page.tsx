@@ -27,7 +27,9 @@ export default async function ClientDashboardPage() {
   const projectsResult = await getProjects();
   const projects = projectsResult.data ?? [];
 
-  const invoicesResult = await getInvoices();
+  const invoicesResult = await getInvoices({
+    status: ['sent', 'viewed', 'overdue', 'paid', 'cancelled'],
+  });
   const invoices = (invoicesResult.data ?? []) as import('@/types').InvoiceWithRelations[];
 
   // Get recent deliverables from all projects
