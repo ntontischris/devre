@@ -10,8 +10,10 @@ import type { z } from 'zod';
 
 type ClientFormValues = z.input<typeof createClientSchema>;
 import { createNewClient, updateClient } from '@/lib/actions/clients';
+import { inviteClient } from '@/lib/actions/auth';
 import { Client } from '@/types/index';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,6 +39,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
   const tc = useTranslations('common');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sendInvite, setSendInvite] = useState(true);
   const isEditing = !!client;
 
   const {
@@ -68,18 +71,23 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
   const onSubmit = async (data: ClientFormValues) => {
     setIsSubmitting(true);
     try {
-      const result = isEditing
-        ? await updateClient(client.id, data)
-        : await createNewClient(data);
+      const result = isEditing ? await updateClient(client.id, data) : await createNewClient(data);
 
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success(
-          isEditing
-            ? t('clientUpdated')
-            : t('clientCreated')
-        );
+        toast.success(isEditing ? t('clientUpdated') : t('clientCreated'));
+
+        if (!isEditing && sendInvite) {
+          const inviteResult = await inviteClient(data.email, data.contact_name);
+          if (inviteResult.error) {
+            console.error('Invite failed:', inviteResult.error);
+            toast.warning(t('inviteFailedWarning'));
+          } else {
+            toast.success(t('inviteSent'));
+          }
+        }
+
         if (onSuccess) {
           onSuccess();
         }
@@ -126,9 +134,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                   disabled
                   className="cursor-not-allowed"
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('description')}
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('description')}</p>
               </div>
             </div>
           </div>
@@ -144,9 +150,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                 placeholder={t('contactName')}
               />
               {errors.contact_name && (
-                <p className="text-sm text-destructive">
-                  {errors.contact_name.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.contact_name.message}</p>
               )}
             </div>
 
@@ -160,11 +164,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                 {...register('email')}
                 placeholder={t('emailAddress')}
               />
-              {errors.email && (
-                <p className="text-sm text-destructive">
-                  {errors.email.message}
-                </p>
-              )}
+              {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
             </div>
           </div>
 
@@ -177,39 +177,23 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                 placeholder={t('companyName')}
               />
               {errors.company_name && (
-                <p className="text-sm text-destructive">
-                  {errors.company_name.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.company_name.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="phone">{t('phoneNumber')}</Label>
-              <Input
-                id="phone"
-                {...register('phone')}
-                placeholder={t('phoneNumber')}
-              />
-              {errors.phone && (
-                <p className="text-sm text-destructive">
-                  {errors.phone.message}
-                </p>
-              )}
+              <Input id="phone" {...register('phone')} placeholder={t('phoneNumber')} />
+              {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="vat_number">{t('taxId')}</Label>
-              <Input
-                id="vat_number"
-                {...register('vat_number')}
-                placeholder={t('taxId')}
-              />
+              <Input id="vat_number" {...register('vat_number')} placeholder={t('taxId')} />
               {errors.vat_number && (
-                <p className="text-sm text-destructive">
-                  {errors.vat_number.message}
-                </p>
+                <p className="text-sm text-destructive">{errors.vat_number.message}</p>
               )}
             </div>
 
@@ -217,9 +201,7 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
               <Label htmlFor="status">{t('clientStatus')}</Label>
               <Select
                 value={status}
-                onValueChange={(value) =>
-                  setValue('status', value as ClientFormValues['status'])
-                }
+                onValueChange={(value) => setValue('status', value as ClientFormValues['status'])}
               >
                 <SelectTrigger id="status">
                   <SelectValue placeholder={t('clientStatus')} />
@@ -232,41 +214,34 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                   ))}
                 </SelectContent>
               </Select>
-              {errors.status && (
-                <p className="text-sm text-destructive">
-                  {errors.status.message}
-                </p>
-              )}
+              {errors.status && <p className="text-sm text-destructive">{errors.status.message}</p>}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="address">{t('address')}</Label>
-            <Textarea
-              id="address"
-              {...register('address')}
-              placeholder={t('address')}
-              rows={3}
-            />
-            {errors.address && (
-              <p className="text-sm text-destructive">
-                {errors.address.message}
-              </p>
-            )}
+            <Textarea id="address" {...register('address')} placeholder={t('address')} rows={3} />
+            {errors.address && <p className="text-sm text-destructive">{errors.address.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="notes">{t('clientNotes')}</Label>
-            <Textarea
-              id="notes"
-              {...register('notes')}
-              placeholder={t('clientNotes')}
-              rows={4}
-            />
-            {errors.notes && (
-              <p className="text-sm text-destructive">{errors.notes.message}</p>
-            )}
+            <Textarea id="notes" {...register('notes')} placeholder={t('clientNotes')} rows={4} />
+            {errors.notes && <p className="text-sm text-destructive">{errors.notes.message}</p>}
           </div>
+
+          {!isEditing && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="sendInvite"
+                checked={sendInvite}
+                onCheckedChange={(checked) => setSendInvite(checked === true)}
+              />
+              <Label htmlFor="sendInvite" className="cursor-pointer font-normal">
+                {t('sendInviteOnCreate')}
+              </Label>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -47,8 +47,9 @@ export async function GET(request: NextRequest) {
     if (!error) {
       let redirectPath = next;
 
-      // Check if user needs onboarding (no display_name = hasn't completed setup)
-      // Uses admin client since the session cookies aren't readable yet
+      // Check if user needs onboarding:
+      // 1. No display_name in profile (new trigger sets NULL for invited users)
+      // 2. User still has invited_by metadata (hasn't completed onboarding yet)
       if (data.user) {
         const adminClient = createAdminClient();
         const { data: profile } = await adminClient
@@ -57,7 +58,9 @@ export async function GET(request: NextRequest) {
           .eq('id', data.user.id)
           .single();
 
-        if (!profile?.display_name) {
+        const isInvitedAndNotOnboarded = !!data.user.user_metadata?.invited_by;
+
+        if (!profile?.display_name || isInvitedAndNotOnboarded) {
           redirectPath = '/onboarding';
         }
       }

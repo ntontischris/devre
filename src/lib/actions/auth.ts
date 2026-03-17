@@ -40,6 +40,22 @@ export async function inviteClient(
     });
 
     if (error) {
+      // If user already exists or trigger conflicts, try to recover by linking existing user
+      const { data: linkData } = await adminClient.auth.admin.generateLink({
+        type: 'magiclink',
+        email,
+      });
+
+      if (linkData?.user?.id) {
+        await adminClient
+          .from('clients')
+          .update({ user_id: linkData.user.id })
+          .eq('email', email)
+          .is('user_id', null);
+
+        return { data: { userId: linkData.user.id }, error: null };
+      }
+
       return { data: null, error: error.message };
     }
 
@@ -71,9 +87,10 @@ export async function completeOnboarding(
       return { data: null, error: 'Unauthorized' };
     }
 
-    // Set the user's password so they can log in with email/password
+    // Set the user's password and clear invite flag so they won't be redirected to onboarding again
     const { error: passwordError } = await supabase.auth.updateUser({
       password: validated.password,
+      data: { invited_by: null },
     });
 
     if (passwordError) {

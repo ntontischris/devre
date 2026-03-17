@@ -114,7 +114,11 @@ export async function middleware(request: NextRequest) {
   const dashboard = getDashboardForRole(role);
 
   // Redirect users who haven't completed onboarding (invited but no password/name set)
-  if (profile && !profile.display_name && pathname !== '/onboarding') {
+  const isInvitedAndNotOnboarded = !!user.user_metadata?.invited_by;
+  if (
+    ((profile && !profile.display_name) || isInvitedAndNotOnboarded) &&
+    pathname !== '/onboarding'
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = '/onboarding';
     return NextResponse.redirect(url);

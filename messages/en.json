@@ -481,6 +481,8 @@
     "deleteConfirm": "Are you sure you want to delete this client? All associated data will be affected.",
     "inviteToPortal": "Invite to Portal",
     "inviteSent": "Invitation sent successfully",
+    "sendInviteOnCreate": "Send invitation email to client portal",
+    "inviteFailedWarning": "Client created, but invitation email failed to send. You can resend from the client details page.",
     "activity": "Activity",
     "created": "Created"
   },

@@ -29,6 +29,7 @@ import {
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { deleteClient } from '@/lib/actions/clients';
+import { inviteClient } from '@/lib/actions/auth';
 import { toast } from 'sonner';
 
 type ContractItem = {
@@ -56,6 +57,22 @@ export function ClientDetail({ client, contracts, stats }: ClientDetailProps) {
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isInviting, setIsInviting] = useState(false);
+
+  const handleInvite = async () => {
+    setIsInviting(true);
+    try {
+      const result = await inviteClient(client.email, client.contact_name);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(t('inviteSent'));
+        router.refresh();
+      }
+    } finally {
+      setIsInviting(false);
+    }
+  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -94,6 +111,12 @@ export function ClientDetail({ client, contracts, stats }: ClientDetailProps) {
             {tc('edit')}
           </Link>
         </Button>
+        {!client.user_id && (
+          <Button variant="outline" onClick={handleInvite} disabled={isInviting}>
+            <Mail className="mr-2 h-4 w-4" />
+            {t('inviteToPortal')}
+          </Button>
+        )}
         <Button
           variant="outline"
           className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
