@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { CinematicLogo } from '@/components/shared/cinematic-logo';
 import { usePathname } from 'next/navigation';
 import {
   Menu,
@@ -61,7 +61,7 @@ export function ClientNavbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-stone-200 bg-stone-50/80 backdrop-blur-sm dark:bg-zinc-900/80 dark:border-zinc-800">
-      <div className="flex h-16 items-center px-4 md:px-6">
+      <div className="flex h-24 items-center px-4 md:px-6">
         {/* Mobile menu button */}
         <Button
           variant="ghost"
@@ -76,13 +76,7 @@ export function ClientNavbar() {
 
         {/* Logo */}
         <Link href="/client/dashboard" className="flex items-center mr-6">
-          <Image
-            src="/images/Logo_Horizontal_Transparent.png"
-            alt="Devre Media"
-            width={120}
-            height={32}
-            className="h-7 w-auto invert dark:invert-0"
-          />
+          <CinematicLogo className="h-18" invert priority />
         </Link>
 
         {/* Desktop Navigation */}

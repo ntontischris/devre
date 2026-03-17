@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import Image from 'next/image';
 import Link from 'next/link';
+import { CinematicLogo } from '@/components/shared/cinematic-logo';
 import { Instagram, Youtube, Linkedin } from 'lucide-react';
 import { SOCIAL_LINKS } from './constants';
 
@@ -33,13 +33,7 @@ export async function LandingFooter() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="inline-block mb-4" aria-label="Devre Media - Home">
-              <Image
-                src="/images/Logo_Horizontal_Transparent.png"
-                alt="Devre Media"
-                width={120}
-                height={32}
-                className="h-6 w-auto"
-              />
+              <CinematicLogo className="h-16" />
             </Link>
             <p className="text-zinc-400 text-sm mb-4 sm:mb-6 max-w-xs leading-relaxed">
               {t('footer.tagline')}

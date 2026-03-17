@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { CinematicLogo } from '@/components/shared/cinematic-logo';
 import {
   LayoutDashboard,
   UserPlus,
@@ -70,17 +71,17 @@ export function SalesmanSidebar() {
     <aside
       className={cn(
         'hidden md:flex flex-col border-r border-zinc-800 bg-zinc-900 transition-all duration-300',
-        isCollapsed ? 'w-16' : 'w-64'
+        isCollapsed ? 'w-16' : 'w-64',
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-center border-b border-zinc-800 px-4">
+      <div className="h-24 flex items-center justify-center border-b border-zinc-800 px-4">
         {isCollapsed ? (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-zinc-950 font-bold text-sm">
             D
           </div>
         ) : (
-          <span className="font-bold text-xl tracking-tight text-white">DMS</span>
+          <CinematicLogo className="h-18" priority />
         )}
       </div>
 
@@ -107,11 +108,7 @@ export function SalesmanSidebar() {
           className="w-full text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {isCollapsed ? (
-            <ChevronRight className="h-5 w-5" />
-          ) : (
-            <ChevronLeft className="h-5 w-5" />
-          )}
+          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </Button>
       </div>
     </aside>

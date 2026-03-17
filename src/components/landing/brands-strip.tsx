@@ -29,14 +29,23 @@ export async function BrandsStrip() {
           {[...CLIENT_LOGOS, ...CLIENT_LOGOS].map((brand, i) => (
             <div
               key={`${brand.name}-${i}`}
-              className="flex-shrink-0 bg-white/5 border border-gold-500/30 rounded-lg px-6 py-3 backdrop-blur-sm hover:bg-white/10 hover:border-gold-500/60 hover:shadow-[0_0_12px_rgba(201,160,51,0.25)] hover:scale-105 transition-all duration-300"
+              className={`flex-shrink-0 rounded-lg px-6 py-3 overflow-hidden border border-gold-500/30 hover:border-gold-500/60 hover:shadow-[0_0_14px_rgba(201,160,51,0.2)] hover:scale-105 transition-all duration-300 ${
+                brand.solidBg
+                  ? 'bg-white/90 hover:bg-white'
+                  : 'bg-white/5 backdrop-blur-sm hover:bg-white/10'
+              }`}
             >
               <Image
                 src={brand.src}
                 alt={brand.name}
                 width={100}
                 height={40}
-                className="h-6 sm:h-8 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity duration-300"
+                className={`h-6 sm:h-8 w-auto object-contain transition-opacity duration-300 ${
+                  brand.solidBg
+                    ? 'grayscale opacity-80 hover:opacity-100 hover:grayscale-0'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+                style={brand.solidBg ? undefined : { filter: 'brightness(0) invert(1)' }}
               />
             </div>
           ))}

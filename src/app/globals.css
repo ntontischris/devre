@@ -144,6 +144,46 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   CINEMATIC LOGO — 3D Reveal + Gold Glow
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Initial hidden state */
+.cinematic-logo-hidden {
+  opacity: 0;
+  filter: blur(12px);
+  transform: rotateY(90deg) scale(0.95);
+}
+
+/* Phase 1: Blur-to-sharp + Y-axis rotation reveal */
+.cinematic-logo-reveal {
+  opacity: 1;
+  filter: blur(0);
+  transform: rotateY(0deg) scale(1);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Phase 2: Settled with subtle gold glow pulse */
+@keyframes logo-gold-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(201, 160, 51, 0.15))
+            drop-shadow(0 0 20px rgba(201, 160, 51, 0.05));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(201, 160, 51, 0.35))
+            drop-shadow(0 0 35px rgba(201, 160, 51, 0.12));
+  }
+}
+
+.cinematic-logo-glow {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(201, 160, 51, 0.15));
+  transform: rotateY(0deg) scale(1);
+  animation: logo-gold-glow 4s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    SCROLL REVEAL ANIMATIONS
    ═══════════════════════════════════════════════════════════════ */
 
@@ -557,8 +597,18 @@
   .text-shimmer,
   .animate-line-draw,
   .film-grain::before,
-  .pricing-popular::after {
+  .pricing-popular::after,
+  .cinematic-logo-glow {
     animation: none !important;
+  }
+
+  .cinematic-logo-hidden,
+  .cinematic-logo-reveal,
+  .cinematic-logo-glow {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
   }
 
   /* Force hero elements to their visible final state */

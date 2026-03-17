@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import { CinematicLogo } from '@/components/shared/cinematic-logo';
 import {
   LayoutDashboard,
   Users,
@@ -113,16 +113,9 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-64 p-0 bg-zinc-900 border-zinc-800 text-zinc-300">
-        <SheetHeader className="h-16 flex items-center justify-center border-b border-zinc-800 px-4">
+        <SheetHeader className="h-24 flex items-center justify-center border-b border-zinc-800 px-4">
           <SheetTitle>
-            <Image
-              src="/images/Logo_Horizontal_Transparent.png"
-              alt="Devre Media"
-              width={112}
-              height={28}
-              className="h-6 w-auto"
-              priority
-            />
+            <CinematicLogo className="h-16" priority />
           </SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-1 p-4">

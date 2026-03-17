@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import { CinematicLogo } from '@/components/shared/cinematic-logo';
 import {
   LayoutDashboard,
   Users,
@@ -138,21 +138,14 @@ export function Sidebar() {
       {/* Logo */}
       <Link
         href="/admin/dashboard"
-        className="h-16 flex items-center justify-center border-b border-zinc-800 px-4 hover:bg-white/5 transition-colors"
+        className="h-24 flex items-center justify-center border-b border-zinc-800 px-4 hover:bg-white/5 transition-colors"
       >
         {isCollapsed ? (
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-zinc-950 font-bold text-sm">
             D
           </div>
         ) : (
-          <Image
-            src="/images/Logo_Horizontal_Transparent.png"
-            alt="Devre Media"
-            width={120}
-            height={32}
-            className="h-7 w-auto"
-            priority
-          />
+          <CinematicLogo className="h-18" priority />
         )}
       </Link>
 

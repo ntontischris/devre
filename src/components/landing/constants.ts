@@ -1,16 +1,16 @@
 export const CLIENT_LOGOS = [
-  { name: 'UFC', src: '/images/clients/ufc.png' },
-  { name: 'AJP', src: '/images/clients/ajp.png' },
-  { name: 'ADCC', src: '/images/clients/adcc.png' },
-  { name: 'Alpha Jiu-Jitsu', src: '/images/clients/alpha.png' },
-  { name: 'Almeco', src: '/images/clients/almeco.png' },
-  { name: 'Stammdesign', src: '/images/clients/stammdesign.png' },
-  { name: 'Technomat', src: '/images/clients/technomat.jpeg' },
-  { name: 'RE/MAX', src: '/images/clients/remax.png' },
-  { name: 'Ariston', src: '/images/clients/ariston.png' },
-  { name: 'Ophthalmica', src: '/images/clients/ophthalmica.png' },
-  { name: 'Delli', src: '/images/clients/delli.png' },
-  { name: 'Μαύρη Θάλασσα', src: '/images/clients/mavri-thalassa.png' },
+  { name: 'UFC', src: '/images/clients/ufc.png', solidBg: false },
+  { name: 'AJP', src: '/images/clients/ajp.png', solidBg: false },
+  { name: 'ADCC', src: '/images/clients/adcc.png', solidBg: false },
+  { name: 'Alpha Jiu-Jitsu', src: '/images/clients/alpha.png', solidBg: false },
+  { name: 'Almeco', src: '/images/clients/almeco.png', solidBg: false },
+  { name: 'Stammdesign', src: '/images/clients/stammdesign.png', solidBg: false },
+  { name: 'Technomat', src: '/images/clients/technomat.jpeg', solidBg: true },
+  { name: 'RE/MAX', src: '/images/clients/remax.png', solidBg: false },
+  { name: 'Ariston', src: '/images/clients/ariston.png', solidBg: false },
+  { name: 'Ophthalmica', src: '/images/clients/ophthalmica.png', solidBg: false },
+  { name: 'Delli', src: '/images/clients/delli.png', solidBg: false },
+  { name: 'Μαύρη Θάλασσα', src: '/images/clients/mavri-thalassa.png', solidBg: true },
 ] as const;
 
 export const PORTFOLIO_VIDEOS = [
