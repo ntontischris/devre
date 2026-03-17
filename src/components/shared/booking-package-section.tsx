@@ -52,10 +52,7 @@ export function BookingPackageSection({
                   {pkg.name}
                 </h3>
                 <p className="text-sm text-zinc-400 mb-1">{pkg.deliverables}</p>
-                <p className="text-sm text-zinc-500 mb-2">{pkg.includes}</p>
-                <p className={`text-lg font-bold ${isSelected ? 'text-amber-500' : 'text-white'}`}>
-                  €{pkg.price.toLocaleString()}
-                </p>
+                <p className="text-sm text-zinc-500">{pkg.includes}</p>
               </button>
             );
           })}

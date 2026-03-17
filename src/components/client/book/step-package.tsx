@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { getServiceCategory, type ServicePackage } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Check, Clock, FileText, Package, Euro, Info } from 'lucide-react';
+import { Check, Clock, FileText, Package, Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { BookingFormData } from './booking-wizard';
 
@@ -58,19 +58,18 @@ export function StepPackage({ formData, updateFormData }: StepPackageProps) {
         </div>
       )}
 
-      {/* Per-case pricing (corporate video) */}
+      {/* Per-case services (corporate video) — prices hidden */}
       {hasPerCase && category.perCasePricing && (
         <div className="space-y-4">
           <Card className="p-5">
             <h4 className="font-medium mb-3 flex items-center gap-2">
-              <Euro className="h-4 w-4" />
+              <Info className="h-4 w-4" />
               {t('indicativePricing')}
             </h4>
             <div className="space-y-2">
               {category.perCasePricing.items.map((item, i) => (
-                <div key={i} className="flex justify-between items-center text-sm">
+                <div key={i} className="text-sm">
                   <span>{item.label}</span>
-                  <span className="font-medium">{item.price}</span>
                 </div>
               ))}
             </div>
@@ -90,8 +89,6 @@ export function StepPackage({ formData, updateFormData }: StepPackageProps) {
               <Clock className="h-4 w-4 shrink-0" />
               <span>
                 {t('delivery')}: {category.perCasePricing.deliveryTime}
-                {category.perCasePricing.fastDeliveryFee &&
-                  ` (${t('fastDelivery')}: +${category.perCasePricing.fastDeliveryFee}\u20AC)`}
               </span>
             </div>
 
@@ -168,28 +165,9 @@ function PackageCard({
                 {pkg.contractDuration}
               </span>
             )}
-            {pkg.hasPrePayDiscount && (
-              <Badge
-                variant="outline"
-                className="text-[10px] px-1.5 py-0 text-green-600 border-green-300"
-              >
-                10% έκπτωση προεξόφλησης 6μηνου
-              </Badge>
-            )}
           </div>
 
           {pkg.notes && <p className="text-xs text-muted-foreground italic">{pkg.notes}</p>}
-        </div>
-
-        {/* Price */}
-        <div className="text-right shrink-0">
-          <div className="text-xl font-bold">{pkg.price.toLocaleString('el-GR')}&euro;</div>
-          {pkg.priceWithScripts && (
-            <div className="text-xs text-muted-foreground mt-0.5">
-              {pkg.priceWithScripts.toLocaleString('el-GR')}&euro; με σενάρια
-            </div>
-          )}
-          <div className="text-xs text-muted-foreground">/ μήνα</div>
         </div>
       </div>
 
