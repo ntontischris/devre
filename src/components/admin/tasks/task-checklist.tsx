@@ -57,7 +57,9 @@ export function TaskChecklist({ projectId, tasks, onRefresh }: TaskChecklistProp
   const tc = useTranslations('common');
   const [teamMembers, setTeamMembers] = useState<UserProfile[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'done'>('all');
+  const [filter, setFilter] = useState<
+    'all' | 'todo' | 'in_progress' | 'review' | 'done' | 'pending'
+  >('all');
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -113,11 +115,14 @@ export function TaskChecklist({ projectId, tasks, onRefresh }: TaskChecklistProp
   };
 
   const filteredTasks = tasks.filter((task) => {
-    if (filter === 'done') return task.status === 'done';
+    if (filter === 'all') return true;
     if (filter === 'pending') return task.status !== 'done';
-    return true;
+    return task.status === filter;
   });
 
+  const todoCount = tasks.filter((t) => t.status === 'todo').length;
+  const inProgressCount = tasks.filter((t) => t.status === 'in_progress').length;
+  const reviewCount = tasks.filter((t) => t.status === 'review').length;
   const doneCount = tasks.filter((t) => t.status === 'done').length;
 
   const assigneeName = (userId: string | null) => {
@@ -132,30 +137,42 @@ export function TaskChecklist({ projectId, tasks, onRefresh }: TaskChecklistProp
 
   return (
     <div className="space-y-4">
+      {/* Status counters */}
+      <div className="grid grid-cols-4 gap-3">
+        <button
+          onClick={() => setFilter(filter === 'todo' ? 'all' : ('todo' as typeof filter))}
+          className={`rounded-lg border p-3 text-center transition-colors ${filter === 'todo' ? 'ring-2 ring-blue-500' : 'hover:bg-accent/50'}`}
+        >
+          <div className="text-2xl font-bold text-blue-600">{todoCount}</div>
+          <div className="text-[11px] text-muted-foreground">Προς Υλοποίηση</div>
+        </button>
+        <button
+          onClick={() =>
+            setFilter(filter === 'in_progress' ? 'all' : ('in_progress' as typeof filter))
+          }
+          className={`rounded-lg border p-3 text-center transition-colors ${filter === 'in_progress' ? 'ring-2 ring-amber-500' : 'hover:bg-accent/50'}`}
+        >
+          <div className="text-2xl font-bold text-amber-600">{inProgressCount}</div>
+          <div className="text-[11px] text-muted-foreground">Σε Εξέλιξη</div>
+        </button>
+        <button
+          onClick={() => setFilter(filter === 'review' ? 'all' : ('review' as typeof filter))}
+          className={`rounded-lg border p-3 text-center transition-colors ${filter === 'review' ? 'ring-2 ring-purple-500' : 'hover:bg-accent/50'}`}
+        >
+          <div className="text-2xl font-bold text-purple-600">{reviewCount}</div>
+          <div className="text-[11px] text-muted-foreground">Σε Αξιολόγηση</div>
+        </button>
+        <button
+          onClick={() => setFilter(filter === 'done' ? 'all' : ('done' as typeof filter))}
+          className={`rounded-lg border p-3 text-center transition-colors ${filter === 'done' ? 'ring-2 ring-emerald-500' : 'hover:bg-accent/50'}`}
+        >
+          <div className="text-2xl font-bold text-emerald-600">{doneCount}</div>
+          <div className="text-[11px] text-muted-foreground">Ολοκληρωμένα</div>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <ListChecks className="h-4 w-4" />
-            <span>
-              {doneCount}/{tasks.length}
-            </span>
-          </div>
-          <Select value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
-            <SelectTrigger className="w-[150px] h-8 text-xs">
-              <Filter className="h-3 w-3 mr-1" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{tc('all')}</SelectItem>
-              <SelectItem value="pending">
-                {t('noTasks') === t('noTasks') ? 'Εκκρεμείς' : 'Pending'}
-              </SelectItem>
-              <SelectItem value="done">{tc('done') || 'Done'}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm">

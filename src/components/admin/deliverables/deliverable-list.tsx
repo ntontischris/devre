@@ -137,13 +137,15 @@ export function DeliverableList({ deliverables, onRefresh }: DeliverableListProp
             </div>
 
             {isExternalLink(deliverable.file_path) && getEmbedUrl(deliverable.file_path) && (
-              <div className="aspect-video rounded-md overflow-hidden bg-muted">
-                <iframe
-                  src={getEmbedUrl(deliverable.file_path)!}
-                  className="w-full h-full border-0"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                />
+              <div className="max-w-md">
+                <div className="aspect-video rounded-md overflow-hidden bg-muted">
+                  <iframe
+                    src={getEmbedUrl(deliverable.file_path)!}
+                    className="w-full h-full border-0"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             )}
           </div>
