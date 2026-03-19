@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -26,6 +26,8 @@ function LoginForm() {
   const tToast = useTranslations('toast');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -58,7 +60,6 @@ function LoginForm() {
   const onSubmitPassword = async (data: LoginInput) => {
     setIsLoading(true);
     try {
-      const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
@@ -70,8 +71,10 @@ function LoginForm() {
       }
 
       toast.success(t('signingIn'));
-      router.refresh();
-      router.push('/');
+      startTransition(() => {
+        router.refresh();
+        router.push('/');
+      });
     } catch {
       toast.error(tToast('genericError'));
     } finally {
@@ -121,8 +124,8 @@ function LoginForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? t('signingIn') : t('login')}
+          <Button type="submit" className="w-full" disabled={isLoading || isPending}>
+            {isLoading || isPending ? t('signingIn') : t('login')}
           </Button>
 
           <Link
