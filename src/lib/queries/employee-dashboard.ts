@@ -55,15 +55,19 @@ export async function getMyUpcomingTasks(userId: string, days: number = 7) {
 export async function getMyProjects(userId: string) {
   const supabase = await createClient();
 
-  // Get projects where this employee has tasks assigned
-  const { data: tasks, error } = await supabase
+  // Get projects where employee has tasks assigned
+  const { data: tasks } = await supabase
     .from('tasks')
     .select('project_id, project:projects(id, title, status, project_type, deadline)')
     .eq('assigned_to', userId);
 
-  if (error || !tasks) return [];
+  // Get projects directly assigned to employee
+  const { data: assignedProjects } = await supabase
+    .from('projects')
+    .select('id, title, status, project_type, deadline')
+    .eq('assigned_to', userId);
 
-  // Deduplicate by project_id
+  // Build unified map
   const projectMap = new Map<
     string,
     {
@@ -75,7 +79,9 @@ export async function getMyProjects(userId: string) {
       taskCount: number;
     }
   >();
-  for (const task of tasks) {
+
+  // Add task-based projects
+  for (const task of tasks ?? []) {
     const project = task.project as unknown as {
       id: string;
       title: string;
@@ -89,6 +95,13 @@ export async function getMyProjects(userId: string) {
       existing.taskCount++;
     } else {
       projectMap.set(project.id, { ...project, taskCount: 1 });
+    }
+  }
+
+  // Add directly assigned projects (if not already in map)
+  for (const project of assignedProjects ?? []) {
+    if (!projectMap.has(project.id)) {
+      projectMap.set(project.id, { ...project, taskCount: 0 });
     }
   }
 

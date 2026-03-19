@@ -16,15 +16,23 @@ export default async function EmployeeProjectDetailPage({
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  // Verify employee has tasks in this project
-  const { data: userTasks } = await supabase
-    .from('tasks')
-    .select('id')
-    .eq('project_id', projectId)
-    .eq('assigned_to', user.id)
-    .limit(1);
+  // Verify employee has tasks in this project or is directly assigned
+  const [{ data: taskAccess }, { data: assignedAccess }] = await Promise.all([
+    supabase
+      .from('tasks')
+      .select('id')
+      .eq('project_id', projectId)
+      .eq('assigned_to', user.id)
+      .limit(1),
+    supabase.from('projects').select('id').eq('id', projectId).eq('assigned_to', user.id).limit(1),
+  ]);
 
-  if (!userTasks || userTasks.length === 0) notFound();
+  if (
+    (!taskAccess || taskAccess.length === 0) &&
+    (!assignedAccess || assignedAccess.length === 0)
+  ) {
+    notFound();
+  }
 
   const t = await getTranslations('employee.projects');
 

@@ -2,6 +2,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 import { ProjectWithClient } from '@/types';
+import type { UserProfile } from '@/types/index';
 import { ProjectStatus, PROJECT_STATUS_LABELS } from '@/lib/constants';
 import { ProjectCard } from './project-card';
 
@@ -10,6 +11,7 @@ interface ProjectColumnProps {
   projects: ProjectWithClient[];
   isOver?: boolean;
   isDragging?: boolean;
+  teamMembers?: UserProfile[];
 }
 
 const STATUS_ACCENT: Record<ProjectStatus, string> = {
@@ -45,7 +47,13 @@ const STATUS_BG: Record<ProjectStatus, string> = {
   archived: 'bg-gray-50/80 dark:bg-gray-900/30',
 };
 
-export function ProjectColumn({ status, projects, isOver, isDragging }: ProjectColumnProps) {
+export function ProjectColumn({
+  status,
+  projects,
+  isOver,
+  isDragging,
+  teamMembers,
+}: ProjectColumnProps) {
   const { setNodeRef } = useDroppable({
     id: status,
   });
@@ -76,9 +84,10 @@ export function ProjectColumn({ status, projects, isOver, isDragging }: ProjectC
             <div
               className={`
                 flex items-center justify-center h-[60px] rounded text-[10px] transition-all duration-200
-                ${isOver
-                  ? 'border-2 border-dashed border-muted-foreground/30 text-muted-foreground'
-                  : 'text-muted-foreground/40'
+                ${
+                  isOver
+                    ? 'border-2 border-dashed border-muted-foreground/30 text-muted-foreground'
+                    : 'text-muted-foreground/40'
                 }
               `}
             >
@@ -86,7 +95,7 @@ export function ProjectColumn({ status, projects, isOver, isDragging }: ProjectC
             </div>
           )}
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} teamMembers={teamMembers} />
           ))}
         </div>
       </div>

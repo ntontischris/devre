@@ -15,6 +15,7 @@ import {
   rectIntersection,
 } from '@dnd-kit/core';
 import { ProjectWithClient } from '@/types';
+import type { UserProfile } from '@/types/index';
 import { PROJECT_STATUSES, ProjectStatus } from '@/lib/constants';
 import { ProjectColumn } from './project-column';
 import { ProjectCard } from './project-card';
@@ -25,9 +26,10 @@ import { useTranslations } from 'next-intl';
 
 interface ProjectBoardProps {
   projects: ProjectWithClient[];
+  teamMembers: UserProfile[];
 }
 
-export function ProjectBoard({ projects }: ProjectBoardProps) {
+export function ProjectBoard({ projects, teamMembers }: ProjectBoardProps) {
   const t = useTranslations('projects');
   const router = useRouter();
   const [localProjects, setLocalProjects] = useState(projects);
@@ -45,18 +47,24 @@ export function ProjectBoard({ projects }: ProjectBoardProps) {
     useSensor(TouchSensor, {
       activationConstraint: { delay: 200, tolerance: 5 },
     }),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor),
   );
 
-  const projectsByStatus = PROJECT_STATUSES.reduce((acc, status) => {
-    acc[status] = localProjects.filter((p) => p.status === status);
-    return acc;
-  }, {} as Record<ProjectStatus, ProjectWithClient[]>);
+  const projectsByStatus = PROJECT_STATUSES.reduce(
+    (acc, status) => {
+      acc[status] = localProjects.filter((p) => p.status === status);
+      return acc;
+    },
+    {} as Record<ProjectStatus, ProjectWithClient[]>,
+  );
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const project = localProjects.find((p) => p.id === event.active.id);
-    setActiveProject(project || null);
-  }, [localProjects]);
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const project = localProjects.find((p) => p.id === event.active.id);
+      setActiveProject(project || null);
+    },
+    [localProjects],
+  );
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
     const { over } = event;
@@ -67,37 +75,38 @@ export function ProjectBoard({ projects }: ProjectBoardProps) {
     setOverColumnId(over.id as string);
   }, []);
 
-  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
-    const { active, over } = event;
-    const draggedProject = activeProject;
+  const handleDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+      const draggedProject = activeProject;
 
-    setActiveProject(null);
-    setOverColumnId(null);
+      setActiveProject(null);
+      setOverColumnId(null);
 
-    if (!over || !draggedProject) return;
+      if (!over || !draggedProject) return;
 
-    const newStatus = over.id as ProjectStatus;
-    if (draggedProject.status === newStatus) return;
+      const newStatus = over.id as ProjectStatus;
+      if (draggedProject.status === newStatus) return;
 
-    setLocalProjects((prev) =>
-      prev.map((p) =>
-        p.id === draggedProject.id ? { ...p, status: newStatus } : p
-      )
-    );
-
-    const result = await updateProjectStatus(active.id as string, newStatus);
-    if (result.error) {
       setLocalProjects((prev) =>
-        prev.map((p) =>
-          p.id === draggedProject.id ? { ...p, status: draggedProject.status } : p
-        )
+        prev.map((p) => (p.id === draggedProject.id ? { ...p, status: newStatus } : p)),
       );
-      toast.error(result.error);
-    } else {
-      toast.success(t('projectUpdated'));
-      router.refresh();
-    }
-  }, [activeProject, router, t]);
+
+      const result = await updateProjectStatus(active.id as string, newStatus);
+      if (result.error) {
+        setLocalProjects((prev) =>
+          prev.map((p) =>
+            p.id === draggedProject.id ? { ...p, status: draggedProject.status } : p,
+          ),
+        );
+        toast.error(result.error);
+      } else {
+        toast.success(t('projectUpdated'));
+        router.refresh();
+      }
+    },
+    [activeProject, router, t],
+  );
 
   const handleDragCancel = useCallback(() => {
     setActiveProject(null);
@@ -121,13 +130,14 @@ export function ProjectBoard({ projects }: ProjectBoardProps) {
             projects={projectsByStatus[status]}
             isOver={overColumnId === status}
             isDragging={!!activeProject}
+            teamMembers={teamMembers}
           />
         ))}
       </div>
 
       <DragOverlay>
         {activeProject ? (
-          <ProjectCard project={activeProject} isOverlay />
+          <ProjectCard project={activeProject} isOverlay teamMembers={teamMembers} />
         ) : null}
       </DragOverlay>
     </DndContext>

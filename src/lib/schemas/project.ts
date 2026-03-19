@@ -20,6 +20,7 @@ export const createProjectSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)')
     .optional(),
   budget: z.number().min(0, 'Budget must be positive').optional(),
+  assigned_to: z.string().uuid('Invalid user ID').nullable().optional(),
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;

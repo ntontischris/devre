@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ProjectWithClient } from '@/types';
+import type { UserProfile } from '@/types/index';
 import { PageHeader } from '@/components/shared/page-header';
 import { ViewToggle } from '@/components/admin/projects/view-toggle';
 import { ProjectBoard } from '@/components/admin/projects/project-board';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { getTeamMembers } from '@/lib/actions/team';
 
 interface ProjectsContentProps {
   projects: ProjectWithClient[];
@@ -19,6 +21,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
   const t = useTranslations('projects');
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
   const [mounted, setMounted] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<UserProfile[]>([]);
 
   useEffect(() => {
     const savedView = localStorage.getItem('projects-view') as 'kanban' | 'list' | null;
@@ -26,6 +29,12 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       setView(savedView);
     }
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    getTeamMembers().then((result) => {
+      if (result.data) setTeamMembers(result.data);
+    });
   }, []);
 
   const handleViewChange = (newView: 'kanban' | 'list') => {
@@ -49,7 +58,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
       {mounted &&
         (view === 'kanban' ? (
-          <ProjectBoard projects={projects} />
+          <ProjectBoard projects={projects} teamMembers={teamMembers} />
         ) : (
           <ProjectList projects={projects} />
         ))}

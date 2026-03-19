@@ -528,6 +528,10 @@
     "projectDeleted": "Production deleted successfully",
     "moveToStatus": "Move to {status}",
     "assignedTo": "Assigned to",
+    "assignEmployee": "Assign employee",
+    "unassigned": "Unassigned",
+    "assignSuccess": "Production assigned successfully",
+    "removeAssignment": "Remove assignment",
     "createdAt": "Created",
     "updatedAt": "Updated"
   },

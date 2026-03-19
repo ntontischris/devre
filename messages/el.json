@@ -527,7 +527,11 @@
     "projectUpdated": "Το παραγωγή ενημερώθηκε",
     "projectDeleted": "Το παραγωγή διαγράφηκε",
     "moveToStatus": "Μετακίνηση σε {status}",
-    "assignedTo": "Ανατέθηκε σε",
+    "assignedTo": "Ανατεθειμένο σε",
+    "assignEmployee": "Ανάθεση σε υπάλληλο",
+    "unassigned": "Χωρίς ανάθεση",
+    "assignSuccess": "Η παραγωγή ανατέθηκε επιτυχώς",
+    "removeAssignment": "Αφαίρεση ανάθεσης",
     "createdAt": "Δημιουργήθηκε",
     "updatedAt": "Ενημερώθηκε"
   },

@@ -210,3 +210,57 @@ export async function deleteProject(id: string): Promise<ActionResult<void>> {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete project' };
   }
 }
+
+export async function assignProject(
+  projectId: string,
+  userId: string | null,
+): Promise<ActionResult<Project>> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { data: null, error: 'Unauthorized' };
+
+    // Verify caller is admin
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    if (!profile || !['super_admin', 'admin'].includes(profile.role)) {
+      return { data: null, error: 'Forbidden: admin access required' };
+    }
+
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ assigned_to: userId })
+      .eq('id', projectId)
+      .select()
+      .single();
+
+    if (error) return { data: null, error: error.message };
+
+    revalidatePath('/admin/projects');
+    revalidatePath(`/admin/projects/${projectId}`);
+    revalidatePath('/employee/projects');
+    revalidatePath('/employee/dashboard');
+
+    // Notify the assigned employee
+    if (userId) {
+      createNotification({
+        userId,
+        type: NOTIFICATION_TYPES.TASK_ASSIGNED,
+        title: `You have been assigned to production "${data.title}"`,
+        actionUrl: `/employee/projects/${projectId}`,
+      });
+    }
+
+    return { data, error: null };
+  } catch (err: unknown) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to assign project',
+    };
+  }
+}

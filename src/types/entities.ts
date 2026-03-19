@@ -59,6 +59,7 @@ export type Project = {
   budget: number | null;
   deadline: string | null;
   start_date: string | null;
+  assigned_to: string | null;
   created_at: string;
   updated_at: string;
 };
