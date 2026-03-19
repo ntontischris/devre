@@ -9,6 +9,8 @@ import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { EmptyState } from '@/components/shared/empty-state';
 import { MessageThread } from '@/components/shared/message-thread';
 import { ContractsTab } from './contracts-tab';
+import { TasksTab } from './tasks-tab';
+import { DeliverablesTab } from './deliverables-tab';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -333,19 +335,11 @@ export function ProjectDetail({ project, contracts }: ProjectDetailProps) {
         </TabsContent>
 
         <TabsContent value="tasks">
-          <EmptyState
-            icon={CheckSquare}
-            title={tc('noTasksYet')}
-            description={tc('noTasksDescription')}
-          />
+          <TasksTab projectId={project.id} />
         </TabsContent>
 
         <TabsContent value="deliverables">
-          <EmptyState
-            icon={Package}
-            title={tc('noDeliverablesYet')}
-            description={tc('noDeliverablesDescription')}
-          />
+          <DeliverablesTab projectId={project.id} />
         </TabsContent>
 
         <TabsContent value="messages">
