@@ -50,33 +50,40 @@ export function MessageThread({
   // Use realtime hook
   const { messages, isConnected } = useRealtimeMessages(projectId, initialMessages);
 
-  // Fetch initial messages
+  // Fetch initial messages with timeout
   useEffect(() => {
     const fetchMessages = async () => {
       setIsLoading(true);
       setError(null);
 
-      const result = await getMessagesByProject(projectId, channel);
+      try {
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Request timed out')), 10000),
+        );
 
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setInitialMessages((result.data as unknown as Message[]) ?? []);
+        const result = await Promise.race([
+          getMessagesByProject(projectId, channel),
+          timeoutPromise,
+        ]);
+
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setInitialMessages((result.data as unknown as Message[]) ?? []);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load messages');
       }
 
       setIsLoading(false);
     };
 
     fetchMessages();
-  }, [projectId]);
+  }, [projectId, channel]);
 
-  // Mark messages as read when thread opens
+  // Mark messages as read when thread opens (fire and forget, don't block)
   useEffect(() => {
-    const markAsRead = async () => {
-      await markMessagesAsRead(projectId);
-    };
-
-    markAsRead();
+    markMessagesAsRead(projectId).catch(() => {});
   }, [projectId]);
 
   // Auto-scroll to bottom on new messages
