@@ -5,12 +5,16 @@ import { createAdminClient } from '@/lib/supabase/admin';
 type OtpType = 'signup' | 'recovery' | 'email' | 'invite' | 'magiclink';
 
 /**
- * Email confirmation handler for Supabase
- * Handles: signup confirmation, password recovery, email change, invite
+ * Email confirmation handler for Supabase.
+ * Handles: signup confirmation, password recovery, email change, invite.
  *
- * After OTP verification, checks the user profile to determine redirect:
- * - No display_name → /onboarding (user hasn't completed setup)
- * - Otherwise → uses `next` param or home
+ * Email templates use this route directly (instead of Supabase's verify endpoint)
+ * so the token exchange happens SERVER-SIDE via verifyOtp — no hash fragments.
+ *
+ * Redirect logic:
+ * - Invited user or missing display_name → /onboarding
+ * - Recovery for existing user (not re-invite) → /update-password
+ * - Otherwise → `next` param or /
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -53,7 +57,6 @@ export async function GET(request: NextRequest) {
     if (!error) {
       let redirectPath = next;
 
-      // Check if user needs onboarding
       if (data.user) {
         const adminClient = createAdminClient();
         const { data: profile } = await adminClient
@@ -65,7 +68,11 @@ export async function GET(request: NextRequest) {
         const isInvitedAndNotOnboarded = !!data.user.user_metadata?.invited_by;
 
         if (!profile?.display_name || isInvitedAndNotOnboarded) {
+          // Invited user or re-invited user → onboarding to set password + name
           redirectPath = '/onboarding';
+        } else if (type === 'recovery') {
+          // Regular password recovery (not re-invite) → update password page
+          redirectPath = '/update-password';
         }
       }
 
