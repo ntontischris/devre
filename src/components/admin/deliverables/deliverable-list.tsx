@@ -136,6 +136,7 @@ export function DeliverableList({ deliverables, onRefresh }: DeliverableListProp
               )}
             </div>
 
+            {/* Embedded player — Google Drive / YouTube / Vimeo */}
             {isExternalLink(deliverable.file_path) && getEmbedUrl(deliverable.file_path) && (
               <div className="max-w-md">
                 <div className="aspect-video rounded-md overflow-hidden bg-muted">
