@@ -72,7 +72,6 @@ function LoginForm() {
 
       toast.success(t('signingIn'));
       startTransition(() => {
-        router.refresh();
         router.push('/');
       });
     } catch {
