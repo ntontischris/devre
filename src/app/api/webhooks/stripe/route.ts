@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
 import {
   createNotification,
@@ -13,6 +13,10 @@ import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
+  }
+
   const body = await request.text();
   const signature = request.headers.get('stripe-signature');
 
@@ -24,7 +28,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = getStripe().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (error) {
     console.error('Webhook signature verification failed:', error);
     return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 });
