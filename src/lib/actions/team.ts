@@ -220,7 +220,9 @@ export async function updateTeamMemberRole(
       return { data: null, error: 'Forbidden: admin access required' };
     }
 
-    const { error } = await supabase.from('user_profiles').update({ role }).eq('id', userId);
+    // Use admin client to bypass RLS — caller is already verified as admin
+    const adminClient = createAdminClient();
+    const { error } = await adminClient.from('user_profiles').update({ role }).eq('id', userId);
 
     if (error) {
       return { data: null, error: error.message };
@@ -228,7 +230,6 @@ export async function updateTeamMemberRole(
 
     // When changing role to 'client', ensure a clients record exists
     if (role === 'client') {
-      const adminClient = createAdminClient();
       const { data: authData } = await adminClient.auth.admin.getUserById(userId);
       const email = authData?.user?.email;
 
@@ -316,8 +317,8 @@ export async function deactivateTeamMember(
       return { data: null, error: authError.message };
     }
 
-    // Also mark in user_profiles for UI purposes
-    const { error: profileError } = await supabase
+    // Also mark in user_profiles for UI purposes (use admin client to bypass RLS)
+    const { error: profileError } = await adminClient
       .from('user_profiles')
       .update({
         preferences: { deactivated: true },
@@ -370,8 +371,8 @@ export async function reactivateTeamMember(
       return { data: null, error: authError.message };
     }
 
-    // Remove deactivated flag from preferences
-    const { data: targetProfile } = await supabase
+    // Remove deactivated flag from preferences (use admin client to bypass RLS)
+    const { data: targetProfile } = await adminClient
       .from('user_profiles')
       .select('preferences')
       .eq('id', userId)
@@ -382,7 +383,7 @@ export async function reactivateTeamMember(
         string,
         unknown
       >;
-      await supabase
+      await adminClient
         .from('user_profiles')
         .update({ preferences: restPreferences })
         .eq('id', userId);
