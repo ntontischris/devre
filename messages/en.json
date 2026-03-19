@@ -1596,6 +1596,8 @@
       "passwordsDoNotMatch": "New passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters",
       "passwordChangeSuccess": "Password changed successfully",
+      "passwordChangeError": "Failed to change password",
+      "sessionExpired": "Your session has expired. Please log in again.",
       "currentPassword": "Current Password",
       "newPassword": "New Password",
       "passwordRequirements": "Must be at least 8 characters",

@@ -1596,6 +1596,8 @@
       "passwordsDoNotMatch": "Οι κωδικοί δεν ταιριάζουν",
       "passwordTooShort": "Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες",
       "passwordChangeSuccess": "Ο κωδικός άλλαξε επιτυχώς",
+      "passwordChangeError": "Αποτυχία αλλαγής κωδικού",
+      "sessionExpired": "Η συνεδρία σας έχει λήξει. Συνδεθείτε ξανά.",
       "currentPassword": "Τρέχων Κωδικός",
       "newPassword": "Νέος Κωδικός",
       "passwordRequirements": "Τουλάχιστον 8 χαρακτήρες",
