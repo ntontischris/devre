@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const PUBLIC_ROUTES = ['/login', '/forgot-password', '/update-password', '/book'];
-const AUTH_ROUTES = ['/login', '/forgot-password'];
+const AUTH_ROUTES = ['/login'];
 const ADMIN_ROUTES_PREFIX = '/admin';
 const CLIENT_ROUTES_PREFIX = '/client';
 const EMPLOYEE_ROUTES_PREFIX = '/employee';

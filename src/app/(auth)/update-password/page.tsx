@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-import { createClient } from '@/lib/supabase/client';
 import { updatePasswordSchema } from '@/lib/schemas/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,26 +17,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;
 
+/**
+ * Parse the Supabase auth session directly from document.cookie.
+ * Bypasses the Supabase JS client which uses navigator.locks internally
+ * and throws AbortError on pages loaded via recovery redirect.
+ */
+function getSessionFromCookie(): {
+  access_token: string;
+  user: { id: string; user_metadata?: Record<string, unknown> };
+} | null {
+  try {
+    const cookies = document.cookie.split('; ');
+
+    // Find auth-token cookie — could be single or chunked (.0, .1, ...)
+    const single = cookies.find((c) => c.includes('auth-token=') && !c.match(/auth-token\.\d+=/));
+
+    let raw: string;
+    if (single) {
+      raw = single.split('=').slice(1).join('=');
+    } else {
+      // Combine chunked cookies in order
+      const chunks: string[] = [];
+      for (let i = 0; ; i++) {
+        const chunk = cookies.find((c) => c.match(new RegExp(`auth-token\\.${i}=`)));
+        if (!chunk) break;
+        chunks.push(chunk.split('=').slice(1).join('='));
+      }
+      if (chunks.length === 0) return null;
+      raw = chunks.join('');
+    }
+
+    const json = raw.startsWith('base64-') ? atob(raw.slice(7)) : raw;
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 export default function UpdatePasswordPage() {
   const router = useRouter();
   const t = useTranslations('auth');
   const [isLoading, setIsLoading] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
-  const sessionReady = useRef(false);
-
-  // Warm up the Supabase client on mount — forces it to acquire the
-  // navigator.locks lock and hydrate the session from cookies BEFORE
-  // the user submits. This prevents AbortError on submit.
-  useEffect(() => {
-    createClient()
-      .auth.getSession()
-      .then(() => {
-        sessionReady.current = true;
-      })
-      .catch(() => {
-        // Ignore — will be handled on submit
-      });
-  }, []);
 
   const {
     register,
@@ -50,37 +71,49 @@ export default function UpdatePasswordPage() {
   const onSubmit = async (data: UpdatePasswordInput) => {
     setIsLoading(true);
     try {
-      const supabase = createClient();
-
-      // If session hasn't been hydrated yet, wait briefly
-      if (!sessionReady.current) {
-        await supabase.auth.getSession();
+      const session = getSessionFromCookie();
+      if (!session?.access_token) {
+        setIsExpired(true);
+        return;
       }
 
-      const { error } = await supabase.auth.updateUser({
-        password: data.password,
+      // Call Supabase Auth API directly — bypasses navigator.locks
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        },
+        body: JSON.stringify({ password: data.password }),
       });
 
-      if (error) {
-        if (error.status === 401 || error.status === 403) {
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403 || res.status === 422) {
           setIsExpired(true);
           return;
         }
-        toast.error(error.message);
+        const body = await res.json().catch(() => null);
+        toast.error(body?.message ?? body?.msg ?? t('unexpectedError'));
         return;
       }
 
       toast.success(t('passwordUpdated'));
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
+      // Get role from user_profiles via REST API (no Supabase client needed)
+      const userId = session.user?.id;
+      if (userId) {
+        const profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/user_profiles?id=eq.${userId}&select=role`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            },
+          },
+        );
+        const profiles = await profileRes.json().catch(() => []);
+        const role: string = profiles?.[0]?.role ?? 'client';
 
         const dashboards: Record<string, string> = {
           super_admin: '/admin/dashboard',
@@ -89,47 +122,12 @@ export default function UpdatePasswordPage() {
           salesman: '/salesman/dashboard',
           client: '/client/dashboard',
         };
-        const dashboard = dashboards[profile?.role ?? 'client'] ?? '/client/dashboard';
-        router.replace(dashboard);
+        router.replace(dashboards[role] ?? '/client/dashboard');
       } else {
-        router.replace('/login');
+        router.replace('/client/dashboard');
       }
-    } catch (err) {
-      // AbortError = Supabase lock contention — retry once after a delay
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        try {
-          await new Promise((r) => setTimeout(r, 1000));
-          const supabase = createClient();
-          const { error } = await supabase.auth.updateUser({
-            password: data.password,
-          });
-          if (error) {
-            if (error.status === 401 || error.status === 403) {
-              setIsExpired(true);
-            } else {
-              toast.error(error.message);
-            }
-            return;
-          }
-          toast.success(t('passwordUpdated'));
-          router.replace('/login');
-          return;
-        } catch {
-          setIsExpired(true);
-          return;
-        }
-      }
-
-      // Session-related thrown errors
-      if (
-        err instanceof Error &&
-        (err.message.toLowerCase().includes('session') ||
-          err.message.toLowerCase().includes('not authenticated'))
-      ) {
-        setIsExpired(true);
-      } else {
-        toast.error(t('unexpectedError'));
-      }
+    } catch {
+      toast.error(t('unexpectedError'));
     } finally {
       setIsLoading(false);
     }
