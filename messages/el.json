@@ -265,6 +265,8 @@
     "passwordUpdated": "Ο κωδικός ενημερώθηκε επιτυχώς!",
     "profileCompleted": "Το προφίλ ολοκληρώθηκε! Ανακατεύθυνση...",
     "unexpectedError": "Παρουσιάστηκε μη αναμενόμενο σφάλμα",
+    "recoveryLinkExpired": "Ο σύνδεσμος επαναφοράς κωδικού έχει λήξει ή δεν είναι έγκυρος.",
+    "requestNewLink": "Ζητήστε νέο σύνδεσμο",
     "displayNamePlaceholder": "Το ονοματεπώνυμό σας",
     "companyNameOptional": "Επωνυμία Εταιρείας (προαιρετικό)",
     "companyNamePlaceholder": "Η εταιρεία σας",

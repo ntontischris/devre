@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 import { createClient } from '@/lib/supabase/client';
 import { updatePasswordSchema } from '@/lib/schemas/auth';
@@ -20,49 +21,8 @@ type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;
 export default function UpdatePasswordPage() {
   const router = useRouter();
   const t = useTranslations('auth');
-  const tc = useTranslations('common');
   const [isLoading, setIsLoading] = useState(false);
-  const [hasSession, setHasSession] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-
-  // Verify session exists before showing the form
-  useEffect(() => {
-    const supabase = createClient();
-
-    // Check existing session
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setHasSession(true);
-        setIsChecking(false);
-      }
-    });
-
-    // Listen for auth events — recovery session may arrive after page load
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
-        setHasSession(true);
-        setIsChecking(false);
-      }
-    });
-
-    // Timeout: if no session after 5 seconds, redirect to forgot-password
-    const timeout = setTimeout(() => {
-      setIsChecking((prev) => {
-        if (prev) {
-          toast.error(t('sessionExpired'));
-          router.replace('/forgot-password');
-        }
-        return false;
-      });
-    }, 5000);
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
-  }, [router, t]);
+  const [isExpired, setIsExpired] = useState(false);
 
   const {
     register,
@@ -82,6 +42,10 @@ export default function UpdatePasswordPage() {
       });
 
       if (error) {
+        if (error.message.includes('session') || error.status === 403 || error.status === 401) {
+          setIsExpired(true);
+          return;
+        }
         toast.error(error.message);
         return;
       }
@@ -118,11 +82,17 @@ export default function UpdatePasswordPage() {
     }
   };
 
-  if (isChecking || !hasSession) {
+  if (isExpired) {
     return (
       <Card>
-        <CardContent className="py-12">
-          <p className="text-center text-sm text-muted-foreground">{tc('loading')}</p>
+        <CardContent className="py-12 text-center">
+          <p className="text-sm text-muted-foreground">{t('recoveryLinkExpired')}</p>
+          <Link
+            href="/forgot-password"
+            className="mt-4 inline-block text-sm text-primary underline"
+          >
+            {t('requestNewLink')}
+          </Link>
         </CardContent>
       </Card>
     );

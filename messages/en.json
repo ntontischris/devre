@@ -265,6 +265,8 @@
     "passwordUpdated": "Password updated successfully!",
     "profileCompleted": "Profile completed! Redirecting...",
     "unexpectedError": "An unexpected error occurred",
+    "recoveryLinkExpired": "Your password reset link has expired or is invalid.",
+    "requestNewLink": "Request a new link",
     "displayNamePlaceholder": "Your full name",
     "companyNameOptional": "Company Name (optional)",
     "companyNamePlaceholder": "Your company",
