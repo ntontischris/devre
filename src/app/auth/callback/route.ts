@@ -58,10 +58,14 @@ export async function GET(request: NextRequest) {
 
         const isInvitedAndNotOnboarded = !!data.user.user_metadata?.invited_by;
 
+        // Detect recovery: recent recovery_sent_at on user
+        const isRecovery =
+          data.user.recovery_sent_at &&
+          Date.now() - new Date(data.user.recovery_sent_at).getTime() < 10 * 60 * 1000;
+
         if (!profile?.display_name || isInvitedAndNotOnboarded) {
           redirectPath = '/onboarding';
-        } else if (data.session?.user?.recovery_sent_at) {
-          // User came from a recovery link — redirect to update-password
+        } else if (isRecovery) {
           redirectPath = '/update-password';
         }
       }

@@ -70,10 +70,16 @@ export async function GET(request: NextRequest) {
 
         const isInvitedAndNotOnboarded = !!data.user.user_metadata?.invited_by;
 
+        // Detect recovery: URL type param OR recent recovery_sent_at on user
+        const isRecovery =
+          type === 'recovery' ||
+          (data.user.recovery_sent_at &&
+            Date.now() - new Date(data.user.recovery_sent_at).getTime() < 10 * 60 * 1000);
+
         if (!profile?.display_name || isInvitedAndNotOnboarded) {
           // Invited user or re-invited user → onboarding to set password + name
           redirectPath = '/onboarding';
-        } else if (type === 'recovery') {
+        } else if (isRecovery) {
           // Regular password recovery (not re-invite) → update password page
           redirectPath = '/update-password';
         }
