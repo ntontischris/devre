@@ -181,24 +181,26 @@ function CardInner({
                         {t('removeAssignment')}
                       </CommandItem>
                     )}
-                    {teamMembers?.map((member) => (
-                      <CommandItem
-                        key={member.id}
-                        value={member.display_name ?? member.id}
-                        onSelect={() => handleAssign(member.id === assignedTo ? null : member.id)}
-                        className="text-xs"
-                      >
-                        <Check
-                          className={cn(
-                            'mr-1 h-3 w-3',
-                            assignedTo === member.id ? 'opacity-100' : 'opacity-0',
-                          )}
-                        />
-                        <span className="truncate">
-                          {member.display_name ?? member.id.slice(0, 8)}
-                        </span>
-                      </CommandItem>
-                    ))}
+                    {teamMembers
+                      ?.filter((m) => m.role === 'employee')
+                      .map((member) => (
+                        <CommandItem
+                          key={member.id}
+                          value={member.display_name ?? member.id}
+                          onSelect={() => handleAssign(member.id === assignedTo ? null : member.id)}
+                          className="text-xs"
+                        >
+                          <Check
+                            className={cn(
+                              'mr-1 h-3 w-3',
+                              assignedTo === member.id ? 'opacity-100' : 'opacity-0',
+                            )}
+                          />
+                          <span className="truncate">
+                            {member.display_name ?? member.id.slice(0, 8)}
+                          </span>
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </CommandList>
               </Command>
