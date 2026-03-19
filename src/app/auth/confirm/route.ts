@@ -8,8 +8,9 @@ type OtpType = 'signup' | 'recovery' | 'email' | 'invite' | 'magiclink';
  * Email confirmation handler for Supabase.
  * Handles: signup confirmation, password recovery, email change, invite.
  *
- * Email templates use this route directly (instead of Supabase's verify endpoint)
- * so the token exchange happens SERVER-SIDE via verifyOtp — no hash fragments.
+ * Supports both flows:
+ * - token_hash: direct OTP verification (custom email templates)
+ * - code: PKCE code exchange (Supabase Cloud default)
  *
  * Redirect logic:
  * - Invited user or missing display_name → /onboarding
@@ -19,12 +20,13 @@ type OtpType = 'signup' | 'recovery' | 'email' | 'invite' | 'magiclink';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const token_hash = searchParams.get('token_hash');
+  const code = searchParams.get('code');
   const type = searchParams.get('type') as OtpType | null;
   const rawNext = searchParams.get('next') ?? '/';
   // Prevent open redirect: only allow relative paths starting with /
   const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
 
-  if (token_hash && type) {
+  if ((token_hash && type) || code) {
     // Collect cookies to set on the final redirect response
     const responseCookies: { name: string; value: string; options: Record<string, unknown> }[] = [];
 
@@ -49,10 +51,11 @@ export async function GET(request: NextRequest) {
       },
     );
 
-    const { data, error } = await supabase.auth.verifyOtp({
-      type,
-      token_hash,
-    });
+    // Use token_hash (OTP) or code (PKCE) to establish session
+    const { data, error } =
+      token_hash && type
+        ? await supabase.auth.verifyOtp({ type, token_hash })
+        : await supabase.auth.exchangeCodeForSession(code!);
 
     if (!error) {
       let redirectPath = next;

@@ -47,9 +47,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       let redirectPath = next;
 
-      // Check if user needs onboarding:
-      // 1. No display_name in profile (new trigger sets NULL for invited users)
-      // 2. User still has invited_by metadata (hasn't completed onboarding yet)
+      // Check if user needs onboarding or is in recovery flow
       if (data.user) {
         const adminClient = createAdminClient();
         const { data: profile } = await adminClient
@@ -62,6 +60,9 @@ export async function GET(request: NextRequest) {
 
         if (!profile?.display_name || isInvitedAndNotOnboarded) {
           redirectPath = '/onboarding';
+        } else if (data.session?.user?.recovery_sent_at) {
+          // User came from a recovery link — redirect to update-password
+          redirectPath = '/update-password';
         }
       }
 

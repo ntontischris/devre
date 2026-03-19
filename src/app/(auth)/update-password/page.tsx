@@ -28,15 +28,40 @@ export default function UpdatePasswordPage() {
   // Verify session exists before showing the form
   useEffect(() => {
     const supabase = createClient();
+
+    // Check existing session
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        toast.error(t('sessionExpired'));
-        router.replace('/forgot-password');
-      } else {
+      if (user) {
         setHasSession(true);
+        setIsChecking(false);
       }
-      setIsChecking(false);
     });
+
+    // Listen for auth events — recovery session may arrive after page load
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+        setHasSession(true);
+        setIsChecking(false);
+      }
+    });
+
+    // Timeout: if no session after 5 seconds, redirect to forgot-password
+    const timeout = setTimeout(() => {
+      setIsChecking((prev) => {
+        if (prev) {
+          toast.error(t('sessionExpired'));
+          router.replace('/forgot-password');
+        }
+        return false;
+      });
+    }, 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, [router, t]);
 
   const {
