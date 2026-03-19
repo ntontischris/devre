@@ -55,72 +55,51 @@ export function ProjectList({ projects }: ProjectListProps) {
   const columns: ColumnDef<ProjectWithClient>[] = [
     {
       accessorKey: 'title',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('projectName')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('projectName')} />,
       cell: ({ row }) => (
-        <Link
-          href={`/admin/projects/${row.original.id}`}
-          className="font-medium hover:underline"
-        >
+        <Link href={`/admin/projects/${row.original.id}`} className="font-medium hover:underline">
           {row.original.title}
         </Link>
       ),
     },
     {
       accessorKey: 'client',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('client')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('client')} />,
       cell: ({ row }) => (
         <div className="text-sm">
-          {row.original.client.company_name || row.original.client.contact_name}
+          {row.original.client?.company_name || row.original.client?.contact_name || '-'}
         </div>
       ),
     },
     {
       accessorKey: 'project_type',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('projectType')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('projectType')} />,
       cell: ({ row }) => (
-        <div className="text-sm">
-          {PROJECT_TYPE_LABELS[row.original.project_type]}
-        </div>
+        <div className="text-sm">{PROJECT_TYPE_LABELS[row.original.project_type]}</div>
       ),
     },
     {
       accessorKey: 'status',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('projectStatus')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('projectStatus')} />,
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       accessorKey: 'priority',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={tc('priority')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={tc('priority')} />,
       cell: ({ row }) => <StatusBadge status={row.original.priority} />,
     },
     {
       accessorKey: 'deadline',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('endDate')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('endDate')} />,
       cell: ({ row }) => (
         <div className="text-sm">
-          {row.original.deadline
-            ? format(new Date(row.original.deadline), 'MMM d, yyyy')
-            : '-'}
+          {row.original.deadline ? format(new Date(row.original.deadline), 'MMM d, yyyy') : '-'}
         </div>
       ),
     },
     {
       accessorKey: 'budget',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('budget')} />
-      ),
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('budget')} />,
       cell: ({ row }) => (
         <div className="text-sm">
           {row.original.budget
@@ -179,7 +158,7 @@ export function ProjectList({ projects }: ProjectListProps) {
         columns={columns}
         data={projects}
         searchKey="title"
-        searchPlaceholder={tc('searchPlaceholder')}
+        searchPlaceholder={tc('searchPlaceholder', { item: t('title').toLowerCase() })}
         mobileHiddenColumns={['project_type', 'priority', 'deadline', 'budget']}
       />
 
