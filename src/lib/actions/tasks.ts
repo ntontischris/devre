@@ -5,7 +5,11 @@ import { createTaskSchema, updateTaskSchema } from '@/lib/schemas/task';
 import type { ActionResult, Task } from '@/types/index';
 import type { TaskStatus } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
-import { createNotification } from '@/lib/actions/notifications';
+import {
+  createNotification,
+  createNotificationForMany,
+  getAdminUserIds,
+} from '@/lib/actions/notifications';
 import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 
 export async function getTasksByProject(projectId: string): Promise<ActionResult<Task[]>> {
@@ -183,13 +187,22 @@ export async function updateTaskStatus(
     revalidatePath('/employee/tasks');
     revalidatePath('/employee/dashboard');
 
-    // Notify assigned employee about status change (if someone else changed it)
+    // Notify based on who changed the status
     if (data.assigned_to && data.assigned_to !== user.id) {
+      // Admin changed status → notify assigned employee
       createNotification({
         userId: data.assigned_to,
         type: NOTIFICATION_TYPES.TASK_UPDATED,
         title: `Task "${data.title}" status changed to ${status}`,
         actionUrl: `/employee/tasks/${data.id}`,
+      });
+    } else if (data.assigned_to === user.id) {
+      // Employee changed status → notify all admins
+      const adminIds = await getAdminUserIds();
+      createNotificationForMany(adminIds, {
+        type: NOTIFICATION_TYPES.TASK_UPDATED,
+        title: `Task "${data.title}" marked as ${status}`,
+        actionUrl: `/admin/projects/${data.project_id}?tab=tasks`,
       });
     }
 
