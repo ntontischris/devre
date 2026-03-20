@@ -734,7 +734,19 @@
     "project": "Production",
     "processing": "Processing...",
     "subtotal": "Subtotal",
-    "totalDue": "Total Due"
+    "totalDue": "Total Due",
+    "searchClient": "Search client...",
+    "allClients": "All",
+    "withBalance": "With balance",
+    "withOverdue": "With overdue",
+    "totalInvoiced": "Invoiced",
+    "totalPaid": "Paid",
+    "balance": "Balance",
+    "invoiceCount": "{count} invoices",
+    "invoiceCountOne": "{count} invoice",
+    "overdueCount": "{count} overdue",
+    "noClientsFound": "No clients found",
+    "noClientsWithInvoices": "No clients with invoices"
   },
 
   "contracts": {
@@ -758,6 +770,10 @@
     "clearSignature": "Clear",
     "iAgree": "I agree to the terms and conditions",
     "contractCreated": "Contract created",
+    "scopeDescription": "Scope Description",
+    "scopeDescriptionPlaceholder": "Detailed description of services to be provided...",
+    "specialTerms": "Special Terms",
+    "specialTermsPlaceholder": "Special terms for this contract...",
     "contractSent": "Contract sent for signature",
     "contractSigned": "Contract signed successfully",
     "templates": "Templates",

@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -94,8 +95,10 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
       project_id: project.id,
       client_id: project.client_id ?? undefined,
       service_type: '',
+      scope_description: '',
       agreed_amount: undefined,
       payment_method: undefined,
+      special_terms: '',
       expires_at: '',
     },
   });
@@ -121,8 +124,10 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
       project_id: data.project_id,
       client_id: data.client_id,
       service_type: data.service_type,
+      scope_description: data.scope_description || undefined,
       agreed_amount: Number(data.agreed_amount),
       payment_method: data.payment_method,
+      special_terms: data.special_terms || undefined,
       expires_at: data.expires_at || undefined,
     });
 
@@ -204,6 +209,13 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
                 label="Scope of Services"
                 value={vals.service_type || '—'}
               />
+              {vals.scope_description && (
+                <DetailRow
+                  icon={<Briefcase className="h-3.5 w-3.5" />}
+                  label="Scope Description"
+                  value={vals.scope_description}
+                />
+              )}
               <DetailRow
                 icon={<CreditCard className="h-3.5 w-3.5" />}
                 label="Total Amount"
@@ -215,6 +227,13 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
                 label="Payment Method"
                 value={PAYMENT_LABEL[vals.payment_method ?? ''] ?? '—'}
               />
+              {vals.special_terms && (
+                <DetailRow
+                  icon={<FileSignature className="h-3.5 w-3.5" />}
+                  label="Special Terms"
+                  value={vals.special_terms}
+                />
+              )}
               {vals.expires_at && (
                 <DetailRow
                   icon={<Calendar className="h-3.5 w-3.5" />}
@@ -346,6 +365,20 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
           )}
         </div>
 
+        {/* Scope Description */}
+        <div className="space-y-2">
+          <Label htmlFor="scope_description">{t('scopeDescription')}</Label>
+          <Textarea
+            id="scope_description"
+            {...register('scope_description')}
+            placeholder={t('scopeDescriptionPlaceholder')}
+            rows={4}
+          />
+          {errors.scope_description && (
+            <p className="text-sm text-red-500">{errors.scope_description.message}</p>
+          )}
+        </div>
+
         {/* Amount + Payment Method */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -391,6 +424,20 @@ export function ContractCreator({ project, onSuccess, onCancel }: ContractCreato
               <p className="text-sm text-red-600">{errors.payment_method.message}</p>
             )}
           </div>
+        </div>
+
+        {/* Special Terms */}
+        <div className="space-y-2">
+          <Label htmlFor="special_terms">{t('specialTerms')}</Label>
+          <Textarea
+            id="special_terms"
+            {...register('special_terms')}
+            placeholder={t('specialTermsPlaceholder')}
+            rows={4}
+          />
+          {errors.special_terms && (
+            <p className="text-sm text-red-500">{errors.special_terms.message}</p>
+          )}
         </div>
 
         {/* Signature Deadline */}

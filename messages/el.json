@@ -734,7 +734,19 @@
     "project": "Παραγωγή",
     "processing": "Επεξεργασία...",
     "subtotal": "Υποσύνολο",
-    "totalDue": "Σύνολο Οφειλής"
+    "totalDue": "Σύνολο Οφειλής",
+    "searchClient": "Αναζήτηση πελάτη...",
+    "allClients": "Όλοι",
+    "withBalance": "Με υπόλοιπο",
+    "withOverdue": "Με ληξιπρόθεσμα",
+    "totalInvoiced": "Τιμολογημένα",
+    "totalPaid": "Πληρωμένα",
+    "balance": "Υπόλοιπο",
+    "invoiceCount": "{count} τιμολόγια",
+    "invoiceCountOne": "{count} τιμολόγιο",
+    "overdueCount": "{count} ληξιπρόθεσμα",
+    "noClientsFound": "Δεν βρέθηκαν πελάτες",
+    "noClientsWithInvoices": "Δεν υπάρχουν πελάτες με τιμολόγια"
   },
 
   "contracts": {
@@ -758,6 +770,10 @@
     "clearSignature": "Καθαρισμός",
     "iAgree": "Συμφωνώ με τους όρους και τις προϋποθέσεις",
     "contractCreated": "Το συμβόλαιο δημιουργήθηκε",
+    "scopeDescription": "Περιγραφή Υπηρεσιών",
+    "scopeDescriptionPlaceholder": "Αναλυτική περιγραφή των υπηρεσιών που θα παρασχεθούν...",
+    "specialTerms": "Ειδικοί Όροι",
+    "specialTermsPlaceholder": "Ειδικοί όροι για αυτή τη σύμβαση...",
     "contractSent": "Το συμβόλαιο εστάλη για υπογραφή",
     "contractSigned": "Το συμβόλαιο υπογράφηκε",
     "templates": "Πρότυπα",
