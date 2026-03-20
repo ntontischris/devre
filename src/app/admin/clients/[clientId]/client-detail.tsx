@@ -32,18 +32,8 @@ import { deleteClient } from '@/lib/actions/clients';
 import { inviteClient } from '@/lib/actions/auth';
 import { toast } from 'sonner';
 
-type ContractItem = {
-  id: string;
-  title: string;
-  status: string;
-  project: { title: string } | null;
-  created_at: string;
-  signed_at: string | null;
-};
-
 interface ClientDetailProps {
   client: Client;
-  contracts: ContractItem[];
   stats: {
     totalProjects: number;
     totalInvoiced: number;
@@ -51,7 +41,7 @@ interface ClientDetailProps {
   };
 }
 
-export function ClientDetail({ client, contracts, stats }: ClientDetailProps) {
+export function ClientDetail({ client, stats }: ClientDetailProps) {
   const t = useTranslations('clients');
   const tc = useTranslations('common');
   const router = useRouter();
@@ -300,7 +290,7 @@ export function ClientDetail({ client, contracts, stats }: ClientDetailProps) {
         </TabsContent>
 
         <TabsContent value="contracts">
-          <ClientContractsTab clientId={client.id} contracts={contracts} />
+          <ClientContractsTab clientId={client.id} refreshKey={0} />
         </TabsContent>
 
         <TabsContent value="activity">

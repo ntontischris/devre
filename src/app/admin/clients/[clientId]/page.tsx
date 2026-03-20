@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getClient } from '@/lib/actions/clients';
-import { getContractsByClient } from '@/lib/actions/contracts';
 import { getProjects } from '@/lib/actions/projects';
 import { getInvoices } from '@/lib/actions/invoices';
 import { Client } from '@/types/index';
@@ -33,9 +32,8 @@ export async function generateMetadata({ params }: ClientDetailPageProps): Promi
 
 export default async function ClientDetailPage({ params }: ClientDetailPageProps) {
   const { clientId } = await params;
-  const [clientResult, contractsResult, projectsResult, invoicesResult] = await Promise.all([
+  const [clientResult, projectsResult, invoicesResult] = await Promise.all([
     getClient(clientId),
-    getContractsByClient(clientId),
     getProjects({ client_id: clientId }),
     getInvoices({ client_id: clientId }),
   ]);
@@ -45,15 +43,6 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
   }
 
   const client = clientResult.data as Client;
-  const contracts = (contractsResult.data ?? []) as unknown as Array<{
-    id: string;
-    title: string;
-    status: string;
-    project: { title: string } | null;
-    created_at: string;
-    signed_at: string | null;
-  }>;
-
   const projects = projectsResult.data ?? [];
   const invoices = invoicesResult.data ?? [];
 
@@ -65,7 +54,6 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
   return (
     <ClientDetail
       client={client}
-      contracts={contracts}
       stats={{
         totalProjects: projects.length,
         totalInvoiced,
