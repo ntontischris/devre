@@ -16,8 +16,16 @@ export default async function ClientInvoicesPage() {
     redirect('/login');
   }
 
+  // Get client record for this user to filter invoices
+  const { data: clientRecord } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
+
   const invoicesResult = await getInvoices({
     status: ['sent', 'viewed', 'overdue', 'paid', 'cancelled'],
+    ...(clientRecord?.id && { client_id: clientRecord.id }),
   });
   const invoices = (invoicesResult.data ?? []) as import('@/types').InvoiceWithRelations[];
 
