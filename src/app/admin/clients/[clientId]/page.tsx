@@ -19,19 +19,16 @@ export async function generateMetadata({ params }: ClientDetailPageProps): Promi
   const t = await getTranslations('clients');
 
   if (result.error || !result.data) {
-    return {
-      title: t('clientDetails'),
-    };
+    return { title: t('clientDetails') };
   }
 
-  const client = result.data as Client;
-  return {
-    title: client.contact_name,
-  };
+  return { title: (result.data as Client).contact_name };
 }
 
 export default async function ClientDetailPage({ params }: ClientDetailPageProps) {
   const { clientId } = await params;
+
+  // Fetch client + lightweight stats only — tabs fetch their own data lazily
   const [clientResult, projectsResult, invoicesResult] = await Promise.all([
     getClient(clientId),
     getProjects({ client_id: clientId }),
@@ -43,9 +40,7 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
   }
 
   const client = clientResult.data as Client;
-  const projects = projectsResult.data ?? [];
   const invoices = invoicesResult.data ?? [];
-
   const totalInvoiced = invoices.reduce((sum, inv) => sum + (inv.total ?? 0), 0);
   const totalPaid = invoices
     .filter((inv) => inv.status === 'paid')
@@ -55,7 +50,7 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
     <ClientDetail
       client={client}
       stats={{
-        totalProjects: projects.length,
+        totalProjects: (projectsResult.data ?? []).length,
         totalInvoiced,
         totalPaid,
       }}
