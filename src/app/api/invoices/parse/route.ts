@@ -1,16 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { parseInvoiceText } from '@/lib/invoice-parser';
+import { openai } from '@ai-sdk/openai';
+import { generateObject } from 'ai';
+import { z } from 'zod';
 import type { ParsedInvoice } from '@/lib/invoice-parser';
 
 export const maxDuration = 60;
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const parsedInvoiceSchema = z.object({
+  date: z.string().nullable().describe('Invoice date in YYYY-MM-DD format'),
+  invoiceNumber: z.string().nullable().describe('Invoice number (Α.Α.)'),
+  invoiceType: z.string().nullable().describe('Invoice type: ΤΠΥ, ΤΔΑ, ΑΠΥ, etc.'),
+  mark: z.string().nullable().describe('ΜΑΡΚ number from myDATA (long digit sequence)'),
+  issuerName: z.string().nullable().describe('Issuer company name (Επωνυμία εκδότη)'),
+  issuerAfm: z.string().nullable().describe('Issuer tax ID (ΑΦΜ εκδότη, 9 digits)'),
+  customerName: z.string().nullable().describe('Customer company name (Επωνυμία πελάτη)'),
+  customerAfm: z.string().nullable().describe('Customer tax ID (ΑΦΜ πελάτη, 9 digits)'),
+  description: z.string().nullable().describe('Service/product description'),
+  netAmount: z.number().nullable().describe('Net amount before VAT (Καθαρή αξία)'),
+  vatPercent: z.number().nullable().describe('VAT percentage (e.g. 24)'),
+  vatAmount: z.number().nullable().describe('VAT amount (Ποσό ΦΠΑ)'),
+  totalAmount: z.number().nullable().describe('Total payable amount (Πληρωτέο)'),
+});
 
 export async function POST(
   request: NextRequest,
 ): Promise<NextResponse<ParsedInvoice | { error: string }>> {
   try {
+    // Auth check
     const supabase = await createClient();
     const {
       data: { user },
@@ -29,135 +46,49 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const formData = await request.formData();
-    const file = formData.get('file');
+    const body = await request.json();
+    const { image } = body as { image: string };
 
-    if (!file || !(file instanceof Blob)) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    if (!image) {
+      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 });
-    }
+    // Call GPT-4o-mini with vision to extract invoice data
+    const { object } = await generateObject({
+      model: openai('gpt-4o-mini'),
+      schema: parsedInvoiceSchema,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: `Extract all invoice data from this Greek invoice image.
+This is a Greek tax invoice (τιμολόγιο). Extract:
+- Date (ημερομηνία) in YYYY-MM-DD format
+- Invoice number (Α.Α.) and type (ΤΠΥ/ΤΔΑ/ΑΠΥ)
+- ΜΑΡΚ number (long digit sequence from myDATA)
+- Issuer name and AFM (ΑΦΜ, 9 digits)
+- Customer name and AFM
+- Description of services/products
+- Net amount (Καθαρή αξία), VAT % and amount, Total (Πληρωτέο)
+Return null for any field you cannot find.`,
+            },
+            {
+              type: 'image',
+              image: `data:image/png;base64,${image}`,
+            },
+          ],
+        },
+      ],
+    });
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    // Strategy 1: Try text layer extraction (fast, for digital PDFs)
-    let text = await extractTextLayer(buffer);
-
-    // Check if text layer returned valid Greek text (not garbled font encoding)
-    if (!hasValidGreekText(text)) {
-      console.log('Text layer invalid or garbled, falling back to OCR...');
-      text = '';
-    }
-
-    // Strategy 2: OCR fallback (for scanned PDFs or garbled text layers)
-    if (text.length < 50) {
-      console.log('Starting OCR fallback...');
-      text = await ocrFallback(buffer);
-      console.log('OCR result length:', text.length);
-      console.log('OCR text:', text.slice(0, 500));
-    }
-
-    // If still no text, return empty result — user fills form manually
-    if (text.length < 50) {
-      const empty: ParsedInvoice = {
-        date: null,
-        invoiceNumber: null,
-        invoiceType: null,
-        mark: null,
-        issuerName: null,
-        issuerAfm: null,
-        customerName: null,
-        customerAfm: null,
-        description: null,
-        netAmount: null,
-        vatPercent: null,
-        vatAmount: null,
-        totalAmount: null,
-      };
-      return NextResponse.json(empty);
-    }
-
-    const parsed = parseInvoiceText(text);
-    console.log('Parsed result:', JSON.stringify(parsed, null, 2));
-    return NextResponse.json(parsed);
+    return NextResponse.json(object as ParsedInvoice);
   } catch (err: unknown) {
     console.error('Invoice parse error:', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Failed to parse invoice' },
       { status: 500 },
     );
-  }
-}
-
-/**
- * Check if text contains actual Greek Unicode characters (Α-Ω, α-ω).
- * PDFs with custom font encoding return garbled Latin Extended characters instead.
- */
-function hasValidGreekText(text: string): boolean {
-  const greekChars = text.match(/[\u0370-\u03FF\u1F00-\u1FFF]/g);
-  return (greekChars?.length ?? 0) > 10;
-}
-
-/** Extract text layer from PDF using pdfjs-dist (no canvas needed) */
-async function extractTextLayer(buffer: Buffer): Promise<string> {
-  try {
-    // @ts-expect-error — pdfjs-dist ESM module, no matching .d.ts for .mjs path
-    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
-
-    const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
-    const textParts: string[] = [];
-
-    for (let i = 1; i <= doc.numPages; i++) {
-      const page = await doc.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items
-        .filter(
-          (item: unknown): item is { str: string } =>
-            typeof item === 'object' && item !== null && 'str' in item,
-        )
-        .map((item: { str: string }) => item.str)
-        .join(' ');
-      textParts.push(pageText);
-    }
-
-    return textParts.join('\n');
-  } catch (err) {
-    console.error('PDF text extraction failed:', err);
-    return '';
-  }
-}
-
-/** OCR fallback: call Python pytesseract via subprocess (reliable for Greek invoices) */
-async function ocrFallback(buffer: Buffer): Promise<string> {
-  const { writeFile, unlink } = await import('fs/promises');
-  const { execFile } = await import('child_process');
-  const { promisify } = await import('util');
-  const path = await import('path');
-  const os = await import('os');
-
-  const execFileAsync = promisify(execFile);
-  const tmpPath = path.join(os.tmpdir(), `invoice-${Date.now()}.pdf`);
-
-  try {
-    await writeFile(tmpPath, buffer);
-
-    const scriptPath = path.join(process.cwd(), 'scripts', 'ocr-invoice.py');
-    const { stdout } = await execFileAsync('python', [scriptPath, tmpPath], {
-      timeout: 60000,
-      maxBuffer: 10 * 1024 * 1024,
-    });
-
-    return stdout;
-  } catch (err) {
-    console.error('OCR fallback failed:', err);
-    return '';
-  } finally {
-    try {
-      await unlink(tmpPath);
-    } catch {
-      // ignore cleanup errors
-    }
   }
 }
