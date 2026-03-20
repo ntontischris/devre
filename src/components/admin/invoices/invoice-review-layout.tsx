@@ -16,26 +16,12 @@ import {
 import { PdfPreview } from '@/components/shared/pdf-preview';
 import { Loader2 } from 'lucide-react';
 
-interface ReviewFormValues {
-  issue_date: string;
-  due_date: string;
-  description: string;
-  net_amount: number;
-  vat_percent: number;
-  vat_amount: number;
-  total_amount: number;
-  project_id?: string;
-  notes?: string;
-  invoice_number?: string;
-  invoice_type?: string;
-  mark?: string;
-  issuer_name?: string;
-  issuer_afm?: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ReviewForm = UseFormReturn<any>;
 
 interface InvoiceReviewLayoutProps {
   file: File;
-  form: UseFormReturn<ReviewFormValues>;
+  form: ReviewForm;
   projects: { id: string; title: string }[];
   isSaving: boolean;
   onSubmit: () => void;

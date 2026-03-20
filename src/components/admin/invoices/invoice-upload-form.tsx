@@ -25,10 +25,10 @@ const reviewFormSchema = z.object({
   issue_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
   due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
   description: z.string().min(1, 'Description is required'),
-  net_amount: z.number().min(0),
-  vat_percent: z.number().min(0).max(100),
-  vat_amount: z.number().min(0),
-  total_amount: z.number().min(0),
+  net_amount: z.coerce.number().min(0),
+  vat_percent: z.coerce.number().min(0).max(100),
+  vat_amount: z.coerce.number().min(0),
+  total_amount: z.coerce.number().min(0),
   project_id: z.string().uuid().optional().or(z.literal('')),
   notes: z.string().max(2000).optional(),
   invoice_number: z.string().optional(),
@@ -38,7 +38,8 @@ const reviewFormSchema = z.object({
   issuer_afm: z.string().optional(),
 });
 
-type ReviewFormValues = z.infer<typeof reviewFormSchema>;
+// Use output type (coerced numbers are `number`, not `unknown`)
+type ReviewFormValues = z.output<typeof reviewFormSchema>;
 
 /** Compute due_date as issue_date + 30 days */
 function addDays(dateStr: string, days: number): string {
@@ -111,60 +112,66 @@ export function InvoiceUploadForm({
     }
   };
 
-  const handleSave = form.handleSubmit(async (values) => {
-    if (!file) return;
-    setIsSaving(true);
+  const handleSave = form.handleSubmit(
+    async (values) => {
+      if (!file) return;
+      setIsSaving(true);
 
-    try {
-      // 1. Upload PDF to Supabase Storage from browser
-      const supabase = createClient();
-      const invoiceId = crypto.randomUUID();
-      const storagePath = `${clientId}/${invoiceId}.pdf`;
+      try {
+        // 1. Upload PDF to Supabase Storage from browser
+        const supabase = createClient();
+        const invoiceId = crypto.randomUUID();
+        const storagePath = `${clientId}/${invoiceId}.pdf`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('invoices')
-        .upload(storagePath, file, { contentType: 'application/pdf' });
+        const { error: uploadError } = await supabase.storage
+          .from('invoices')
+          .upload(storagePath, file, { contentType: 'application/pdf' });
 
-      let filePath: string | null = storagePath;
-      if (uploadError) {
-        console.error('Storage upload failed:', uploadError);
-        toast.error('PDF upload failed — invoice will be saved without file');
-        filePath = null;
+        let filePath: string | null = storagePath;
+        if (uploadError) {
+          console.error('Storage upload failed:', uploadError);
+          toast.error('PDF upload failed — invoice will be saved without file');
+          filePath = null;
+        }
+
+        // 2. Synthesize line item from parsed amounts
+        const lineItem = {
+          description: values.description || 'Υπηρεσία',
+          quantity: 1,
+          unit_price: values.net_amount,
+        };
+
+        // 3. Call createInvoice server action
+        const result = await createInvoice({
+          client_id: clientId,
+          project_id: values.project_id || undefined,
+          issue_date: values.issue_date,
+          due_date: values.due_date || values.issue_date,
+          line_items: [lineItem],
+          tax_rate: values.vat_percent,
+          notes: values.notes || undefined,
+          file_path: filePath,
+        });
+
+        if (result.error) {
+          toast.error(result.error);
+          return;
+        }
+
+        toast.success('Invoice created');
+        onSuccess();
+      } catch (err) {
+        console.error('Save error:', err);
+        toast.error('Failed to save invoice');
+      } finally {
+        setIsSaving(false);
       }
-
-      // 2. Synthesize line item from parsed amounts
-      const lineItem = {
-        description: values.description || 'Υπηρεσία',
-        quantity: 1,
-        unit_price: values.net_amount,
-      };
-
-      // 3. Call createInvoice server action
-      const result = await createInvoice({
-        client_id: clientId,
-        project_id: values.project_id || undefined,
-        issue_date: values.issue_date,
-        due_date: values.due_date || values.issue_date,
-        line_items: [lineItem],
-        tax_rate: values.vat_percent,
-        notes: values.notes || undefined,
-        file_path: filePath,
-      });
-
-      if (result.error) {
-        toast.error(result.error);
-        return;
-      }
-
-      toast.success('Invoice created');
-      onSuccess();
-    } catch (err) {
-      console.error('Save error:', err);
-      toast.error('Failed to save invoice');
-    } finally {
-      setIsSaving(false);
-    }
-  });
+    },
+    (errors) => {
+      console.error('Form validation errors:', errors);
+      toast.error('Ελέγξτε τα πεδία της φόρμας');
+    },
+  );
 
   const handleChangeFile = () => {
     setStep('upload');
