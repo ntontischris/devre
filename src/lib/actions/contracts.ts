@@ -137,10 +137,23 @@ export async function getMyContracts(): Promise<ActionResult<ContractWithProject
     } = await supabase.auth.getUser();
     if (!user) return { data: null, error: 'User not authenticated' };
 
-    const { data, error } = await supabase
+    // Get client record for this user
+    const { data: clientRecord } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    let query = supabase
       .from('contracts')
       .select('*, project:projects(title)')
       .order('created_at', { ascending: false });
+
+    if (clientRecord?.id) {
+      query = query.eq('client_id', clientRecord.id);
+    }
+
+    const { data, error } = await query;
 
     if (error) return { data: null, error: error.message };
     return { data: data as ContractWithProject[], error: null };

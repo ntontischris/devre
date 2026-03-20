@@ -23,12 +23,22 @@ export default async function ClientDashboardPage() {
     redirect('/login');
   }
 
-  // Fetch client's data
-  const projectsResult = await getProjects();
+  // Get client record for this user
+  const { data: clientRecord } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
+
+  const clientId = clientRecord?.id;
+
+  // Fetch client's data — filtered by client_id
+  const projectsResult = await getProjects({ client_id: clientId });
   const projects = projectsResult.data ?? [];
 
   const invoicesResult = await getInvoices({
     status: ['sent', 'viewed', 'overdue', 'paid', 'cancelled'],
+    ...(clientId && { client_id: clientId }),
   });
   const invoices = (invoicesResult.data ?? []) as import('@/types').InvoiceWithRelations[];
 

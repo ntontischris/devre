@@ -17,8 +17,15 @@ export default async function ClientProjectsPage() {
     redirect('/login');
   }
 
+  // Get client record for this user
+  const { data: clientRecord } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
+
   const [projectsResult, requestsResult] = await Promise.all([
-    getProjects(),
+    getProjects({ client_id: clientRecord?.id }),
     getClientFilmingRequests(),
   ]);
 
