@@ -5,9 +5,20 @@ import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/shared/data-table';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
 import { INVOICE_STATUSES, INVOICE_STATUS_LABELS } from '@/lib/constants';
@@ -47,7 +58,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
 
   const filteredInvoices = React.useMemo(() => {
     if (statusFilter === 'all') return initialInvoices;
-    return initialInvoices.filter(invoice => invoice.status === statusFilter);
+    return initialInvoices.filter((invoice) => invoice.status === statusFilter);
   }, [initialInvoices, statusFilter]);
 
   const handleDelete = async () => {
@@ -85,7 +96,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
       header: tc('client'),
       cell: ({ row }) => {
         const client = row.original.client;
-        return client.company_name || client.contact_name;
+        return client?.company_name || client?.contact_name || '—';
       },
     },
     {
