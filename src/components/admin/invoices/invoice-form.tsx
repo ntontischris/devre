@@ -61,11 +61,18 @@ interface InvoiceFormProps {
   clients: ClientOption[];
   projects: ProjectOption[];
   nextInvoiceNumber: string;
+  onSuccess?: () => void;
 }
 
 type FormData = z.input<typeof createInvoiceSchema>;
 
-export function InvoiceForm({ invoice, clients, projects, nextInvoiceNumber }: InvoiceFormProps) {
+export function InvoiceForm({
+  invoice,
+  clients,
+  projects,
+  nextInvoiceNumber,
+  onSuccess,
+}: InvoiceFormProps) {
   const router = useRouter();
   const t = useTranslations('invoices');
   const tc = useTranslations('common');
@@ -114,6 +121,10 @@ export function InvoiceForm({ invoice, clients, projects, nextInvoiceNumber }: I
       });
     } else {
       toast.success(invoice ? t('invoiceUpdated') : t('invoiceCreated'));
+      if (onSuccess) {
+        onSuccess();
+        return;
+      }
       router.push(`/admin/invoices/${result.data!.id}`);
       router.refresh();
     }

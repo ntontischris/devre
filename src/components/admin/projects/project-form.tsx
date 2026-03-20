@@ -5,12 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createProjectSchema } from '@/lib/schemas/project';
 import { ProjectWithClient, Client } from '@/types';
 import { createProject, updateProject } from '@/lib/actions/projects';
-import {
-  PROJECT_TYPES,
-  PROJECT_TYPE_LABELS,
-  PRIORITIES,
-  PRIORITY_LABELS,
-} from '@/lib/constants';
+import { PROJECT_TYPES, PROJECT_TYPE_LABELS, PRIORITIES, PRIORITY_LABELS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -37,11 +32,12 @@ import { useTranslations } from 'next-intl';
 interface ProjectFormProps {
   project?: ProjectWithClient;
   clients: Client[];
+  onSuccess?: () => void;
 }
 
 type FormData = z.input<typeof createProjectSchema>;
 
-export function ProjectForm({ project, clients }: ProjectFormProps) {
+export function ProjectForm({ project, clients, onSuccess }: ProjectFormProps) {
   const t = useTranslations('projects');
   const tc = useTranslations('common');
   const router = useRouter();
@@ -61,14 +57,14 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
   });
 
   const onSubmit = async (data: FormData) => {
-    const result = project
-      ? await updateProject(project.id, data)
-      : await createProject(data);
+    const result = project ? await updateProject(project.id, data) : await createProject(data);
 
     if (!result.error) {
-      toast.success(
-        project ? t('projectUpdated') : t('projectCreated')
-      );
+      toast.success(project ? t('projectUpdated') : t('projectCreated'));
+      if (onSuccess) {
+        onSuccess();
+        return;
+      }
       router.push('/admin/projects');
       router.refresh();
     } else {
@@ -100,11 +96,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             <FormItem>
               <FormLabel>{tc('description')}</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder={tc('description')}
-                  rows={4}
-                  {...field}
-                />
+                <Textarea placeholder={tc('description')} rows={4} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -143,10 +135,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('projectType')}</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t('projectType')} />
@@ -171,10 +160,7 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tc('priority')}</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={tc('priority')} />
@@ -253,14 +239,10 @@ export function ProjectForm({ project, clients }: ProjectFormProps) {
             {form.formState.isSubmitting
               ? tc('saving')
               : project
-              ? t('editProject')
-              : t('addProject')}
+                ? t('editProject')
+                : t('addProject')}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
+          <Button type="button" variant="outline" onClick={() => router.back()}>
             {tc('cancel')}
           </Button>
         </div>

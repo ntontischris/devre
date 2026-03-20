@@ -81,7 +81,6 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
         if (!isEditing && sendInvite) {
           const inviteResult = await inviteClient(data.email, data.contact_name);
           if (inviteResult.error) {
-            console.error('Invite failed:', inviteResult.error);
             toast.warning(t('inviteFailedWarning'));
           } else {
             toast.success(t('inviteSent'));
