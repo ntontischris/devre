@@ -55,6 +55,7 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     // Don't redirect if already on a public/auth route
     if (
+      pathname !== '/' &&
       !PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) &&
       !pathname.startsWith('/auth/')
     ) {
