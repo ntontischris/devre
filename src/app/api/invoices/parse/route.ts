@@ -6,7 +6,6 @@ import type { ParsedInvoice } from '@/lib/invoice-parser';
 export const maxDuration = 60;
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const MIN_TEXT_LENGTH = 50;
 
 export async function POST(
   request: NextRequest,
@@ -43,16 +42,25 @@ export async function POST(
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Strategy 1: Text layer extraction (fast, works for digital PDFs)
+    // Strategy 1: Try text layer extraction (fast, for digital PDFs)
     let text = await extractTextLayer(buffer);
 
-    // Strategy 2: OCR fallback (slow, for scanned PDFs)
-    if (text.length < MIN_TEXT_LENGTH) {
+    // Check if text layer returned valid Greek text (not garbled font encoding)
+    if (!hasValidGreekText(text)) {
+      console.log('Text layer invalid or garbled, falling back to OCR...');
+      text = '';
+    }
+
+    // Strategy 2: OCR fallback (for scanned PDFs or garbled text layers)
+    if (text.length < 50) {
+      console.log('Starting OCR fallback...');
       text = await ocrFallback(buffer);
+      console.log('OCR result length:', text.length);
+      console.log('OCR text:', text.slice(0, 500));
     }
 
     // If still no text, return empty result — user fills form manually
-    if (text.length < MIN_TEXT_LENGTH) {
+    if (text.length < 50) {
       const empty: ParsedInvoice = {
         date: null,
         invoiceNumber: null,
@@ -71,7 +79,9 @@ export async function POST(
       return NextResponse.json(empty);
     }
 
-    return NextResponse.json(parseInvoiceText(text));
+    const parsed = parseInvoiceText(text);
+    console.log('Parsed result:', JSON.stringify(parsed, null, 2));
+    return NextResponse.json(parsed);
   } catch (err: unknown) {
     console.error('Invoice parse error:', err);
     return NextResponse.json(
@@ -79,6 +89,15 @@ export async function POST(
       { status: 500 },
     );
   }
+}
+
+/**
+ * Check if text contains actual Greek Unicode characters (Α-Ω, α-ω).
+ * PDFs with custom font encoding return garbled Latin Extended characters instead.
+ */
+function hasValidGreekText(text: string): boolean {
+  const greekChars = text.match(/[\u0370-\u03FF\u1F00-\u1FFF]/g);
+  return (greekChars?.length ?? 0) > 10;
 }
 
 /** Extract text layer from PDF using pdfjs-dist (no canvas needed) */
