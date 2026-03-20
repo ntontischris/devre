@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -16,12 +17,13 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { PaymentActions } from '@/components/admin/invoices/payment-actions';
 import { deleteInvoice, updateInvoiceStatus } from '@/lib/actions/invoices';
+import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { Pencil, Trash2, Download } from 'lucide-react';
+import { Trash2, Download, Eye } from 'lucide-react';
 
 interface LineItem {
   description: string;
@@ -42,6 +44,7 @@ interface Invoice {
   total: number;
   notes?: string;
   currency: string;
+  file_path?: string | null;
   client: { id: string; contact_name: string; company_name?: string; email: string };
   project?: { id: string; title: string };
 }
@@ -60,6 +63,8 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
   const tc = useTranslations('common');
   const [invoice, setInvoice] = React.useState(initialInvoice);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [previewOpen, setPreviewOpen] = React.useState(false);
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
 
@@ -92,8 +97,34 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
     }
   };
 
-  const handleDownloadPDF = () => {
-    window.open(`/api/invoices/${invoice.id}/pdf`, '_blank');
+  const handlePreview = async () => {
+    if (invoice.file_path) {
+      const supabase = createClient();
+      const { data } = await supabase.storage
+        .from('invoices')
+        .createSignedUrl(invoice.file_path, 3600);
+      if (data?.signedUrl) {
+        setPreviewUrl(data.signedUrl);
+        setPreviewOpen(true);
+      }
+    } else {
+      setPreviewUrl(`/api/invoices/${invoice.id}/pdf`);
+      setPreviewOpen(true);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (invoice.file_path) {
+      const supabase = createClient();
+      const { data } = await supabase.storage
+        .from('invoices')
+        .createSignedUrl(invoice.file_path, 3600);
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank');
+      }
+    } else {
+      window.open(`/api/invoices/${invoice.id}/pdf`, '_blank');
+    }
   };
 
   const handleStatusChange = () => {
@@ -109,16 +140,14 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
             <p className="text-muted-foreground mt-2">{t('invoiceDetailsDescription')}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleDownloadPDF}>
-              <Download className="mr-2 h-4 w-4" />
-              {t('downloadPdf')}
+            <Button variant="outline" onClick={handlePreview}>
+              <Eye className="mr-2 h-4 w-4" />
+              Preview
             </Button>
-            <Link href={`/admin/invoices/${invoice.id}/edit`}>
-              <Button variant="outline">
-                <Pencil className="mr-2 h-4 w-4" />
-                {tc('edit')}
-              </Button>
-            </Link>
+            <Button variant="outline" onClick={handleDownload}>
+              <Download className="mr-2 h-4 w-4" />
+              Download
+            </Button>
             <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
               <Trash2 className="mr-2 h-4 w-4" />
               {tc('delete')}
@@ -172,21 +201,25 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">{t('clientName')}</p>
                 <p className="mt-1 font-medium">
-                  {invoice.client.company_name || invoice.client.contact_name}
+                  {invoice.client?.company_name || invoice.client?.contact_name || '—'}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">{t('contact')}</p>
-                <p className="mt-1">{invoice.client.contact_name}</p>
+                <p className="mt-1">{invoice.client?.contact_name || '—'}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">{tc('email')}</p>
-                <a
-                  href={`mailto:${invoice.client.email}`}
-                  className="mt-1 text-primary hover:underline"
-                >
-                  {invoice.client.email}
-                </a>
+                {invoice.client?.email ? (
+                  <a
+                    href={`mailto:${invoice.client.email}`}
+                    className="mt-1 text-primary hover:underline"
+                  >
+                    {invoice.client.email}
+                  </a>
+                ) : (
+                  <p className="mt-1">—</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -267,6 +300,22 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* PDF Preview Dialog */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-4xl h-[85vh]">
+          <DialogHeader>
+            <DialogTitle>{invoice.invoice_number} — Preview</DialogTitle>
+          </DialogHeader>
+          {previewUrl && (
+            <iframe
+              src={previewUrl}
+              className="w-full h-full rounded-md border"
+              title="Invoice Preview"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <ConfirmDialog
         open={deleteDialogOpen}

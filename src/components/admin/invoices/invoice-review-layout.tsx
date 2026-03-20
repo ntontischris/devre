@@ -82,7 +82,9 @@ export function InvoiceReviewLayout({
             <Label htmlFor="issue_date">Ημ. Έκδοσης</Label>
             <Input type="date" id="issue_date" {...form.register('issue_date')} />
             {form.formState.errors.issue_date && (
-              <p className="text-xs text-destructive">{form.formState.errors.issue_date.message}</p>
+              <p className="text-xs text-destructive">
+                {String(form.formState.errors.issue_date.message)}
+              </p>
             )}
           </div>
           <div className="space-y-1.5">
@@ -96,7 +98,9 @@ export function InvoiceReviewLayout({
           <Label htmlFor="description">Περιγραφή</Label>
           <Textarea id="description" rows={3} {...form.register('description')} />
           {form.formState.errors.description && (
-            <p className="text-xs text-destructive">{form.formState.errors.description.message}</p>
+            <p className="text-xs text-destructive">
+              {String(form.formState.errors.description.message)}
+            </p>
           )}
         </div>
 

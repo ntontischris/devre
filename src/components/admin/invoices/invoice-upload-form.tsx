@@ -60,7 +60,8 @@ export function InvoiceUploadForm({
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<ReviewFormValues>({
-    resolver: zodResolver(reviewFormSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(reviewFormSchema) as any,
     defaultValues: {
       issue_date: new Date().toISOString().slice(0, 10),
       due_date: addDays(new Date().toISOString().slice(0, 10), 30),
@@ -118,30 +119,30 @@ export function InvoiceUploadForm({
       setIsSaving(true);
 
       try {
-        // 1. Upload PDF to Supabase Storage from browser
+        // 1. Upload original PDF to Supabase Storage
         const supabase = createClient();
         const invoiceId = crypto.randomUUID();
         const storagePath = `${clientId}/${invoiceId}.pdf`;
 
+        console.log('Uploading PDF to storage...', storagePath);
         const { error: uploadError } = await supabase.storage
           .from('invoices')
           .upload(storagePath, file, { contentType: 'application/pdf' });
 
-        let filePath: string | null = storagePath;
         if (uploadError) {
           console.error('Storage upload failed:', uploadError);
-          toast.error('PDF upload failed — invoice will be saved without file');
-          filePath = null;
+          toast.error(`Upload failed: ${uploadError.message}`);
+          return;
         }
+        console.log('PDF uploaded successfully');
 
-        // 2. Synthesize line item from parsed amounts
+        // 2. Save invoice data
         const lineItem = {
           description: values.description || 'Υπηρεσία',
           quantity: 1,
           unit_price: values.net_amount,
         };
 
-        // 3. Call createInvoice server action
         const result = await createInvoice({
           client_id: clientId,
           project_id: values.project_id || undefined,
@@ -150,7 +151,7 @@ export function InvoiceUploadForm({
           line_items: [lineItem],
           tax_rate: values.vat_percent,
           notes: values.notes || undefined,
-          file_path: filePath,
+          file_path: storagePath,
         });
 
         if (result.error) {

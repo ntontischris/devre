@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { format } from 'date-fns';
-import { ArrowLeft, Download, CreditCard } from 'lucide-react';
+import { ArrowLeft, Download, CreditCard, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { createClient } from '@/lib/supabase/client';
 import type { InvoiceWithRelations, InvoiceLineItem } from '@/types';
 
 interface InvoiceDetailProps {
@@ -28,23 +30,38 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const router = useRouter();
   const t = useTranslations('invoices');
   const [loading, setLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handlePayment = async () => {
     setLoading(true);
-
-    // Placeholder for Stripe integration
-    // In production, this would redirect to Stripe Checkout
     toast.info(t('paymentComingSoon'));
-
-    // Simulated redirect to success page after delay
     setTimeout(() => {
       setLoading(false);
       router.push(`/client/invoices/${invoice.id}/success`);
     }, 2000);
   };
 
-  const handleDownloadPDF = () => {
-    window.open(`/api/invoices/${invoice.id}/pdf`, '_blank');
+  const getInvoiceUrl = async (): Promise<string> => {
+    if (invoice.file_path) {
+      const supabase = createClient();
+      const { data } = await supabase.storage
+        .from('invoices')
+        .createSignedUrl(invoice.file_path, 3600);
+      if (data?.signedUrl) return data.signedUrl;
+    }
+    return `/api/invoices/${invoice.id}/pdf`;
+  };
+
+  const handlePreview = async () => {
+    const url = await getInvoiceUrl();
+    setPreviewUrl(url);
+    setPreviewOpen(true);
+  };
+
+  const handleDownload = async () => {
+    const url = await getInvoiceUrl();
+    window.open(url, '_blank');
   };
 
   return (
@@ -63,9 +80,13 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleDownloadPDF} className="gap-2">
+          <Button variant="outline" onClick={handlePreview} className="gap-2">
+            <Eye className="h-4 w-4" />
+            Preview
+          </Button>
+          <Button variant="outline" onClick={handleDownload} className="gap-2">
             <Download className="h-4 w-4" />
-            {t('downloadPdf')}
+            Download
           </Button>
           {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
             <Button onClick={handlePayment} disabled={loading} className="gap-2">
@@ -188,6 +209,22 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* PDF Preview Dialog */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-4xl h-[85vh]">
+          <DialogHeader>
+            <DialogTitle>{invoice.invoice_number} — Preview</DialogTitle>
+          </DialogHeader>
+          {previewUrl && (
+            <iframe
+              src={previewUrl}
+              className="w-full h-full rounded-md border"
+              title="Invoice Preview"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

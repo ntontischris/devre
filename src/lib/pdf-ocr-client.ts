@@ -49,6 +49,7 @@ async function renderPdfPageToBase64(arrayBuffer: ArrayBuffer): Promise<string |
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // @ts-expect-error — pdfjs-dist types mismatch with browser CanvasRenderingContext2D
     await page.render({ canvasContext: ctx, viewport }).promise;
 
     const dataUrl = canvas.toDataURL('image/png');

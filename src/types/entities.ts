@@ -125,7 +125,6 @@ export type Invoice = {
   currency: string;
   line_items: InvoiceLineItem[];
   notes: string | null;
-  terms: string | null;
   sent_at: string | null;
   viewed_at: string | null;
   paid_at: string | null;

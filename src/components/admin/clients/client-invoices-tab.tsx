@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { format, isPast } from 'date-fns';
 import { toast } from 'sonner';
-import { Receipt, Plus, MoreHorizontal, Eye, Pencil, FileDown, CheckCircle } from 'lucide-react';
+import { Receipt, Plus, MoreHorizontal, Eye, FileDown, CheckCircle } from 'lucide-react';
 
 import { createClient } from '@/lib/supabase/client';
 import { getInvoices, getNextInvoiceNumber, updateInvoiceStatus } from '@/lib/actions/invoices';
@@ -254,12 +254,6 @@ function InvoiceActions({ invoice, onMarkAsPaid, onMarkAsUnpaid }: InvoiceAction
           <Link href={`/admin/invoices/${invoice.id}`}>
             <Eye className="mr-2 h-4 w-4" />
             View
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={`/admin/invoices/${invoice.id}/edit`}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
           </Link>
         </DropdownMenuItem>
         {invoice.file_path ? (

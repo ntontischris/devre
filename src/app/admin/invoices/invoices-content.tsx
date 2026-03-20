@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Eye, Trash2 } from 'lucide-react';
 import { INVOICE_STATUSES, INVOICE_STATUS_LABELS } from '@/lib/constants';
 import { deleteInvoice } from '@/lib/actions/invoices';
 import { toast } from 'sonner';
@@ -138,12 +138,6 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
                   {tc('view')}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/admin/invoices/${invoice.id}/edit`}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  {tc('edit')}
-                </Link>
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => {
@@ -165,12 +159,7 @@ export function InvoicesContent({ invoices: initialInvoices }: InvoicesContentPr
     <>
       <div className="space-y-6">
         <PageHeader title={t('title')}>
-          <Link href="/admin/invoices/new">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              {t('addInvoice')}
-            </Button>
-          </Link>
+          {/* Invoices are created from client detail page via upload */}
         </PageHeader>
 
         <div className="flex items-center gap-4">
