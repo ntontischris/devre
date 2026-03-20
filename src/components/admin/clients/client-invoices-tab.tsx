@@ -105,6 +105,24 @@ export function ClientInvoicesTab({ clientId, refreshKey, onOpenDrawer }: Client
     }
   };
 
+  const handleMarkAsUnpaid = async (invoiceId: string) => {
+    const previous = invoices.find((inv) => inv.id === invoiceId);
+    setInvoices((prev) =>
+      prev.map((inv) => (inv.id === invoiceId ? { ...inv, status: 'draft' as const } : inv)),
+    );
+    const result = await updateInvoiceStatus(invoiceId, 'draft');
+    if (result.error) {
+      if (previous) {
+        setInvoices((prev) =>
+          prev.map((inv) => (inv.id === invoiceId ? { ...inv, status: previous.status } : inv)),
+        );
+      }
+      toast.error(result.error);
+    } else {
+      toast.success('Invoice marked as unpaid');
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -174,7 +192,11 @@ export function ClientInvoicesTab({ clientId, refreshKey, onOpenDrawer }: Client
                     {format(new Date(invoice.due_date), 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell>
-                    <InvoiceActions invoice={invoice} onMarkAsPaid={handleMarkAsPaid} />
+                    <InvoiceActions
+                      invoice={invoice}
+                      onMarkAsPaid={handleMarkAsPaid}
+                      onMarkAsUnpaid={handleMarkAsUnpaid}
+                    />
                   </TableCell>
                 </TableRow>
               );
@@ -205,11 +227,10 @@ export function ClientInvoicesTab({ clientId, refreshKey, onOpenDrawer }: Client
 interface InvoiceActionsProps {
   invoice: InvoiceWithRelations;
   onMarkAsPaid: (id: string) => Promise<void>;
+  onMarkAsUnpaid: (id: string) => Promise<void>;
 }
 
-function InvoiceActions({ invoice, onMarkAsPaid }: InvoiceActionsProps) {
-  const canMarkAsPaid = invoice.status !== 'paid' && invoice.status !== 'cancelled';
-
+function InvoiceActions({ invoice, onMarkAsPaid, onMarkAsUnpaid }: InvoiceActionsProps) {
   const handleDownloadOriginal = async () => {
     const supabase = createClient();
     const { data } = await supabase.storage
@@ -241,26 +262,35 @@ function InvoiceActions({ invoice, onMarkAsPaid }: InvoiceActionsProps) {
             Edit
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <a href={`/api/invoices/pdf?id=${invoice.id}`} target="_blank" rel="noopener noreferrer">
-            <FileDown className="mr-2 h-4 w-4" />
-            Download PDF
-          </a>
-        </DropdownMenuItem>
-        {invoice.file_path && (
+        {invoice.file_path ? (
           <DropdownMenuItem onClick={handleDownloadOriginal}>
             <FileDown className="mr-2 h-4 w-4" />
-            Download Original
+            Download PDF
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem asChild>
+            <a
+              href={`/api/invoices/pdf?id=${invoice.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              Download PDF
+            </a>
           </DropdownMenuItem>
         )}
-        {canMarkAsPaid && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onMarkAsPaid(invoice.id)}>
-              <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
-              Mark as Paid
-            </DropdownMenuItem>
-          </>
+        <DropdownMenuSeparator />
+        {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
+          <DropdownMenuItem onClick={() => onMarkAsPaid(invoice.id)}>
+            <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+            Mark as Paid
+          </DropdownMenuItem>
+        )}
+        {invoice.status === 'paid' && (
+          <DropdownMenuItem onClick={() => onMarkAsUnpaid(invoice.id)}>
+            <CheckCircle className="mr-2 h-4 w-4 text-orange-500" />
+            Mark as Unpaid
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
