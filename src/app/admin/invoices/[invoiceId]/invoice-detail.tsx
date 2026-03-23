@@ -99,24 +99,37 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
     }
   };
 
+  const getInvoicePdfUrl = React.useCallback(async (): Promise<string | null> => {
+    if (invoice.file_path) {
+      console.log('[Invoice PDF] file_path exists:', invoice.file_path);
+      const supabase = createClient();
+      const { data, error } = await supabase.storage
+        .from('invoices')
+        .createSignedUrl(invoice.file_path, 3600);
+      console.log('[Invoice PDF] signedUrl result:', { url: data?.signedUrl?.slice(0, 80), error });
+      if (error || !data?.signedUrl) {
+        toast.error(t('pdfDownloadFailed'));
+        return null;
+      }
+      return data.signedUrl;
+    }
+    const url = `/api/invoices/${invoice.id}/pdf?t=${Date.now()}`;
+    console.log('[Invoice PDF] using API route:', url);
+    return url;
+  }, [invoice.file_path, invoice.id, t]);
+
   const handlePreview = async () => {
+    console.log('[Invoice PDF] handlePreview called');
     setIsPreviewLoading(true);
     try {
-      if (invoice.file_path) {
-        const supabase = createClient();
-        const { data, error } = await supabase.storage
-          .from('invoices')
-          .createSignedUrl(invoice.file_path, 3600);
-        if (error || !data?.signedUrl) {
-          toast.error(t('pdfDownloadFailed'));
-          return;
-        }
-        setPreviewUrl(data.signedUrl);
-      } else {
-        setPreviewUrl(`/api/invoices/${invoice.id}/pdf?t=${Date.now()}`);
+      const url = await getInvoicePdfUrl();
+      console.log('[Invoice PDF] preview url:', url?.slice(0, 80));
+      if (url) {
+        setPreviewUrl(url);
+        setPreviewOpen(true);
       }
-      setPreviewOpen(true);
-    } catch {
+    } catch (err) {
+      console.error('[Invoice PDF] preview error:', err);
       toast.error(t('pdfDownloadFailed'));
     } finally {
       setIsPreviewLoading(false);
@@ -124,22 +137,24 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
   };
 
   const handleDownload = async () => {
+    console.log('[Invoice PDF] handleDownload called');
     setIsDownloadLoading(true);
     try {
-      if (invoice.file_path) {
-        const supabase = createClient();
-        const { data, error } = await supabase.storage
-          .from('invoices')
-          .createSignedUrl(invoice.file_path, 3600);
-        if (error || !data?.signedUrl) {
-          toast.error(t('pdfDownloadFailed'));
-          return;
-        }
-        window.open(data.signedUrl, '_blank');
-      } else {
-        window.open(`/api/invoices/${invoice.id}/pdf?t=${Date.now()}`, '_blank');
+      const url = await getInvoicePdfUrl();
+      console.log('[Invoice PDF] download url:', url?.slice(0, 80));
+      if (url) {
+        // Use anchor element instead of window.open to avoid popup blockers
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        console.log('[Invoice PDF] download triggered via anchor');
       }
-    } catch {
+    } catch (err) {
+      console.error('[Invoice PDF] download error:', err);
       toast.error(t('pdfDownloadFailed'));
     } finally {
       setIsDownloadLoading(false);
@@ -148,7 +163,10 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
 
   const handlePreviewClose = (open: boolean) => {
     setPreviewOpen(open);
-    if (!open) setPreviewUrl(null);
+    if (!open) {
+      setPreviewUrl(null);
+      console.log('[Invoice PDF] preview dialog closed, url cleared');
+    }
   };
 
   const handleStatusChange = () => {
