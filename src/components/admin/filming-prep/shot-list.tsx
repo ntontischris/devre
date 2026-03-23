@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { getShotLists, createShotList, updateShotList } from '@/lib/actions/filming-prep';
 import type { Shot, ShotList as ShotListData } from '@/types';
@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/select';
 import { EmptyState } from '@/components/shared/empty-state';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
-import { Plus, Trash2, Camera } from 'lucide-react';
+import { Plus, Trash2, Camera, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ShotListProps {
@@ -107,16 +107,13 @@ export function ShotList({ projectId }: ShotListProps) {
         <CardTitle>{t('shotList')}</CardTitle>
         <CardDescription>{t('planAndTrackShots')}</CardDescription>
       </CardHeader>
-      <CardContent>
-        {activeShotList && <ShotListTable shotList={activeShotList} onUpdate={loadShotLists} />}
-      </CardContent>
+      <CardContent>{activeShotList && <ShotListTable shotList={activeShotList} />}</CardContent>
     </Card>
   );
 }
 
 interface ShotListTableProps {
   shotList: ShotListData;
-  onUpdate: () => void;
 }
 
 function ShotListTable({ shotList }: ShotListTableProps) {
@@ -124,22 +121,19 @@ function ShotListTable({ shotList }: ShotListTableProps) {
   const tc = useTranslations('common');
   const [shots, setShots] = useState<Shot[]>(shotList.shots || []);
   const [saving, setSaving] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
-  const debouncedSave = (updatedShots: Shot[]) => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  const handleSave = async () => {
+    setSaving(true);
+    const result = await updateShotList(shotList.id, { shots });
+    setSaving(false);
+
+    if (result.error) {
+      toast.error(t('failedToSaveShotList'));
+    } else {
+      setIsDirty(false);
+      toast.success(t('shotListSaved'));
     }
-
-    saveTimeoutRef.current = setTimeout(async () => {
-      setSaving(true);
-      const result = await updateShotList(shotList.id, { shots: updatedShots });
-      setSaving(false);
-
-      if (result.error) {
-        toast.error(t('failedToSaveShotList'));
-      }
-    }, 500);
   };
 
   const addShot = () => {
@@ -152,43 +146,28 @@ function ShotListTable({ shotList }: ShotListTableProps) {
       notes: '',
       completed: false,
     };
-
-    const updatedShots = [...shots, newShot];
-    setShots(updatedShots);
-    debouncedSave(updatedShots);
+    setShots((prev) => [...prev, newShot]);
+    setIsDirty(true);
   };
 
   const updateShot = (index: number, updates: Partial<Shot>) => {
-    const updatedShots = shots.map((shot, i) => {
-      if (i === index) {
-        return { ...shot, ...updates };
-      }
-      return shot;
-    });
-    setShots(updatedShots);
-    debouncedSave(updatedShots);
+    setShots((prev) => prev.map((shot, i) => (i === index ? { ...shot, ...updates } : shot)));
+    setIsDirty(true);
   };
 
   const deleteShot = (index: number) => {
-    const updatedShots = shots.filter((_, i) => i !== index);
-    const reNumberedShots = updatedShots.map((shot, i) => ({
-      ...shot,
-      number: i + 1,
-    }));
-    setShots(reNumberedShots);
-    debouncedSave(reNumberedShots);
-    toast.success(t('shotRemoved'));
+    setShots((prev) => {
+      const filtered = prev.filter((_, i) => i !== index);
+      return filtered.map((shot, i) => ({ ...shot, number: i + 1 }));
+    });
+    setIsDirty(true);
   };
 
   const toggleCompleted = (index: number) => {
-    const updatedShots = shots.map((shot, i) => {
-      if (i === index) {
-        return { ...shot, completed: !shot.completed };
-      }
-      return shot;
-    });
-    setShots(updatedShots);
-    debouncedSave(updatedShots);
+    setShots((prev) =>
+      prev.map((shot, i) => (i === index ? { ...shot, completed: !shot.completed } : shot)),
+    );
+    setIsDirty(true);
   };
 
   const completedCount = shots.filter((shot) => shot.completed).length;
@@ -210,7 +189,13 @@ function ShotListTable({ shotList }: ShotListTableProps) {
               {tc('saving')}
             </span>
           )}
-          <Button onClick={addShot} size="sm">
+          {isDirty && (
+            <Button onClick={handleSave} size="sm" disabled={saving}>
+              <Save className="h-4 w-4 mr-2" />
+              {saving ? tc('saving') : tc('save')}
+            </Button>
+          )}
+          <Button onClick={addShot} size="sm" variant="outline">
             <Plus className="h-4 w-4 mr-2" />
             {t('addShot')}
           </Button>
@@ -236,7 +221,7 @@ function ShotListTable({ shotList }: ShotListTableProps) {
             </TableHeader>
             <TableBody>
               {shots.map((shot, index) => (
-                <TableRow key={`shot-${shot.number}`}>
+                <TableRow key={`shot-${index}`}>
                   <TableCell className="font-medium text-center">{shot.number}</TableCell>
                   <TableCell>
                     <Input

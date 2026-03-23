@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   getConceptNotes,
@@ -16,7 +16,7 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import dynamic from 'next/dynamic';
-import { Plus, Trash2, FileText } from 'lucide-react';
+import { Plus, Trash2, FileText, Save } from 'lucide-react';
 
 const TiptapEditor = dynamic(
   () => import('@/components/shared/tiptap-editor').then((mod) => mod.TiptapEditor),
@@ -230,42 +230,21 @@ function NoteEditor({ note, onNoteChange, onDelete }: NoteEditorProps) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content || '');
   const [saving, setSaving] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
+  const handleSave = async () => {
+    setSaving(true);
+    const updates = { title, content };
+    const result = await updateConceptNote(note.id, updates);
+    setSaving(false);
 
-  const debouncedSave = (updates: { title?: string; content?: string }) => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+    if (result.error) {
+      toast.error(t('failedToSaveNote'));
+    } else {
+      setIsDirty(false);
+      onNoteChange({ id: note.id, ...updates, updated_at: new Date().toISOString() });
+      toast.success(t('noteSaved'));
     }
-
-    saveTimeoutRef.current = setTimeout(async () => {
-      setSaving(true);
-      const result = await updateConceptNote(note.id, updates);
-      setSaving(false);
-
-      if (result.error) {
-        toast.error(t('failedToSaveNote'));
-      } else {
-        onNoteChange({ id: note.id, ...updates, updated_at: new Date().toISOString() });
-      }
-    }, 500);
-  };
-
-  const handleTitleChange = (newTitle: string) => {
-    setTitle(newTitle);
-    debouncedSave({ title: newTitle });
-  };
-
-  const handleContentChange = (newContent: string) => {
-    setContent(newContent);
-    debouncedSave({ content: newContent });
   };
 
   return (
@@ -273,16 +252,19 @@ function NoteEditor({ note, onNoteChange, onDelete }: NoteEditorProps) {
       <div className="flex items-center justify-between">
         <Input
           value={title}
-          onChange={(e) => handleTitleChange(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setIsDirty(true);
+          }}
           className="text-2xl font-bold border-0 px-0 focus-visible:ring-0"
           placeholder={t('noteTitlePlaceholder')}
         />
         <div className="flex items-center gap-2">
-          {saving && (
-            <span className="text-sm text-muted-foreground flex items-center gap-2">
-              <LoadingSpinner size="sm" />
-              {tc('saving')}
-            </span>
+          {isDirty && (
+            <Button size="sm" onClick={handleSave} disabled={saving}>
+              <Save className="h-4 w-4 mr-2" />
+              {saving ? tc('saving') : tc('save')}
+            </Button>
           )}
           <Button variant="destructive" size="sm" onClick={onDelete}>
             <Trash2 className="h-4 w-4 mr-2" />
@@ -297,7 +279,10 @@ function NoteEditor({ note, onNoteChange, onDelete }: NoteEditorProps) {
 
       <TiptapEditor
         content={content}
-        onChange={handleContentChange}
+        onChange={(v) => {
+          setContent(v);
+          setIsDirty(true);
+        }}
         placeholder={t('noteContentPlaceholder')}
       />
     </div>

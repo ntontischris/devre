@@ -12,10 +12,15 @@ import type { EquipmentItemWithId } from './sortable-equipment-item';
 
 export type { DragEndEvent };
 
+function uid() {
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
 interface UseEquipmentListReturn {
   items: EquipmentItemWithId[];
   loading: boolean;
   saving: boolean;
+  isDirty: boolean;
   catalogOpen: boolean;
   selectedCatalogItems: Set<string>;
   customItemName: string;
@@ -27,14 +32,15 @@ interface UseEquipmentListReturn {
   setCatalogOpen: (v: boolean) => void;
   openCatalog: () => void;
   toggleCatalogItem: (name: string) => void;
-  addFromCatalog: () => Promise<void>;
-  addCustomItem: () => Promise<void>;
-  deleteItem: (id: string) => Promise<void>;
-  toggleCheck: (id: string) => Promise<void>;
-  updateItem: (id: string, updates: Partial<EquipmentItem>) => Promise<void>;
-  checkAll: () => Promise<void>;
-  uncheckAll: () => Promise<void>;
-  handleDragEnd: (event: DragEndEvent) => Promise<void>;
+  addFromCatalog: () => void;
+  addCustomItem: () => void;
+  deleteItem: (id: string) => void;
+  toggleCheck: (id: string) => void;
+  updateItem: (id: string, updates: Partial<EquipmentItem>) => void;
+  checkAll: () => void;
+  uncheckAll: () => void;
+  handleDragEnd: (event: DragEndEvent) => void;
+  save: () => Promise<void>;
 }
 
 export function useEquipmentList(projectId: string): UseEquipmentListReturn {
@@ -42,6 +48,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
   const [items, setItems] = useState<EquipmentItemWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [selectedCatalogItems, setSelectedCatalogItems] = useState<Set<string>>(new Set());
   const [customItemName, setCustomItemName] = useState('');
@@ -59,9 +66,10 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     const itemsWithIds: EquipmentItemWithId[] = (result.data?.items ?? []).map((item) => ({
       ...item,
       checked: item.checked ?? false,
-      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      id: uid(),
     }));
     setItems(itemsWithIds);
+    setIsDirty(false);
     setLoading(false);
   }, [projectId, t]);
 
@@ -69,18 +77,19 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     loadEquipmentList();
   }, [loadEquipmentList]);
 
-  const saveEquipmentList = async (updatedItems: EquipmentItemWithId[]) => {
+  const save = async () => {
     setSaving(true);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const itemsWithoutIds = updatedItems.map(({ id, ...item }) => item);
+    const itemsWithoutIds = items.map(({ id, ...item }) => item);
     const result = await updateEquipmentList(projectId, { items: itemsWithoutIds });
     setSaving(false);
 
     if (result.error) {
       toast.error(t('failedToSaveEquipment'));
-      return false;
+      return;
     }
-    return true;
+    setIsDirty(false);
+    toast.success(t('equipmentSaved'));
   };
 
   const openCatalog = () => {
@@ -102,7 +111,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     });
   };
 
-  const addFromCatalog = async () => {
+  const addFromCatalog = () => {
     const existingNames = new Set(items.map((i) => i.name));
     const toAdd: EquipmentItemWithId[] = [];
     const toRemove = new Set<string>();
@@ -118,7 +127,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
         const catItem = EQUIPMENT_CATALOG.find((c) => c.name === name);
         if (catItem) {
           toAdd.push({
-            id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+            id: uid(),
             name: catItem.name,
             quantity: 1,
             checked: false,
@@ -131,18 +140,10 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     const updatedItems = [...items.filter((i) => !toRemove.has(i.name)), ...toAdd];
     setItems(updatedItems);
     setCatalogOpen(false);
-
-    const success = await saveEquipmentList(updatedItems);
-    if (!success) return;
-
-    const added = toAdd.length;
-    const removed = toRemove.size;
-    if (added > 0 && removed > 0) toast.success(t('itemsAddedAndRemoved', { added, removed }));
-    else if (added > 0) toast.success(t('itemsAdded', { count: added }));
-    else if (removed > 0) toast.success(t('itemsRemoved', { count: removed }));
+    if (toAdd.length > 0 || toRemove.size > 0) setIsDirty(true);
   };
 
-  const addCustomItem = async () => {
+  const addCustomItem = () => {
     if (!customItemName.trim()) {
       toast.error(t('enterItemName'));
       return;
@@ -155,65 +156,53 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     }
 
     const newItem: EquipmentItemWithId = {
-      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      id: uid(),
       name: customItemName.trim(),
       quantity,
       checked: false,
       notes: '',
     };
 
-    const updatedItems = [...items, newItem];
-    setItems(updatedItems);
+    setItems((prev) => [...prev, newItem]);
     setCustomItemName('');
     setCustomItemQuantity('1');
-
-    const success = await saveEquipmentList(updatedItems);
-    if (success) toast.success(t('itemAdded'));
+    setIsDirty(true);
   };
 
-  const deleteItem = async (id: string) => {
-    const updatedItems = items.filter((item) => item.id !== id);
-    setItems(updatedItems);
-    const success = await saveEquipmentList(updatedItems);
-    if (success) toast.success(t('itemRemoved'));
+  const deleteItem = (id: string) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+    setIsDirty(true);
   };
 
-  const toggleCheck = async (id: string) => {
-    const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, checked: !item.checked } : item,
+  const toggleCheck = (id: string) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)),
     );
-    setItems(updatedItems);
-    await saveEquipmentList(updatedItems);
+    setIsDirty(true);
   };
 
-  const updateItem = async (id: string, updates: Partial<EquipmentItem>) => {
-    const updatedItems = items.map((item) => (item.id === id ? { ...item, ...updates } : item));
-    setItems(updatedItems);
-    await saveEquipmentList(updatedItems);
+  const updateItem = (id: string, updates: Partial<EquipmentItem>) => {
+    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...updates } : item)));
+    setIsDirty(true);
   };
 
-  const checkAll = async () => {
-    const updatedItems = items.map((item) => ({ ...item, checked: true }));
-    setItems(updatedItems);
-    const success = await saveEquipmentList(updatedItems);
-    if (success) toast.success(t('allItemsChecked'));
+  const checkAll = () => {
+    setItems((prev) => prev.map((item) => ({ ...item, checked: true })));
+    setIsDirty(true);
   };
 
-  const uncheckAll = async () => {
-    const updatedItems = items.map((item) => ({ ...item, checked: false }));
-    setItems(updatedItems);
-    const success = await saveEquipmentList(updatedItems);
-    if (success) toast.success(t('allItemsUnchecked'));
+  const uncheckAll = () => {
+    setItems((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setIsDirty(true);
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = items.findIndex((item) => item.id === active.id);
       const newIndex = items.findIndex((item) => item.id === over.id);
-      const updatedItems = arrayMove(items, oldIndex, newIndex);
-      setItems(updatedItems);
-      await saveEquipmentList(updatedItems);
+      setItems(arrayMove(items, oldIndex, newIndex));
+      setIsDirty(true);
     }
   };
 
@@ -221,6 +210,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     items,
     loading,
     saving,
+    isDirty,
     catalogOpen,
     selectedCatalogItems,
     customItemName,
@@ -240,5 +230,6 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     checkAll,
     uncheckAll,
     handleDragEnd,
+    save,
   };
 }

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/shared/empty-state';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
-import { Package } from 'lucide-react';
+import { Package, Save } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -30,10 +30,12 @@ interface EquipmentChecklistProps {
 
 export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
   const t = useTranslations('filmingPrep');
+  const tc = useTranslations('common');
   const {
     items,
     loading,
     saving,
+    isDirty,
     catalogOpen,
     selectedCatalogItems,
     customItemName,
@@ -53,6 +55,7 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
     checkAll,
     uncheckAll,
     handleDragEnd,
+    save,
   } = useEquipmentList(projectId);
 
   const sensors = useSensors(
@@ -98,6 +101,12 @@ export function EquipmentChecklist({ projectId }: EquipmentChecklistProps) {
                   {t('uncheckAllItems')}
                 </Button>
               </>
+            )}
+            {isDirty && (
+              <Button size="sm" onClick={save} disabled={saving}>
+                <Save className="h-4 w-4 mr-2" />
+                {saving ? tc('saving') : tc('save')}
+              </Button>
             )}
           </div>
         </div>
