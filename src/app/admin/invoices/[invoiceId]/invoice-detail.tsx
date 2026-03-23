@@ -67,8 +67,28 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
-  const [isPreviewLoading, setIsPreviewLoading] = React.useState(false);
-  const [isDownloadLoading, setIsDownloadLoading] = React.useState(false);
+  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null);
+
+  // Pre-compute PDF URL once on mount — avoids repeated createSignedUrl calls that hang
+  React.useEffect(() => {
+    if (invoice.file_path) {
+      const supabase = createClient();
+      supabase.storage
+        .from('invoices')
+        .createSignedUrl(invoice.file_path, 3600)
+        .then(({ data, error }) => {
+          if (!error && data?.signedUrl) {
+            setPdfUrl(data.signedUrl);
+          } else {
+            console.error('[Invoice PDF] Failed to create signed URL:', error);
+            // Fallback to API-generated PDF
+            setPdfUrl(`/api/invoices/${invoice.id}/pdf`);
+          }
+        });
+    } else {
+      setPdfUrl(`/api/invoices/${invoice.id}/pdf`);
+    }
+  }, [invoice.file_path, invoice.id]);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -99,74 +119,32 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
     }
   };
 
-  const getInvoicePdfUrl = React.useCallback(async (): Promise<string | null> => {
-    if (invoice.file_path) {
-      console.log('[Invoice PDF] file_path exists:', invoice.file_path);
-      const supabase = createClient();
-      const { data, error } = await supabase.storage
-        .from('invoices')
-        .createSignedUrl(invoice.file_path, 3600);
-      console.log('[Invoice PDF] signedUrl result:', { url: data?.signedUrl?.slice(0, 80), error });
-      if (error || !data?.signedUrl) {
-        toast.error(t('pdfDownloadFailed'));
-        return null;
-      }
-      return data.signedUrl;
-    }
-    const url = `/api/invoices/${invoice.id}/pdf?t=${Date.now()}`;
-    console.log('[Invoice PDF] using API route:', url);
-    return url;
-  }, [invoice.file_path, invoice.id, t]);
-
-  const handlePreview = async () => {
-    console.log('[Invoice PDF] handlePreview called');
-    setIsPreviewLoading(true);
-    try {
-      const url = await getInvoicePdfUrl();
-      console.log('[Invoice PDF] preview url:', url?.slice(0, 80));
-      if (url) {
-        setPreviewUrl(url);
-        setPreviewOpen(true);
-      }
-    } catch (err) {
-      console.error('[Invoice PDF] preview error:', err);
+  const handlePreview = () => {
+    if (!pdfUrl) {
       toast.error(t('pdfDownloadFailed'));
-    } finally {
-      setIsPreviewLoading(false);
+      return;
     }
+    setPreviewUrl(pdfUrl);
+    setPreviewOpen(true);
   };
 
-  const handleDownload = async () => {
-    console.log('[Invoice PDF] handleDownload called');
-    setIsDownloadLoading(true);
-    try {
-      const url = await getInvoicePdfUrl();
-      console.log('[Invoice PDF] download url:', url?.slice(0, 80));
-      if (url) {
-        // Use anchor element instead of window.open to avoid popup blockers
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        console.log('[Invoice PDF] download triggered via anchor');
-      }
-    } catch (err) {
-      console.error('[Invoice PDF] download error:', err);
+  const handleDownload = () => {
+    if (!pdfUrl) {
       toast.error(t('pdfDownloadFailed'));
-    } finally {
-      setIsDownloadLoading(false);
+      return;
     }
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const handlePreviewClose = (open: boolean) => {
     setPreviewOpen(open);
-    if (!open) {
-      setPreviewUrl(null);
-      console.log('[Invoice PDF] preview dialog closed, url cleared');
-    }
+    if (!open) setPreviewUrl(null);
   };
 
   const handleStatusChange = () => {
@@ -182,13 +160,13 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
             <p className="text-muted-foreground mt-2">{t('invoiceDetailsDescription')}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handlePreview} disabled={isPreviewLoading}>
+            <Button variant="outline" onClick={handlePreview} disabled={!pdfUrl}>
               <Eye className="mr-2 h-4 w-4" />
-              {isPreviewLoading ? '...' : 'Preview'}
+              Preview
             </Button>
-            <Button variant="outline" onClick={handleDownload} disabled={isDownloadLoading}>
+            <Button variant="outline" onClick={handleDownload} disabled={!pdfUrl}>
               <Download className="mr-2 h-4 w-4" />
-              {isDownloadLoading ? '...' : 'Download'}
+              Download
             </Button>
             <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
               <Trash2 className="mr-2 h-4 w-4" />
