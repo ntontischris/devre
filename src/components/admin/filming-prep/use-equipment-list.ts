@@ -59,7 +59,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     const itemsWithIds: EquipmentItemWithId[] = (result.data?.items ?? []).map((item) => ({
       ...item,
       checked: item.checked ?? false,
-      id: crypto.randomUUID(),
+      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
     }));
     setItems(itemsWithIds);
     setLoading(false);
@@ -118,7 +118,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
         const catItem = EQUIPMENT_CATALOG.find((c) => c.name === name);
         if (catItem) {
           toAdd.push({
-            id: crypto.randomUUID(),
+            id: Math.random().toString(36).slice(2) + Date.now().toString(36),
             name: catItem.name,
             quantity: 1,
             checked: false,
@@ -155,7 +155,7 @@ export function useEquipmentList(projectId: string): UseEquipmentListReturn {
     }
 
     const newItem: EquipmentItemWithId = {
-      id: crypto.randomUUID(),
+      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
       name: customItemName.trim(),
       quantity,
       checked: false,

@@ -11,7 +11,7 @@ function getSessionId(): string {
   const KEY = 'devre-chat-session-id';
   let id = localStorage.getItem(KEY);
   if (!id) {
-    id = crypto.randomUUID();
+    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
     localStorage.setItem(KEY, id);
   }
   return id;
@@ -19,7 +19,7 @@ function getSessionId(): string {
 
 function resetSessionId(): string {
   const KEY = 'devre-chat-session-id';
-  const id = crypto.randomUUID();
+  const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
   localStorage.setItem(KEY, id);
   return id;
 }
@@ -42,7 +42,7 @@ function ChatWidgetInner({ sessionId: initialSessionId }: { sessionId: string })
           pageUrl: typeof window !== 'undefined' ? window.location.pathname : '/',
         },
       }),
-    [sessionId, locale]
+    [sessionId, locale],
   );
 
   const chatHelpers = useChat({ transport });
@@ -56,14 +56,14 @@ function ChatWidgetInner({ sessionId: initialSessionId }: { sessionId: string })
       sendMessage({ text: inputValue });
       setInputValue('');
     },
-    [inputValue, isLoading, sendMessage]
+    [inputValue, isLoading, sendMessage],
   );
 
   const handleQuickAction = useCallback(
     (message: string) => {
       sendMessage({ text: message });
     },
-    [sendMessage]
+    [sendMessage],
   );
 
   const handleNewChat = useCallback(() => {
@@ -95,7 +95,15 @@ function ChatWidgetInner({ sessionId: initialSessionId }: { sessionId: string })
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-4 sm:right-6 z-50 h-14 w-14 rounded-full bg-gold-500 text-black flex items-center justify-center shadow-lg shadow-gold-500/20 hover:bg-gold-400 hover:shadow-gold-500/30 hover:scale-105 active:scale-95 transition-all duration-200 animate-glow-pulse"
-        aria-label={isOpen ? (isGreek ? 'Κλείσιμο συνομιλίας' : 'Close chat') : (isGreek ? 'Ανοιχτή συνομιλία' : 'Open chat')}
+        aria-label={
+          isOpen
+            ? isGreek
+              ? 'Κλείσιμο συνομιλίας'
+              : 'Close chat'
+            : isGreek
+              ? 'Ανοιχτή συνομιλία'
+              : 'Open chat'
+        }
         aria-expanded={isOpen}
       >
         {isOpen ? (
