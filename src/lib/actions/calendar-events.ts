@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createCalendarEventSchema, updateCalendarEventSchema } from '@/lib/schemas/calendar-event';
 import { revalidatePath } from 'next/cache';
 import type { ActionResult, CalendarEventRecord } from '@/types';
+import { syncEntityToGoogle } from '@/lib/google-sync-helper';
+import { getGoogleColorId } from '@/lib/google-calendar';
 
 export async function createCalendarEvent(
   input: unknown,
@@ -37,6 +39,19 @@ export async function createCalendarEvent(
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/calendar');
+    await syncEntityToGoogle({
+      entityType: 'custom',
+      entityId: data.id,
+      operation: 'create',
+      eventData: {
+        title: data.title,
+        description: data.description ?? undefined,
+        startDate: data.start_date,
+        endDate: data.end_date ?? undefined,
+        allDay: data.all_day,
+        colorId: getGoogleColorId('custom', null, data.event_type),
+      },
+    });
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) return { data: null, error: error.message };
@@ -78,6 +93,19 @@ export async function updateCalendarEvent(
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/calendar');
+    await syncEntityToGoogle({
+      entityType: 'custom',
+      entityId: data.id,
+      operation: 'update',
+      eventData: {
+        title: data.title,
+        description: data.description ?? undefined,
+        startDate: data.start_date,
+        endDate: data.end_date ?? undefined,
+        allDay: data.all_day,
+        colorId: getGoogleColorId('custom', null, data.event_type),
+      },
+    });
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) return { data: null, error: error.message };
@@ -108,6 +136,11 @@ export async function deleteCalendarEvent(id: string): Promise<ActionResult<null
     if (error) return { data: null, error: error.message };
 
     revalidatePath('/admin/calendar');
+    await syncEntityToGoogle({
+      entityType: 'custom',
+      entityId: id,
+      operation: 'delete',
+    });
     return { data: null, error: null };
   } catch {
     return { data: null, error: 'Failed to delete event' };

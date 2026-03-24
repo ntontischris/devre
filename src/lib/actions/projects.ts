@@ -8,6 +8,8 @@ import { revalidatePath } from 'next/cache';
 import { escapePostgrestFilter } from '@/lib/utils';
 import { createNotification, getClientUserIdFromProject } from '@/lib/actions/notifications';
 import { NOTIFICATION_TYPES } from '@/lib/notification-types';
+import { syncEntityToGoogle } from '@/lib/google-sync-helper';
+import { getGoogleColorId } from '@/lib/google-calendar';
 
 interface ProjectFilters {
   client_id?: string;
@@ -101,6 +103,34 @@ export async function createProject(input: unknown): Promise<ActionResult<Projec
     revalidatePath('/admin/projects');
     revalidatePath('/client/projects');
     revalidatePath('/client/dashboard');
+    if (data.start_date) {
+      await syncEntityToGoogle({
+        entityType: 'project',
+        entityId: data.id,
+        operation: 'create',
+        subtype: 'start',
+        eventData: {
+          title: `Start: ${data.title}`,
+          startDate: data.start_date,
+          allDay: true,
+          colorId: getGoogleColorId('project', 'start'),
+        },
+      });
+    }
+    if (data.deadline) {
+      await syncEntityToGoogle({
+        entityType: 'project',
+        entityId: data.id,
+        operation: 'create',
+        subtype: 'deadline',
+        eventData: {
+          title: `Deadline: ${data.title}`,
+          startDate: data.deadline,
+          allDay: true,
+          colorId: getGoogleColorId('project', 'deadline'),
+        },
+      });
+    }
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -136,6 +166,34 @@ export async function updateProject(
     revalidatePath('/client/projects');
     revalidatePath(`/client/projects/${id}`);
     revalidatePath('/client/dashboard');
+    if (data.start_date) {
+      await syncEntityToGoogle({
+        entityType: 'project',
+        entityId: data.id,
+        operation: 'update',
+        subtype: 'start',
+        eventData: {
+          title: `Start: ${data.title}`,
+          startDate: data.start_date,
+          allDay: true,
+          colorId: getGoogleColorId('project', 'start'),
+        },
+      });
+    }
+    if (data.deadline) {
+      await syncEntityToGoogle({
+        entityType: 'project',
+        entityId: data.id,
+        operation: 'update',
+        subtype: 'deadline',
+        eventData: {
+          title: `Deadline: ${data.title}`,
+          startDate: data.deadline,
+          allDay: true,
+          colorId: getGoogleColorId('project', 'deadline'),
+        },
+      });
+    }
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -205,6 +263,18 @@ export async function deleteProject(id: string): Promise<ActionResult<void>> {
     revalidatePath('/admin/projects');
     revalidatePath('/client/projects');
     revalidatePath('/client/dashboard');
+    await syncEntityToGoogle({
+      entityType: 'project',
+      entityId: id,
+      operation: 'delete',
+      subtype: 'start',
+    });
+    await syncEntityToGoogle({
+      entityType: 'project',
+      entityId: id,
+      operation: 'delete',
+      subtype: 'deadline',
+    });
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete project' };

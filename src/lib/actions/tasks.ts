@@ -11,6 +11,8 @@ import {
   getAdminUserIds,
 } from '@/lib/actions/notifications';
 import { NOTIFICATION_TYPES } from '@/lib/notification-types';
+import { syncEntityToGoogle } from '@/lib/google-sync-helper';
+import { getGoogleColorId } from '@/lib/google-calendar';
 
 export async function getTasksByProject(projectId: string): Promise<ActionResult<Task[]>> {
   try {
@@ -91,6 +93,20 @@ export async function createTask(input: unknown): Promise<ActionResult<Task>> {
       });
     }
 
+    if (data.due_date) {
+      await syncEntityToGoogle({
+        entityType: 'task',
+        entityId: data.id,
+        operation: 'create',
+        eventData: {
+          title: `Task: ${data.title}`,
+          startDate: data.due_date,
+          allDay: true,
+          colorId: getGoogleColorId('task'),
+        },
+      });
+    }
+
     return { data, error: null };
   } catch (error) {
     if (error instanceof Error) {
@@ -141,6 +157,20 @@ export async function updateTask(id: string, input: unknown): Promise<ActionResu
         title: 'New task assigned to you',
         body: data.title,
         actionUrl: `/employee/tasks/${data.id}`,
+      });
+    }
+
+    if (data.due_date) {
+      await syncEntityToGoogle({
+        entityType: 'task',
+        entityId: data.id,
+        operation: 'update',
+        eventData: {
+          title: `Task: ${data.title}`,
+          startDate: data.due_date,
+          allDay: true,
+          colorId: getGoogleColorId('task'),
+        },
       });
     }
 
@@ -245,6 +275,11 @@ export async function deleteTask(id: string): Promise<ActionResult<void>> {
     }
     revalidatePath('/employee/tasks');
     revalidatePath('/employee/dashboard');
+    await syncEntityToGoogle({
+      entityType: 'task',
+      entityId: id,
+      operation: 'delete',
+    });
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete task' };

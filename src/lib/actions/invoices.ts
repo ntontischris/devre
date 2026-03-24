@@ -12,6 +12,8 @@ import {
   getAdminUserIds,
 } from '@/lib/actions/notifications';
 import { NOTIFICATION_TYPES } from '@/lib/notification-types';
+import { syncEntityToGoogle } from '@/lib/google-sync-helper';
+import { getGoogleColorId } from '@/lib/google-calendar';
 
 interface InvoiceFilters {
   status?: InvoiceStatus | InvoiceStatus[];
@@ -153,6 +155,19 @@ export async function createInvoice(input: unknown): Promise<ActionResult<Invoic
     revalidatePath('/admin/invoices');
     revalidatePath('/client/invoices');
     revalidatePath('/client/dashboard');
+    if (data.due_date) {
+      await syncEntityToGoogle({
+        entityType: 'invoice',
+        entityId: data.id,
+        operation: 'create',
+        eventData: {
+          title: `Invoice Due: ${data.invoice_number}`,
+          startDate: data.due_date,
+          allDay: true,
+          colorId: getGoogleColorId('invoice'),
+        },
+      });
+    }
     return { data: data as unknown as InvoiceWithRelations, error: null };
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -208,6 +223,19 @@ export async function updateInvoice(
     revalidatePath(`/admin/invoices/${id}`);
     revalidatePath('/client/invoices');
     revalidatePath('/client/dashboard');
+    if (data.due_date) {
+      await syncEntityToGoogle({
+        entityType: 'invoice',
+        entityId: data.id,
+        operation: 'update',
+        eventData: {
+          title: `Invoice Due: ${data.invoice_number}`,
+          startDate: data.due_date,
+          allDay: true,
+          colorId: getGoogleColorId('invoice'),
+        },
+      });
+    }
     return { data: data as unknown as InvoiceWithRelations, error: null };
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -313,6 +341,11 @@ export async function deleteInvoice(id: string): Promise<ActionResult<void>> {
     revalidatePath('/admin/invoices');
     revalidatePath('/client/invoices');
     revalidatePath('/client/dashboard');
+    await syncEntityToGoogle({
+      entityType: 'invoice',
+      entityId: id,
+      operation: 'delete',
+    });
     return { data: undefined, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Failed to delete invoice' };
