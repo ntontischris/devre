@@ -3,5 +3,15 @@
   "framework": "nextjs",
   "buildCommand": "next build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "crons": [
+    {
+      "path": "/api/cron/google-sync-retry",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/google-webhook-renew",
+      "schedule": "0 3 */6 * *"
+    }
+  ]
 }
