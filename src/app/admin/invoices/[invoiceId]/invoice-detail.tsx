@@ -17,7 +17,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { PaymentActions } from '@/components/admin/invoices/payment-actions';
 import { deleteInvoice, updateInvoiceStatus } from '@/lib/actions/invoices';
-import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -67,18 +66,7 @@ export function InvoiceDetail({ invoice: initialInvoice }: InvoiceDetailProps) {
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
-  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (!invoice.file_path) return;
-    const supabase = createClient();
-    supabase.storage
-      .from('invoices')
-      .createSignedUrl(invoice.file_path, 3600)
-      .then(({ data }) => {
-        if (data?.signedUrl) setPdfUrl(data.signedUrl);
-      });
-  }, [invoice.file_path]);
+  const pdfUrl = invoice.file_path ? `/api/invoices/${invoice.id}/file` : null;
 
   const handleDelete = async () => {
     setIsDeleting(true);

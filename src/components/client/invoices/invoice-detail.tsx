@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -18,9 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
 import type { InvoiceWithRelations, InvoiceLineItem } from '@/types';
 
 interface InvoiceDetailProps {
@@ -43,18 +41,7 @@ export function InvoiceDetail({ invoice }: InvoiceDetailProps) {
     }, 2000);
   };
 
-  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (!invoice.file_path) return;
-    const supabase = createClient();
-    supabase.storage
-      .from('invoices')
-      .createSignedUrl(invoice.file_path, 3600)
-      .then(({ data }) => {
-        if (data?.signedUrl) setPdfUrl(data.signedUrl);
-      });
-  }, [invoice.file_path]);
+  const pdfUrl = invoice.file_path ? `/api/invoices/${invoice.id}/file` : null;
 
   const handlePreview = () => {
     if (!pdfUrl) return;
