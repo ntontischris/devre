@@ -6,7 +6,9 @@ import { randomUUID } from 'crypto';
 
 function getAuthClient() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  // Handle both formats: literal \n strings (from .env files) and real newlines (from Vercel UI)
+  const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const key = rawKey?.includes('\\n') ? rawKey.replace(/\\n/g, '\n') : rawKey;
 
   if (!email || !key) {
     throw new Error('Google Calendar credentials not configured');
