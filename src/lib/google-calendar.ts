@@ -80,10 +80,12 @@ function buildEventResource(payload: GoogleEventPayload): calendar_v3.Schema$Eve
     event.start = { date: payload.startDate.split('T')[0] };
     event.end = { date: (payload.endDate ?? payload.startDate).split('T')[0] };
   } else {
-    event.start = { dateTime: payload.startDate, timeZone: 'Europe/Athens' };
+    // Supabase stores dates in UTC (+00:00). Pass them as-is with UTC timezone.
+    // Google will convert to the calendar's timezone automatically.
+    event.start = { dateTime: payload.startDate, timeZone: 'UTC' };
     event.end = {
       dateTime: payload.endDate ?? payload.startDate,
-      timeZone: 'Europe/Athens',
+      timeZone: 'UTC',
     };
   }
 
