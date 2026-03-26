@@ -3,7 +3,16 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { watchCalendar, fetchChangedEvents } from '@/lib/google-calendar';
 
+// Support both GET and POST for easy browser access
+export async function GET(request: NextRequest) {
+  return handleSetup();
+}
+
 export async function POST(_request: NextRequest) {
+  return handleSetup();
+}
+
+async function handleSetup() {
   // Auth check — admin only
   const supabase = await createClient();
   const {
