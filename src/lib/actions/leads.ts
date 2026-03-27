@@ -249,7 +249,7 @@ export async function convertLeadToClient(id: string): Promise<ActionResult<Clie
         status: 'active',
       })
       .select(
-        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, created_at, updated_at',
+        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, preferred_locale, created_at, updated_at',
       )
       .single();
 

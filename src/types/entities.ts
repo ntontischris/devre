@@ -44,6 +44,7 @@ export type Client = {
   avatar_url: string | null;
   notes: string | null;
   status: ClientStatus;
+  preferred_locale: 'el' | 'en';
   created_at: string;
   updated_at: string;
 };
@@ -467,3 +468,24 @@ export type GoogleSyncActionData =
   | { action_type: 'google_new_event'; data: GoogleNewEventData }
   | { action_type: 'google_event_changed'; data: GoogleEventChangedData }
   | { action_type: 'google_event_deleted'; data: GoogleEventDeletedData };
+
+// --- Email Log Types ---
+
+export type EmailType =
+  | 'filming_reminder'
+  | 'invoice_sent'
+  | 'project_delivered'
+  | 'holiday_greeting';
+
+export type EmailLog = {
+  id: string;
+  email_type: EmailType;
+  recipient_email: string;
+  recipient_client_id: string | null;
+  subject: string;
+  resend_message_id: string | null;
+  status: 'sent' | 'failed' | 'bounced';
+  error_message: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};

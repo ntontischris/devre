@@ -9,6 +9,7 @@ import { escapePostgrestFilter } from '@/lib/utils';
 import { createNotification, getClientUserIdFromProject } from '@/lib/actions/notifications';
 import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 import { syncEntityToGoogle } from '@/lib/google-sync-helper';
+import { triggerProjectDeliveredEmail } from '@/lib/email/triggers/project-delivered';
 import { getGoogleColorId } from '@/lib/google-calendar';
 
 interface ProjectFilters {
@@ -237,6 +238,15 @@ export async function updateProjectStatus(
         type: NOTIFICATION_TYPES.PROJECT_STATUS,
         title: `Project "${data.title}" status updated to ${status}`,
         actionUrl: `/client/projects/${id}`,
+      });
+    }
+
+    // Send email when project is delivered (fire-and-forget)
+    if (status === 'delivered' && data.client_id) {
+      triggerProjectDeliveredEmail({
+        projectId: id,
+        projectTitle: data.title,
+        clientId: data.client_id,
       });
     }
 

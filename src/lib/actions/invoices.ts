@@ -13,6 +13,7 @@ import {
 } from '@/lib/actions/notifications';
 import { NOTIFICATION_TYPES } from '@/lib/notification-types';
 import { syncEntityToGoogle } from '@/lib/google-sync-helper';
+import { triggerInvoiceSentEmail } from '@/lib/email/triggers/invoice-sent';
 import { getGoogleColorId } from '@/lib/google-calendar';
 
 interface InvoiceFilters {
@@ -293,6 +294,16 @@ export async function updateInvoiceStatus(
           actionUrl: '/client/invoices',
         });
       }
+
+      // Send email notification via Resend (fire-and-forget)
+      triggerInvoiceSentEmail({
+        invoiceId: data.id,
+        clientId: data.client_id,
+        invoiceNumber: data.invoice_number,
+        total: data.total ?? 0,
+        currency: data.currency ?? 'EUR',
+        dueDate: data.due_date,
+      });
     }
 
     if (status === 'paid') {

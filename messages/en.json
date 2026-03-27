@@ -467,6 +467,7 @@
     "taxOffice": "Tax Office (DOY)",
     "clientNotes": "Notes",
     "clientStatus": "Status",
+    "emailLanguage": "Email Language",
     "noClients": "No clients yet",
     "noClientsDescription": "Get started by adding your first client.",
     "contactInfo": "Contact Information",

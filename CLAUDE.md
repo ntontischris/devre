@@ -131,6 +131,41 @@ These shared components have non-obvious APIs -- always check before using:
 - Lead -> convert to Client (CRM pipeline)
 - KbCategory -> KbArticles (internal university)
 
+## Automated Email System (Resend)
+
+4 automated email scenarios via Resend, all with branded React Email templates, bilingual (el/en), and deduplication via `email_logs` table.
+
+### Email Types
+| Type | Trigger | Target |
+|------|---------|--------|
+| `filming_reminder` | Cron on 25th of each month (09:00 UTC) | Active clients with monthly package contracts |
+| `invoice_sent` | Event: invoice status → 'sent' | Invoice's client |
+| `project_delivered` | Event: project status → 'delivered' | Project's client |
+| `holiday_greeting` | Cron daily (07:00 UTC), sends on Greek holidays | All active clients |
+
+### Key Files
+- **Email core**: `src/lib/email/` (resend.ts, send-email.ts, translations.ts, greek-holidays.ts)
+- **Templates**: `src/lib/email/templates/` (base-layout, filming-reminder, invoice-notification, project-completed, holiday-greeting)
+- **Triggers**: `src/lib/email/triggers/` (invoice-sent.ts, project-delivered.ts)
+- **Cron routes**: `src/app/api/cron/email-filming-reminder/`, `src/app/api/cron/email-holiday-greeting/`
+- **Migration**: `supabase/migrations/00031_email_logs.sql`
+
+### Environment Variables
+- `RESEND_API_KEY` — Resend API key
+- `RESEND_FROM_EMAIL` — Sender address (default: `Devre Media <noreply@devremedia.com>`)
+
+### Package-Aware Logic
+Monthly filming reminders check `contracts.service_type` against monthly package IDs (social_a/b/c, podcast_a/b/c). The email content adapts to the client's package.
+
+### Greek Holidays
+13 holidays per year (8 fixed + 5 Orthodox Easter-based). Easter calculated via Meeus algorithm. Validated for 2024-2030.
+
+### Adding New Email Types
+1. Add type to `email_type` CHECK in migration
+2. Create template in `src/lib/email/templates/`
+3. Add translations in `src/lib/email/translations.ts`
+4. Create trigger in `src/lib/email/triggers/` or cron in `src/app/api/cron/`
+
 ## Dev Commands
 
 ```bash

@@ -73,7 +73,7 @@ export async function getContract(id: string): Promise<ActionResult<ContractWith
     const { data, error } = await supabase
       .from('contracts')
       .select(
-        'id, project_id, client_id, template_id, title, content, status, pdf_path, signature_data, sent_at, viewed_at, signed_at, expires_at, service_type, agreed_amount, payment_method, scope_description, special_terms, signed_pdf_path, locale, created_by, created_at, client:clients!inner(id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, created_at, updated_at), project:projects(id, client_id, title, description, project_type, status, priority, budget, deadline, start_date, created_at, updated_at)',
+        'id, project_id, client_id, template_id, title, content, status, pdf_path, signature_data, sent_at, viewed_at, signed_at, expires_at, service_type, agreed_amount, payment_method, scope_description, special_terms, signed_pdf_path, locale, created_by, created_at, client:clients!inner(id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, preferred_locale, created_at, updated_at), project:projects(id, client_id, title, description, project_type, status, priority, budget, deadline, start_date, created_at, updated_at)',
       )
       .eq('id', id)
       .single();

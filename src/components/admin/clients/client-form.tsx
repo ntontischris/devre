@@ -60,13 +60,16 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
           vat_number: client.vat_number || '',
           notes: client.notes || '',
           status: client.status,
+          preferred_locale: client.preferred_locale ?? 'el',
         }
       : {
           status: 'active',
+          preferred_locale: 'el',
         },
   });
 
   const status = watch('status');
+  const preferredLocale = watch('preferred_locale');
 
   const onSubmit = async (data: ClientFormValues) => {
     setIsSubmitting(true);
@@ -214,6 +217,24 @@ export function ClientForm({ client, onSuccess }: ClientFormProps) {
                 </SelectContent>
               </Select>
               {errors.status && <p className="text-sm text-destructive">{errors.status.message}</p>}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="preferred_locale">{t('emailLanguage')}</Label>
+              <Select
+                value={preferredLocale}
+                onValueChange={(value) => setValue('preferred_locale', value as 'el' | 'en')}
+              >
+                <SelectTrigger id="preferred_locale">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="el">Ελληνικά</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

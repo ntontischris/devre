@@ -17,6 +17,11 @@ export const NOTIFICATION_TYPES = {
   GOOGLE_NEW_EVENT: 'google_new_event',
   GOOGLE_EVENT_CHANGED: 'google_event_changed',
   GOOGLE_EVENT_DELETED: 'google_event_deleted',
+  // Automated Email Notifications
+  EMAIL_FILMING_REMINDER: 'email_filming_reminder',
+  EMAIL_INVOICE_SENT: 'email_invoice_sent',
+  EMAIL_PROJECT_DELIVERED: 'email_project_delivered',
+  EMAIL_HOLIDAY_GREETING: 'email_holiday_greeting',
 } as const;
 
 // Map notification types to preference keys for checking user preferences
@@ -38,4 +43,8 @@ export const TYPE_TO_PREFERENCE: Record<string, string> = {
   [NOTIFICATION_TYPES.GOOGLE_NEW_EVENT]: 'project_updates',
   [NOTIFICATION_TYPES.GOOGLE_EVENT_CHANGED]: 'project_updates',
   [NOTIFICATION_TYPES.GOOGLE_EVENT_DELETED]: 'project_updates',
+  [NOTIFICATION_TYPES.EMAIL_FILMING_REMINDER]: 'filming_reminders',
+  [NOTIFICATION_TYPES.EMAIL_INVOICE_SENT]: 'invoice_reminders',
+  [NOTIFICATION_TYPES.EMAIL_PROJECT_DELIVERED]: 'new_deliverables',
+  [NOTIFICATION_TYPES.EMAIL_HOLIDAY_GREETING]: 'project_updates',
 };

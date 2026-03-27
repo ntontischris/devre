@@ -19,7 +19,7 @@ export async function getClients(filters?: {
     let query = supabase
       .from('clients')
       .select(
-        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, created_at, updated_at',
+        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, preferred_locale, created_at, updated_at',
       )
       .order('created_at', { ascending: false });
 
@@ -49,7 +49,7 @@ export async function getClient(id: string): Promise<ActionResult<Client>> {
     const { data, error } = await supabase
       .from('clients')
       .select(
-        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, created_at, updated_at',
+        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, preferred_locale, created_at, updated_at',
       )
       .eq('id', id)
       .single();
@@ -82,7 +82,7 @@ export async function createNewClient(input: unknown): Promise<ActionResult<Clie
       .from('clients')
       .insert(validated)
       .select(
-        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, created_at, updated_at',
+        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, preferred_locale, created_at, updated_at',
       )
       .single();
 
@@ -120,7 +120,7 @@ export async function updateClient(id: string, input: unknown): Promise<ActionRe
       .update(validated)
       .eq('id', id)
       .select(
-        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, created_at, updated_at',
+        'id, user_id, company_name, contact_name, email, phone, address, vat_number, avatar_url, notes, status, preferred_locale, created_at, updated_at',
       )
       .single();
 

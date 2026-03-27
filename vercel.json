@@ -12,6 +12,14 @@
     {
       "path": "/api/cron/google-webhook-renew",
       "schedule": "0 3 */6 * *"
+    },
+    {
+      "path": "/api/cron/email-filming-reminder",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/email-holiday-greeting",
+      "schedule": "0 7 * * *"
     }
   ]
 }
